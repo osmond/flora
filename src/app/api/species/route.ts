@@ -1,65 +1,53 @@
+// src/app/api/species/route.ts
 import { NextResponse } from "next/server";
 
-const UA = "flora-app/0.1 (+local dev)";
+async function fetchPerenual(q: string) {
+  const res = await fetch(
+    `https://perenual.com/api/species-list?key=${process.env.PERENUAL_API_KEY}&q=${encodeURIComponent(q)}`
+  );
+  if (!res.ok) throw new Error(`Perenual API error: ${res.status}`);
+  const body = await res.json();
 
-async function trefleSearch(q: string, token: string) {
-  const url = `https://trefle.io/api/v1/plants/search?q=${encodeURIComponent(q)}&token=${token}`;
-  const res = await fetch(url, {
-    // avoid caching during dev
-    cache: "no-store",
-    headers: {
-      "User-Agent": UA,
-      "Accept": "application/json",
-    },
-  });
-  const text = await res.text();
-  let json: any = null;
-  try { json = JSON.parse(text); } catch {}
-  return { ok: res.ok, status: res.status, text, json };
+  return body?.data?.map((p: any) => ({
+    id: `perenual-${p.id}`,
+    common_name: p.common_name,
+    scientific_name: p.scientific_name,
+    image_url: p.default_image?.thumbnail,
+  })) ?? [];
+}
+
+async function fetchTrefle(q: string) {
+  const res = await fetch(
+    `https://trefle.io/api/v1/plants/search?token=${process.env.TREFLE_API_KEY}&q=${encodeURIComponent(q)}`
+  );
+  if (!res.ok) throw new Error(`Trefle API error: ${res.status}`);
+  const body = await res.json();
+
+  return body?.data?.map((p: any) => ({
+    id: `trefle-${p.id}`,
+    common_name: p.common_name,
+    scientific_name: p.scientific_name,
+    image_url: p.image_url,
+  })) ?? [];
 }
 
 export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const q = searchParams.get("q") || "";
+  if (!q) return NextResponse.json({ data: [] });
+
   try {
-    const { searchParams } = new URL(req.url);
-    const q = searchParams.get("q");
-    if (!q || q.trim().length < 2) {
-      return NextResponse.json([]);
+    let results = [];
+    try {
+      results = await fetchPerenual(q);
+    } catch (err) {
+      console.warn("Perenual failed, falling back to Trefle:", err);
+      results = await fetchTrefle(q);
     }
 
-    const token = process.env.TREFLE_API_TOKEN;
-    if (!token) {
-      return NextResponse.json({ error: "Missing TREFLE_API_TOKEN on server" }, { status: 500 });
-    }
-
-    // 1st attempt
-    let r = await trefleSearch(q, token);
-
-    // simple retry once on 5xx
-    if (!r.ok && r.status >= 500) {
-      r = await trefleSearch(q, token);
-    }
-
-    if (!r.ok) {
-      // bubble up what Trefle said so we can see it in Network tab
-      return NextResponse.json(
-        { error: "Trefle request failed", status: r.status, body: r.json ?? r.text },
-        { status: 502 }
-      );
-    }
-
-    const items = Array.isArray(r.json?.data)
-      ? r.json.data.map((p: any) => ({
-          common_name: p?.common_name ?? null,
-          scientific_name: p?.scientific_name ?? null,
-          image_url: p?.image_url ?? null,
-        }))
-      : [];
-
-    return NextResponse.json(items);
+    return NextResponse.json({ data: results });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message ?? "Unknown server error" },
-      { status: 500 }
-    );
+    console.error("Species API error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

@@ -1,35 +1,51 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+// src/app/api/plants/route.ts
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // must be service role for inserts
+);
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Expect: { name, species, carePlan: { waterEvery, fertEvery, fertFormula } }
-    const { name, species, carePlan } = body ?? {};
-    if (!name || !species || !carePlan) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    const { name, species, common_name, care_plan } = body;
+
+    if (!name) {
+      return NextResponse.json({ error: "Plant name is required" }, { status: 400 });
     }
 
-    const { data, error } = await supabaseAdmin
-      .from('plants')
-      .insert({
-        name,
-        species,
-        water_every: carePlan.waterEvery,
-        fert_every: carePlan.fertEvery,
-        fert_formula: carePlan.fertFormula,
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase
+      .from("plants")
+      .insert([
+        {
+          name,
+          species,
+          common_name,
+          care_plan,
+        },
+      ])
+      .select();
 
-    if (error) {
-      console.error(error);
-      return Response.json({ error: error.message }, { status: 500 });
-    }
+    if (error) throw error;
 
-    return Response.json({ ok: true, plant: data }, { status: 201 });
+    return NextResponse.json({ data });
   } catch (err: any) {
-    console.error(err);
-    return Response.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
+    console.error("POST /plants error:", err.message);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const { data, error } = await supabase.from("plants").select("*").order("name");
+
+    if (error) throw error;
+
+    return NextResponse.json({ data });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

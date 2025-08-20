@@ -1,138 +1,91 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-type SpeciesItem = {
-  common_name: string | null;
-  scientific_name: string | null;
-  image_url?: string | null;
+type Species = {
+  id: string;
+  common_name: string;
+  scientific_name: string;
+  image_url?: string;
 };
 
-export default function SpeciesAutosuggest({
-  onSelect,
-  placeholder = "e.g. Boston Fern",
-  defaultValue = "",
-  debounceMs = 250,
-}: {
-  onSelect: (val: { common: string; scientific: string }) => void;
-  placeholder?: string;
-  defaultValue?: string;
-  debounceMs?: number;
-}) {
-  const [query, setQuery] = useState(defaultValue);
-  const [results, setResults] = useState<SpeciesItem[]>([]);
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
+type Props = {
+  value: string; // current text (from parent form)
+  onSelect: (scientific: string, common?: string) => void; // callback
+};
 
-  // simple debounce
-  const debouncedQuery = useDebounce(query, debounceMs);
+export default function SpeciesAutosuggest({ value, onSelect }: Props) {
+  const [query, setQuery] = useState(value);
+  const [results, setResults] = useState<Species[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (debouncedQuery.trim().length < 2) {
+    if (!query) {
       setResults([]);
-      setOpen(false);
       return;
     }
 
-    setLoading(true);
-    abortRef.current?.abort();
-    const ctrl = new AbortController();
-    abortRef.current = ctrl;
+    const controller = new AbortController();
 
-    fetch(`/api/species?q=${encodeURIComponent(debouncedQuery)}`, {
-      signal: ctrl.signal,
+    setLoading(true);
+    fetch(`/api/species?q=${encodeURIComponent(query)}`, {
+      signal: controller.signal,
     })
-      .then(async (r) => {
-        if (!r.ok) throw new Error("search failed");
-        return r.json();
-      })
-      .then((data: SpeciesItem[]) => {
-        setResults(data);
-        setOpen(true);
-      })
-      .catch(() => {
-        // ignore aborted / errors for now
+      .then((res) => res.json())
+      .then((data) => setResults(data.data || []))
+      .catch((err) => {
+        if (err.name !== "AbortError") console.error(err);
       })
       .finally(() => setLoading(false));
 
-    return () => ctrl.abort();
-  }, [debouncedQuery]);
+    return () => controller.abort();
+  }, [query]);
+
+  function handleSelect(species: Species) {
+    setQuery(species.scientific_name); // fill input with chosen species
+    setResults([]); // close dropdown
+    onSelect(species.scientific_name, species.common_name);
+  }
 
   return (
-    <div className="relative">
+    <div className="w-full max-w-md relative">
+      <label className="block font-medium mb-1">Species</label>
       <input
         type="text"
         value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-        }}
-        placeholder={placeholder}
-        className="w-full border rounded px-3 py-2"
-        aria-autocomplete="list"
-        aria-expanded={open}
-        aria-controls="species-suggest"
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search for a plant..."
+        className="w-full border rounded px-2 py-1"
       />
-      {loading && (
-        <div className="absolute right-2 top-2 text-xs text-gray-500 select-none">
-          …
-        </div>
-      )}
-      {open && results.length > 0 && (
-        <ul
-          id="species-suggest"
-          className="absolute z-10 mt-2 w-full max-h-64 overflow-auto rounded border bg-white shadow"
-          role="listbox"
-        >
-          {results.map((r, i) => {
-            const sci = r.scientific_name ?? "";
-            const com = r.common_name ?? "";
-            return (
-              <li
-                key={`${sci}-${i}`}
-                role="option"
-                aria-selected="false"
-                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  const common = com || sci;
-                  setQuery(common);
-                  onSelect({ common, scientific: sci });
-                  setOpen(false);
-                }}
-              >
-                {r.image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={r.image_url}
-                    alt={com || sci}
-                    className="h-7 w-7 rounded object-cover"
-                  />
-                ) : (
-                  <div className="h-7 w-7 rounded bg-gray-100" />
-                )}
-                <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">
-                    {com || sci}
-                  </div>
-                  <div className="text-xs text-gray-500 italic truncate">
-                    {sci}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
+
+      {loading && <p className="text-sm text-gray-500 mt-2">Searching…</p>}
+
+      {results.length > 0 && (
+        <ul className="absolute z-10 bg-white border rounded w-full mt-1 shadow-lg max-h-60 overflow-y-auto">
+          {results.map((species) => (
+            <li
+              key={species.id}
+              onClick={() => handleSelect(species)}
+              className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
+            >
+              <img
+                src={
+                  species.image_url ||
+                  "https://placehold.co/48x48?text=🌱"
+                }
+                alt={species.common_name || species.scientific_name}
+                className="w-10 h-10 rounded object-cover bg-gray-100"
+              />
+              <div>
+                <p className="font-medium">{species.common_name || "Unknown"}</p>
+                <p className="text-sm text-gray-500 italic">
+                  {species.scientific_name}
+                </p>
+              </div>
+            </li>
+          ))}
         </ul>
       )}
     </div>
   );
-}
-
-// tiny debounce hook
-function useDebounce<T>(value: T, delay = 250) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
 }
