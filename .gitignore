@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+apply-add-trefle-autosuggest.sh
+apply-fix-species-fetch.sh
+apply-fix-species-proxy.sh
+apply-fix-species-url.sh

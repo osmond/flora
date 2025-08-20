@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import SpeciesAutosuggest from '@/components/SpeciesAutosuggest';
 
 type CarePlan = {
   waterEvery: string;
@@ -62,7 +63,6 @@ export default function AddPlantPage() {
 
     setSaving(false);
     setSavedMsg('Saved! ✅');
-    // TODO: navigate to /plants/[id] once we add that route
   }
 
   return (
@@ -82,20 +82,23 @@ export default function AddPlantPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Species</label>
-          <input
-            value={species}
-            onChange={(e) => setSpecies(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-            placeholder="e.g. Boston Fern"
-            required
+          <label className="block text-sm font-medium">Species (search by common name)</label>
+          <SpeciesAutosuggest
+            onSelect={(sel) => setSpecies(sel.scientific)}
+            placeholder="Type a common name… e.g. boston fern"
           />
+          {species && (
+            <p className="mt-1 text-sm text-gray-600 italic">
+              Selected scientific name: <span className="font-medium">{species}</span>
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
           className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
-          disabled={loading}
+          disabled={loading || !species}
+          title={!species ? 'Pick a species first' : 'Generate care plan'}
         >
           {loading ? 'Thinking...' : 'Get Care Plan'}
         </button>
