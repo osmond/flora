@@ -34,7 +34,9 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 
 Species suggestions are powered by the OpenAI API, which may enforce rate
 limits. The `/api/species` endpoint keeps a short-lived in-memory cache keyed by
-query string to avoid hitting those limits repeatedly.
+query string to avoid hitting those limits repeatedly. Each returned `image_url`
+is verified with a `HEAD` request, and inaccessible links are omitted so the
+client can fall back to a placeholder image.
 
 ## Development
 

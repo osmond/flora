@@ -12,6 +12,18 @@ type Species = {
   image_url?: string | null;
 };
 
+async function validateImageUrl(url: string): Promise<boolean> {
+  try {
+    const head = await fetch(url, { method: "HEAD" });
+    if (head.ok) return true;
+    // Some hosts don't support HEAD; fall back to GET
+    const get = await fetch(url, { method: "GET" });
+    return get.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function fetchOpenAISpecies(q: string): Promise<Species[]> {
   const key = process.env.OPENAI_API_KEY;
   if (!key) throw new Error("Missing OPENAI_API_KEY");
@@ -60,15 +72,25 @@ async function fetchOpenAISpecies(q: string): Promise<Species[]> {
     return [];
   }
   if (!Array.isArray(parsed)) return [];
-  return (parsed as unknown[]).map((p, idx) => {
+  const mapped = (parsed as unknown[]).map((p, idx) => {
     const obj = p as Record<string, unknown>;
     return {
       id: typeof obj.id === "string" ? obj.id : `openai-${idx}`,
       common_name: String(obj.common_name ?? ""),
       scientific_name: String(obj.scientific_name ?? ""),
       image_url: typeof obj.image_url === "string" ? obj.image_url : null,
-    };
+    } satisfies Species;
   });
+
+  return Promise.all(
+    mapped.map(async (item) => {
+      if (item.image_url) {
+        const ok = await validateImageUrl(item.image_url);
+        if (!ok) item.image_url = null;
+      }
+      return item;
+    })
+  );
 }
 
 export async function GET(req: Request) {
