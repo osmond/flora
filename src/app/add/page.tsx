@@ -14,6 +14,7 @@ export default function AddPlantForm() {
   const [drainage, setDrainage] = useState("");
   const [soilType, setSoilType] = useState("");
   const [lightLevel, setLightLevel] = useState("");
+  const [indoor, setIndoor] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function AddPlantForm() {
     formData.append("drainage", drainage);
     formData.append("soil_type", soilType);
     formData.append("light_level", lightLevel);
+    formData.append("indoor", indoor);
     if (photo) {
       formData.append("photo", photo);
     }
@@ -55,6 +57,7 @@ export default function AddPlantForm() {
       setDrainage("");
       setSoilType("");
       setLightLevel("");
+      setIndoor("");
       setPhoto(null);
     }
   };
@@ -148,6 +151,19 @@ export default function AddPlantForm() {
           onChange={(e) => setSoilType(e.target.value)}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium">Location</label>
+        <select
+          value={indoor}
+          onChange={(e) => setIndoor(e.target.value)}
+          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+        >
+          <option value="">Select</option>
+          <option value="Indoor">Indoor</option>
+          <option value="Outdoor">Outdoor</option>
+        </select>
       </div>
 
       <div>
