@@ -61,19 +61,25 @@ export default async function PlantDetailPage({
   return (
     <div className="space-y-6 p-4">
       <div>
-        {plant.image_url && (
-          <img
-            src={plant.image_url}
-            alt={plant.name}
-            className="mb-4 w-full max-w-xs rounded"
-          />
-        )}
-        <h1 className="text-2xl font-bold">{plant.name}</h1>
-        {plant.common_name && (
-          <p className="text-gray-600">{plant.common_name}</p>
-        )}
-        {plant.species && (
-          <p className="text-sm italic text-gray-600">{plant.species}</p>
+        {plant.image_url ? (
+          <div className="relative mb-4">
+            <img
+              src={plant.image_url}
+              alt={plant.name}
+              className="h-48 w-full rounded object-cover"
+            />
+            <div className="absolute bottom-0 left-0 w-full bg-black/50 p-4">
+              <h1 className="text-2xl font-bold text-white">{plant.name}</h1>
+              {plant.common_name && (
+                <p className="text-sm text-white">{plant.common_name}</p>
+              )}
+              {plant.species && (
+                <p className="text-xs italic text-gray-200">{plant.species}</p>
+              )}
+            </div>
+          </div>
+        ) : (
+          <h1 className="mb-4 text-2xl font-bold">{plant.name}</h1>
         )}
         {plant.pot_size && (
           <p className="text-sm text-gray-600">Pot size: {plant.pot_size}</p>
