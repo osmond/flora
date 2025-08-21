@@ -238,7 +238,7 @@ export default function AddPlantForm() {
       </div>
 
       {step === 1 && (
-        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
+        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Identify</h2>
           <div>
             <label className="mb-1 block text-sm font-medium">Nickname</label>
@@ -292,7 +292,7 @@ export default function AddPlantForm() {
       )}
 
       {step === 2 && (
-        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
+        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Place</h2>
           <div>
             <label className="mb-1 block text-sm font-medium">Room</label>
@@ -335,7 +335,7 @@ export default function AddPlantForm() {
       )}
 
       {step === 3 && (
-        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
+        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Pot Setup</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -379,7 +379,7 @@ export default function AddPlantForm() {
       )}
 
       {step === 4 && (
-        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
+        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Environment</h2>
           <input type="hidden" {...register("latitude")} />
           <input type="hidden" {...register("longitude")} />
@@ -400,7 +400,7 @@ export default function AddPlantForm() {
       )}
 
       {step === 5 && (
-        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
+        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Smart Plan</h2>
           <button
             type="button"
@@ -414,7 +414,7 @@ export default function AddPlantForm() {
             {loadingCare ? "Generating..." : "Generate Care Plan"}
           </button>
           {carePlan && (
-            <div className="mt-2 space-y-1 rounded border bg-white p-3 text-sm">
+            <div className="mt-2 space-y-1 rounded border bg-white p-3 text-sm text-gray-900 dark:text-gray-100">
               <p>Water every: {carePlan.waterEvery}</p>
               <p>Fertilize: {carePlan.fertEvery} ({carePlan.fertFormula})</p>
               {carePlan.weather && (
@@ -429,7 +429,7 @@ export default function AddPlantForm() {
       )}
 
       {step === 6 && (
-        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 shadow-sm">
+        <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Ready to add &lsquo;{nameValue}&rsquo;?</h2>
           <div className="space-y-2 text-sm">
             <p>

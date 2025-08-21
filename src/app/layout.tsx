@@ -16,15 +16,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} min-h-dvh bg-green-50 text-gray-900 antialiased dark:bg-gray-900 dark:text-gray-100`}
+        className={`${inter.className} min-h-dvh bg-green-50 text-gray-900 antialiased dark:bg-gray-900`}
       >
         <Providers>
           <ToasterProvider />
-          <header className="flex items-center justify-between p-4">
+          <header className="flex items-center justify-between p-4 text-gray-900 dark:text-gray-100">
             <Navigation />
             <ThemeToggle />
           </header>
-          <main className="mx-auto max-w-screen-md p-4">{children}</main>
+          <main className="mx-auto max-w-screen-md p-4 text-gray-900 dark:text-gray-100">{children}</main>
         </Providers>
       </body>
     </html>
