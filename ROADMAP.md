@@ -20,8 +20,8 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 > Goal: “From curious plant person to confident caretaker — in under a minute.”
 
 - [ ] **Identify**
-  - [ ] Plant nickname
-  - [ ] Species autosuggest (Perenual API)
+  - [x] Plant nickname
+  - [x] Species autosuggest (Perenual API)
   - [x] Optional photo upload
 
 - [ ] **Place**
@@ -29,7 +29,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 - [ ] **Describe**
   - [x] Pot size + material
-  - [ ] Light level
+  - [x] Light level
   - [ ] Drainage quality
   - [ ] Soil type
   - [ ] Indoor/outdoor
