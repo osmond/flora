@@ -11,7 +11,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
   - [ ] `plants` table
 - [ x] Add environment keys (`.env`)
 - [ ] Basic app layout with routing (`/app`, `/app/plants/[id]`, etc.)
-- [ ] Set up local dev 
+- [x ] Set up local dev 
 
 ---
 
