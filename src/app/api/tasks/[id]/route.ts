@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getCurrentUserId } from "@/lib/auth";
+import { logEvent } from "@/lib/analytics";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,6 +23,7 @@ export async function PATCH(
         .eq("id", id)
         .eq("user_id", getCurrentUserId());
       if (error) throw error;
+      await logEvent("task_completed", { task_id: id });
     } else if (action === "snooze") {
       let addDays = typeof days === "number" ? days : 1;
       if (reason === "Too busy") addDays = Math.max(addDays, 2);
