@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Progress } from "@/components/ui";
 
 interface Props {
   hasPlants: boolean;
@@ -49,12 +50,7 @@ export default function OnboardingProgress({ hasPlants, hasTasks }: Props) {
       <div className="mb-1 text-sm">
         Onboarding {completed}/3 steps complete
       </div>
-      <div className="h-2 w-full rounded bg-gray-200">
-        <div
-          className="h-2 rounded bg-green-600"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+      <Progress value={progress} className="h-2 w-full" />
     </div>
   );
 }

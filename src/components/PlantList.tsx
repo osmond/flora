@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import {
+  Toggle,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui";
 
 export type Plant = {
   id: string;
@@ -25,12 +33,13 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
   return (
     <div>
       <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setView(view === "list" ? "grid" : "list")}
-          className="rounded border px-3 py-1 text-sm"
+        <Toggle
+          pressed={view === "grid"}
+          onPressedChange={(pressed) => setView(pressed ? "grid" : "list")}
+          variant="outline"
         >
           {view === "list" ? "Grid view" : "List view"}
-        </button>
+        </Toggle>
       </div>
       {Object.entries(grouped).map(([room, plants]) => (
         <section key={room} className="mb-8">
@@ -39,21 +48,20 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
             <ul className="space-y-4">
               {plants.map((plant) => (
                 <li key={plant.id}>
-                  <Link
-                    href={`/plants/${plant.id}`}
-                    className="block rounded border p-4"
-                  >
-                    <div className="font-semibold">{plant.name}</div>
-                    {plant.common_name && (
-                      <div className="text-sm text-gray-600">
-                        {plant.common_name}
-                      </div>
-                    )}
-                    {plant.species && (
-                      <div className="text-sm italic text-gray-600">
-                        {plant.species}
-                      </div>
-                    )}
+                  <Link href={`/plants/${plant.id}`} className="block">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>{plant.name}</CardTitle>
+                        {plant.common_name && (
+                          <CardDescription>{plant.common_name}</CardDescription>
+                        )}
+                        {plant.species && (
+                          <CardDescription className="italic">
+                            {plant.species}
+                          </CardDescription>
+                        )}
+                      </CardHeader>
+                    </Card>
                   </Link>
                 </li>
               ))}
@@ -62,24 +70,23 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
             <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {plants.map((plant) => (
                 <li key={plant.id}>
-                  <Link
-                    href={`/plants/${plant.id}`}
-                    className="block overflow-hidden rounded border"
-                  >
-                    {plant.image_url ? (
-                      <img
-                        src={plant.image_url}
-                        alt={plant.name}
-                        className="h-32 w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-32 items-center justify-center bg-gray-100 text-gray-500">
+                  <Link href={`/plants/${plant.id}`} className="block">
+                    <Card className="overflow-hidden">
+                      {plant.image_url ? (
+                        <img
+                          src={plant.image_url}
+                          alt={plant.name}
+                          className="h-32 w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-32 items-center justify-center bg-gray-100 text-gray-500">
+                          {plant.name}
+                        </div>
+                      )}
+                      <CardContent className="p-2 text-center text-sm font-medium">
                         {plant.name}
-                      </div>
-                    )}
-                    <div className="p-2 text-center text-sm font-medium">
-                      {plant.name}
-                    </div>
+                      </CardContent>
+                    </Card>
                   </Link>
                 </li>
               ))}

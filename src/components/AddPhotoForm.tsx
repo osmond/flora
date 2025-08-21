@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Input, Button } from "@/components/ui";
 
 export default function AddPhotoForm({ plantId }: { plantId: string }) {
   const [photo, setPhoto] = useState<File | null>(null);
@@ -30,25 +31,18 @@ export default function AddPhotoForm({ plantId }: { plantId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <input
+      <Input
         type="file"
         accept="image/*"
         onChange={(e) => setPhoto(e.target.files?.[0] || null)}
-        className="block w-full text-sm text-gray-700"
       />
-      <input
+      <Input
         type="text"
         placeholder="Caption (optional)"
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
       />
-      <button
-        type="submit"
-        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-      >
-        Add Photo
-      </button>
+      <Button type="submit">Add Photo</Button>
     </form>
   );
 }
