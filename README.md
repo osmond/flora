@@ -28,6 +28,12 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 - Export your plant data in JSON or CSV via `/api/export?format=csv`.
 - Restore plant data by POSTing exported JSON to `/api/import`.
 
+## Rate limits and caching
+
+Species suggestions are fetched from third-party APIs that may enforce rate
+limits. The `/api/species` endpoint keeps a short-lived in-memory cache keyed by
+query string to avoid hitting those limits repeatedly.
+
 ## Development
 
 Install dependencies and start the development server:
