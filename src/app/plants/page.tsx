@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PlantList from "@/components/PlantList";
 import { getPlants } from "@/lib/data";
+import { Button } from "@/components/ui";
 
 export const revalidate = 0;
 
@@ -30,12 +31,9 @@ export default async function PlantsPage() {
       ) : (
         <div className="text-center">
           <p className="mb-4">No plants saved yet.</p>
-          <Link
-            href="/add"
-            className="inline-block rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-          >
-            Add your first plant
-          </Link>
+          <Button asChild>
+            <Link href="/add">Add your first plant</Link>
+          </Button>
         </div>
       )}
     </div>
