@@ -1,0 +1,122 @@
+# 🌿 Flora App Roadmap
+
+Flora is a personalized plant care companion for one user — you. It aims to make plant tracking effortless and emotionally resonant, powered by AI-generated care plans and a delightful UI.
+
+---
+
+## ✅ Phase 0 – Setup & Foundations
+
+- [ ] Create new Next.js app (`app/flora`)
+- [ ] Connect Supabase for database
+  - [ ] `plants` table
+- [ ] Add environment keys (`.env.local`)
+- [ ] Basic app layout with routing (`/app`, `/app/plants/[id]`, etc.)
+- [ ] Set up local dev and Vercel deployment
+
+---
+
+## 🌱 Phase 1 – Add a Plant Flow
+
+> Goal: “From curious plant person to confident caretaker — in under a minute.”
+
+- [ ] **Identify**
+  - [ ] Plant nickname
+  - [ ] Species autosuggest (Perenual API)
+  - [ ] Optional photo upload
+
+- [ ] **Place**
+  - [ ] Room selector or creator
+
+- [ ] **Describe**
+  - [ ] Pot size + material
+  - [ ] Light level
+  - [ ] Drainage quality
+  - [ ] Soil type
+  - [ ] Indoor/outdoor
+  - [ ] Local humidity + lat/lon (for climate context)
+
+- [ ] **Care Plan**
+  - [ ] Call `/api/ai-care` (fake or real) to get AI-generated defaults (watering interval, amount, fertilizer needs)
+  - [ ] Save AI care plan to draft
+
+- [ ] **Confirm**
+  - [ ] Save plant to Supabase
+  - [ ] Show success toast + redirect to detail view
+
+---
+
+## 🌿 Phase 2 – Plant Detail Page
+
+> A visually rich, emotionally resonant view of each plant.
+
+- [ ] Photo + Name hero section
+- [ ] Quick Stats: care plan values, last watered, next due
+- [ ] Timeline of logged events (watering, fertilizing, notes)
+- [ ] Notes section (freeform journaling)
+- [ ] Photo gallery
+- [ ] Edit button for care plan
+
+---
+
+## 📋 Phase 3 – Plants List
+
+- [ ] Room view: show each room and its plants as image tiles
+- [ ] Empty state CTA: “Add your first plant”
+- [ ] Grid or list toggle (mobile-first)
+- [ ] Tap = go to plant detail
+
+---
+
+## 📅 Phase 4 – Care Task Dashboard
+
+- [ ] “Today” view: show plants needing care today
+- [ ] Show overdue, due today, and upcoming
+- [ ] Swipe to mark as done
+- [ ] Floating Action Button (FAB) to add new task (manual)
+
+---
+
+## 🔒 Phase 5 – Auth & RLS (even if single user)
+
+- [ ] Enable Supabase Auth
+- [ ] Sign in screen (email magic link)
+- [ ] Add Row-Level Security (RLS) to `plants` and `tasks`
+- [ ] Protect routes (e.g. `/app`)
+
+---
+
+## 🧠 Phase 6 – Smart Enhancements
+
+- [ ] Improve AI-generated care plan with:
+  - [ ] Real weather data
+  - [ ] Climate zone inference
+  - [ ] Historical behavior
+- [ ] “Care coach” suggestions on plant detail page
+- [ ] Timeline trend insights (“you’ve watered 5 days late lately…”)
+
+---
+
+## 🧪 Phase 7 – Polish & UX
+
+- [ ] Mobile layout refinements
+- [ ] Dark mode toggle
+- [ ] Animations (task done, photo upload, etc.)
+- [ ] Cache API calls + loading states
+- [ ] Micro-interactions (emoji feedback, care badges)
+
+---
+
+## 📦 Optional – Backup & Export
+
+- [ ] Export all plant data to JSON or CSV
+- [ ] Import feature for recovery
+
+---
+
+## 🧭 Next Steps
+
+- [ ] Wrap up Plant Detail timeline view
+- [ ] Build Rooms + Plant List page
+- [ ] Add `/app/today` for task view
+- [ ] Evaluate Supabase Auth vs hardcoded single-user fallback
+- [ ] Polish visual style, typography, and interactions
