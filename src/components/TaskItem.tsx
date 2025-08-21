@@ -20,14 +20,22 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
   const [snoozeOpen, setSnoozeOpen] = useState(false);
 
   const handleComplete = async () => {
-    setIsCompleting(true);
-    await fetch(`/api/tasks/${task.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "complete" }),
-    });
-    // allow animation to play before refreshing
-    setTimeout(() => router.refresh(), 300);
+    try {
+      const res = await fetch(`/api/tasks/${task.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "complete" }),
+      });
+      if (res.ok) {
+        setIsCompleting(true);
+        // allow animation to play before refreshing
+        setTimeout(() => router.refresh(), 300);
+      } else {
+        toast("Failed to complete task");
+      }
+    } catch {
+      toast("Failed to complete task");
+    }
   };
 
   const handleSnooze = async ({ days, reason }: { days: number; reason?: string }) => {
