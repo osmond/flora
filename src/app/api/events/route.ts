@@ -29,6 +29,18 @@ const eventSchema = z
     path: ["file"],
   });
 
+function serializeError(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (err && typeof err === "object") {
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  }
+  return String(err);
+}
+
 export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
@@ -85,15 +97,21 @@ export async function POST(req: Request) {
   let public_id: string | undefined;
   if (file) {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const uploadResult = await new Promise<import("cloudinary").UploadApiResponse>((resolve, reject) =>
-      cloudinary.uploader
-        .upload_stream({ folder: "plant-photos" }, (error, result) =>
-          error ? reject(error) : resolve(result!)
-        )
-        .end(buffer)
-    );
-    image_url = uploadResult.secure_url;
-    public_id = uploadResult.public_id;
+    try {
+      const uploadResult = await new Promise<import("cloudinary").UploadApiResponse>((resolve, reject) =>
+        cloudinary.uploader
+          .upload_stream({ folder: "plant-photos" }, (error, result) =>
+            error ? reject(error) : resolve(result!)
+          )
+          .end(buffer)
+      );
+      image_url = uploadResult.secure_url;
+      public_id = uploadResult.public_id;
+    } catch (err) {
+      const message = serializeError(err);
+      console.error("Error uploading to Cloudinary:", err);
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
   }
 
   const { data, error } = await supabase
@@ -118,8 +136,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ data });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("POST /events error:", message);
+    const message = serializeError(err);
+    console.error("POST /events error:", err);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
