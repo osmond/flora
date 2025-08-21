@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
 import { getCurrentUserId } from "../../../lib/auth";
+import { logEvent } from "../../../lib/analytics";
 import { z } from "zod";
 
 const supabase = createClient(
@@ -101,6 +102,8 @@ export async function POST(req: Request) {
       .select();
 
     if (error) throw error;
+
+    await logEvent("plant_created", { plant_id: data?.[0]?.id });
 
     return NextResponse.json({ data });
   } catch (err: unknown) {
