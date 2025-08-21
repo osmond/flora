@@ -14,7 +14,7 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-let pathname = '/today';
+let pathname = '/';
 vi.mock('next/navigation', () => ({
   usePathname: () => pathname,
 }));
@@ -22,7 +22,7 @@ vi.mock('next/navigation', () => ({
 describe('Navigation', () => {
   it('renders links to all sections', () => {
     const html = renderToString(<Navigation />);
-    expect(html).toContain('href="/today"');
+    expect(html).toContain('href="/"');
     expect(html).toContain('href="/plants"');
     expect(html).toContain('href="/add"');
   });
