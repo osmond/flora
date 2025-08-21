@@ -1,4 +1,4 @@
-import { Inter, Cabin } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -7,7 +7,10 @@ import { Providers } from "./providers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const cabinet = Cabin({ subsets: ["latin"], variable: "--font-cabinet" });
+const cabinet = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-cabinet",
+});
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
