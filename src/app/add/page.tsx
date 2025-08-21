@@ -7,20 +7,27 @@ export default function AddPlantForm() {
   const [name, setName] = useState("");
   const [species, setSpecies] = useState("");
   const [commonName, setCommonName] = useState(""); // 👈
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("species", species);
+    formData.append("common_name", commonName);
+    if (imageFile) formData.append("image", imageFile);
+
     const res = await fetch("/api/plants", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, species, commonName }),
+      body: formData,
     });
 
     if (res.ok) {
       setName("");
       setSpecies("");
       setCommonName("");
+      setImageFile(null);
     }
   };
 
@@ -52,6 +59,15 @@ export default function AddPlantForm() {
           type="text"
           value={commonName}
           onChange={(e) => setCommonName(e.target.value)} // 👈 editable override
+        />
+      </div>
+
+      <div>
+        <label>Photo</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImageFile(e.target.files?.[0] || null)}
         />
       </div>
 

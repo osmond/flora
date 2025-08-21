@@ -6,11 +6,11 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 ## ✅ Phase 0 – Setup & Foundations
 
-- [ ] Create new Next.js app (`app/flora`)
-- [ ] Connect Supabase for database
-  - [ ] `plants` table
+- [x] Create new Next.js app (`app/flora`)
+- [x] Connect Supabase for database
+  - [x] `plants` table
 - [ ] Add environment keys (`.env.local`)
-- [ ] Basic app layout with routing (`/app`, `/app/plants/[id]`, etc.)
+- [x] Basic app layout with routing (`/app`, `/app/plants/[id]`, etc.)
 - [ ] Set up local dev and Vercel deployment
 
 ---
@@ -20,9 +20,9 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 > Goal: “From curious plant person to confident caretaker — in under a minute.”
 
 - [ ] **Identify**
-  - [ ] Plant nickname
-  - [ ] Species autosuggest (Perenual API)
-  - [ ] Optional photo upload
+  - [x] Plant nickname
+  - [x] Species autosuggest (Perenual API)
+  - [x] Optional photo upload
 
 - [ ] **Place**
   - [ ] Room selector or creator

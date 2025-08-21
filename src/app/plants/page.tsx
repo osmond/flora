@@ -7,6 +7,7 @@ type Plant = {
   name: string;
   species: string | null;
   common_name: string | null;
+  image_url: string | null;
 };
 
 export default async function PlantsPage() {
@@ -17,7 +18,7 @@ export default async function PlantsPage() {
 
   const { data, error } = await supabase
     .from("plants")
-    .select("id, name, species, common_name")
+    .select("id, name, species, common_name, image_url")
     .order("name");
 
   const plants = data as Plant[] | null;
@@ -34,6 +35,13 @@ export default async function PlantsPage() {
         <ul className="space-y-4">
           {plants.map((plant) => (
             <li key={plant.id} className="rounded border p-4">
+              {plant.image_url && (
+                <img
+                  src={plant.image_url}
+                  alt={plant.name}
+                  className="mb-2 h-24 w-24 object-cover"
+                />
+              )}
               <div className="font-semibold">{plant.name}</div>
               {plant.common_name && (
                 <div className="text-sm text-gray-600">{plant.common_name}</div>

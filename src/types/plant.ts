@@ -1,6 +1,8 @@
 export type Plant = {
   name: string;
   species: string;
+  common_name?: string;
+  image_url?: string;
   pot: string;
   potMaterial: string;
   light: string;

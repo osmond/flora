@@ -9,12 +9,28 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const form = await req.formData();
 
-    const { name, species, common_name, care_plan } = body;
+    const name = form.get("name") as string | null;
+    const species = (form.get("species") as string) || null;
+    const common_name = (form.get("common_name") as string) || null;
+    const file = form.get("image") as File | null;
 
     if (!name) {
       return NextResponse.json({ error: "Plant name is required" }, { status: 400 });
+    }
+
+    let image_url: string | undefined;
+    if (file && file.size > 0) {
+      const fileName = `${Date.now()}-${file.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("plant-photos")
+        .upload(fileName, file, { contentType: file.type });
+      if (uploadError) throw uploadError;
+      const { data: publicUrl } = supabase.storage
+        .from("plant-photos")
+        .getPublicUrl(uploadData.path);
+      image_url = publicUrl.publicUrl;
     }
 
     const { data, error } = await supabase
@@ -24,7 +40,7 @@ export async function POST(req: Request) {
           name,
           species,
           common_name,
-          care_plan,
+          image_url,
         },
       ])
       .select();

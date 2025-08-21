@@ -8,6 +8,8 @@ create table if not exists public.plants (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   species text not null,
+  common_name text,
+  image_url text,
   care_plan jsonb,
   created_at timestamptz default now()
 );
@@ -41,6 +43,11 @@ create policy "public read species" on public.species
 drop policy if exists "public write species" on public.species;
 create policy "public write species" on public.species
   for insert with check (true);
+
+-- Public storage bucket for plant photos
+insert into storage.buckets (id, name, public)
+values ('plant-photos', 'plant-photos', true)
+on conflict (id) do nothing;
 
 -- Optional starter species
 insert into public.species (scientific_name, common_name, family)
