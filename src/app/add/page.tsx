@@ -86,11 +86,6 @@ export default function AddPlantForm() {
   const nextStep = () => setStep((s) => Math.min(s + 1, totalSteps));
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
-  const funNames = ["Lucky", "Zoe", "Baby Leaf", "Sprout", "Fernie", "Pebble"];
-  const surpriseName = () => {
-    const name = funNames[Math.floor(Math.random() * funNames.length)];
-    setValue("name", name, { shouldValidate: true });
-  };
 
   const photoFile = watch("photo");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -254,21 +249,11 @@ export default function AddPlantForm() {
           <h2 className="text-lg font-medium">Identify</h2>
           <div>
             <label className="mb-1 block text-sm font-medium">Nickname</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                {...register("name")}
-                className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                onClick={surpriseName}
-              >
-                Surprise me
-              </Button>
-            </div>
+            <input
+              type="text"
+              {...register("name")}
+              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
             {errors.name && (
               <p className="text-sm text-red-600">{errors.name.message}</p>
             )}
