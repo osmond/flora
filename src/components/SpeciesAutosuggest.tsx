@@ -69,23 +69,27 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
         onChange={(e) => setQuery(e.target.value)}
         onBlur={() => onSelect(query)}
         placeholder="Search for a plant..."
-        className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+        className="w-full rounded border bg-white px-3 py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400"
       />
 
-      {loading && <p className="mt-2 text-sm text-gray-500">Searching…</p>}
+      {loading && (
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Searching…</p>
+      )}
       {error && (
-        <p className="mt-2 text-sm text-red-600">
+        <p className="mt-2 text-sm text-red-600 dark:text-red-400">
           {error} You can enter a species name manually.
         </p>
       )}
 
       {results.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-white text-gray-900 dark:text-gray-100 shadow-lg">
+
+        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+
           {results.map((species) => (
             <li
               key={species.id}
               onClick={() => handleSelect(species)}
-              className="flex cursor-pointer items-center gap-3 p-2 transition-colors hover:bg-gray-100"
+              className="flex cursor-pointer items-center gap-3 p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <img
                 src={
@@ -96,8 +100,10 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
                 className="h-10 w-10 rounded bg-gray-100 object-cover"
               />
               <div>
-                <p className="font-medium">{species.common_name || "Unknown"}</p>
-                <p className="italic text-sm text-gray-500">
+                <p className="font-medium dark:text-gray-100">
+                  {species.common_name || "Unknown"}
+                </p>
+                <p className="italic text-sm text-gray-500 dark:text-gray-400">
                   {species.scientific_name}
                 </p>
               </div>
