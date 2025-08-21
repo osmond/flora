@@ -136,13 +136,18 @@ export default function AddPlantForm() {
   const generateCarePlan = async () => {
     try {
       setLoadingCare(true);
-      const { latitude, longitude } = getValues();
+      const { latitude, longitude, species, potSize, lightLevel, humidity } =
+        getValues();
       const res = await fetch("/api/ai-care", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           latitude: latitude ? parseFloat(latitude) : undefined,
           longitude: longitude ? parseFloat(longitude) : undefined,
+          species: species || undefined,
+          potSize: typeof potSize === "number" ? potSize : undefined,
+          lightLevel: lightLevel || undefined,
+          humidity: humidity ? parseFloat(humidity) : undefined,
         }),
       });
       if (res.ok) {
@@ -188,6 +193,13 @@ export default function AddPlantForm() {
           body: JSON.stringify({
             latitude: data.latitude ? parseFloat(data.latitude) : undefined,
             longitude: data.longitude ? parseFloat(data.longitude) : undefined,
+            species: data.species || undefined,
+            potSize:
+              typeof data.potSize === "number" ? data.potSize : undefined,
+            lightLevel: data.lightLevel || undefined,
+            humidity: data.humidity
+              ? parseFloat(data.humidity)
+              : undefined,
           }),
         });
         if (res.ok) {
