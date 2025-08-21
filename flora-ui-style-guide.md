@@ -177,14 +177,177 @@ Persist via `next-themes`.
 - Contrast ≥ 4.5:1  
 - Focus → `ring-2 ring-primary`  
 - Swipe actions mirrored as buttons  
-- Dialogs → focus-trapped, `Esc` dismiss  
-- Autosuggest → ARIA combobox pattern  
+- Dialogs → focus-trapped, `Esc` dismiss
+- Autosuggest → ARIA combobox pattern
+
+---
+
+# 4. Preview Page Example
+Full-page component demonstrating Flora’s tokens and components in action.
+
+```tsx
+"use client";
+
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import {
+  Droplet,
+  Sun,
+  Calendar,
+  CheckCircle2,
+  Leaf,
+  Plus,
+  Image as ImageIcon,
+  ThermometerSun,
+  MapPin,
+} from "lucide-react";
+
+export default function FloraPreviewPage() {
+  return (
+    <div className="p-8 space-y-12 bg-background min-h-screen font-inter">
+      {/* Typography / Intro */}
+      <section>
+        <h1 className="text-3xl font-cabinet font-semibold mb-2">Flora UI Preview</h1>
+        <p className="text-muted-foreground text-sm">Component showcase for consistent styling and QA.</p>
+      </section>
+
+      {/* Buttons */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Buttons</h2>
+        <div className="flex gap-4 flex-wrap">
+          <Button><Plus className="mr-2 h-4 w-4" strokeWidth={1.5} />Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="outline"><Leaf className="mr-2 h-4 w-4" strokeWidth={1.5} />Outline</Button>
+        </div>
+      </section>
+
+      {/* Plant Card */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Plant Card</h2>
+        <Card className="max-w-xs">
+          <CardHeader>
+            <Avatar>
+              <AvatarImage src="/placeholder-plant.jpg" alt="Monstera" />
+              <AvatarFallback>M</AvatarFallback>
+            </Avatar>
+            <CardTitle className="mt-2 font-cabinet">Monstera</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground font-inter">Room: Living Room</CardContent>
+        </Card>
+      </section>
+
+      {/* Quick Stats */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Quick Stats</h2>
+        <div className="flex gap-2 flex-wrap">
+          <Badge variant="outline"><Droplet className="mr-1 h-3 w-3" strokeWidth={1.5} />Water: Every 7d</Badge>
+          <Badge variant="outline"><Sun className="mr-1 h-3 w-3" strokeWidth={1.5} />Light: Bright Indirect</Badge>
+          <Badge variant="secondary"><Calendar className="mr-1 h-3 w-3" strokeWidth={1.5} />Last watered: 2d ago</Badge>
+        </div>
+      </section>
+
+      {/* Task Card */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Task Card</h2>
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle className="font-cabinet">Water Monstera</CardTitle>
+          </CardHeader>
+          <CardContent className="flex items-center justify-between">
+            <p className="text-muted-foreground text-sm font-inter">Due today</p>
+            <Button size="sm"><CheckCircle2 className="mr-1 h-4 w-4" strokeWidth={1.5} />Mark Done</Button>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Timeline Entry */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Timeline Entry</h2>
+        <div className="flex items-start gap-3">
+          <div className="h-2 w-2 rounded-full bg-primary mt-2" />
+          <div>
+            <p className="font-medium font-inter">Watered Monstera</p>
+            <p className="text-sm text-muted-foreground font-inter">Aug 20, 2025</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Tile */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Gallery Tile</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="aspect-square bg-secondary flex items-center justify-center rounded-xl">
+            <ImageIcon className="h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
+          </div>
+          <div className="aspect-square bg-secondary flex items-center justify-center rounded-xl">
+            <ImageIcon className="h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
+          </div>
+          <div className="aspect-square bg-secondary flex items-center justify-center rounded-xl">
+            <ImageIcon className="h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
+          </div>
+        </div>
+      </section>
+
+      {/* Form Controls */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Form Controls</h2>
+        <div className="space-y-4">
+          <Input placeholder="Enter plant name..." />
+          <div className="flex items-center gap-2">
+            <Switch id="indoor-outdoor" />
+            <label htmlFor="indoor-outdoor" className="text-sm font-medium font-inter">Indoor plant</label>
+          </div>
+        </div>
+      </section>
+
+      {/* Plant Detail Hero */}
+      <section>
+        <h2 className="text-xl font-cabinet font-semibold mb-4">Plant Detail Hero</h2>
+        <div className="rounded-2xl overflow-hidden border">
+          {/* Cover image placeholder */}
+          <div className="h-48 sm:h-64 bg-muted" />
+          <div className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h3 className="text-2xl font-cabinet">Kay (Monstera deliciosa)</h3>
+                <p className="text-xs text-muted-foreground font-inter flex items-center gap-2 mt-1">
+                  <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} /> Living Room · <ThermometerSun className="h-3.5 w-3.5" strokeWidth={1.5} /> 45% humidity
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="secondary"><ImageIcon className="mr-1 h-4 w-4" strokeWidth={1.5} />Add Photo</Button>
+                <Button size="sm"><Leaf className="mr-1 h-4 w-4" strokeWidth={1.5} />Edit Care Plan</Button>
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            {/* Quick stats row inside hero */}
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline"><Droplet className="mr-1 h-3 w-3" strokeWidth={1.5} />Every 5d</Badge>
+              <Badge variant="outline"><Calendar className="mr-1 h-3 w-3" strokeWidth={1.5} />Last 2d</Badge>
+              <Badge variant="outline"><Calendar className="mr-1 h-3 w-3" strokeWidth={1.5} />Next in 3d</Badge>
+              <Badge variant="outline"><Sun className="mr-1 h-3 w-3" strokeWidth={1.5} />Bright indirect</Badge>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+```
 
 ---
 
 # References
-- [Tailwind CSS](https://tailwindcss.com/docs)  
-- [shadcn/ui](https://ui.shadcn.com)  
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [shadcn/ui](https://ui.shadcn.com)
 - [Radix UI](https://www.radix-ui.com/primitives)  
 - [Lucide Icons](https://lucide.dev)  
 - [next-themes](https://github.com/pacocoursey/next-themes)  
