@@ -14,7 +14,12 @@ const formSchema = z.object({
   species: z.string().min(1, "Species is required"),
   commonName: z.string().optional(),
   room: z.string().optional(),
-  potSize: z.string().optional(),
+  potSize: z
+    .number({ invalid_type_error: "Pot size must be a number" })
+    .min(1, "Pot size must be at least 1")
+    .max(100, "Pot size cannot exceed 100")
+    .optional(),
+  potUnit: z.enum(["cm", "in"]).optional(),
   potMaterial: z.string().optional(),
   drainage: z.string().optional(),
   soilType: z.string().optional(),
@@ -62,7 +67,8 @@ export default function AddPlantForm() {
       species: "",
       commonName: "",
       room: "",
-      potSize: "",
+      potSize: undefined,
+      potUnit: "cm",
       potMaterial: "",
       drainage: "",
       soilType: "",
@@ -158,7 +164,12 @@ export default function AddPlantForm() {
     formData.append("species", data.species);
     formData.append("common_name", data.commonName || "");
     formData.append("room", data.room || "");
-    formData.append("pot_size", data.potSize || "");
+    formData.append(
+      "pot_size",
+      data.potSize !== undefined
+        ? `${data.potSize}${data.potUnit ? ` ${data.potUnit}` : ""}`
+        : ""
+    );
     formData.append("pot_material", data.potMaterial || "");
     formData.append("drainage", data.drainage || "");
     formData.append("soil_type", data.soilType || "");
@@ -342,11 +353,26 @@ export default function AddPlantForm() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium">Pot Size</label>
-              <input
-                type="text"
-                {...register("potSize")}
-                className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  step={1}
+                  {...register("potSize", { valueAsNumber: true })}
+                  className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <select
+                  {...register("potUnit")}
+                  className="rounded border px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="cm">cm</option>
+                  <option value="in">in</option>
+                </select>
+              </div>
+              {errors.potSize && (
+                <p className="text-sm text-red-600">{errors.potSize.message}</p>
+              )}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Pot Material</label>
