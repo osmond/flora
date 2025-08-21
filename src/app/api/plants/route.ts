@@ -3,40 +3,64 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
 import { getCurrentUserId } from "@/lib/auth";
+import { z } from "zod";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // must be service role for inserts
+  process.env.SUPABASE_SERVICE_ROLE_KEY!, // must be service role for inserts
 );
+
+export const plantSchema = z.object({
+  name: z.string().min(1),
+  species: z.string().min(1),
+  common_name: z.string().optional().nullable(),
+  room: z.string().optional().nullable(),
+  pot_size: z.string().optional().nullable(),
+  pot_material: z.string().optional().nullable(),
+  drainage: z.string().optional().nullable(),
+  soil_type: z.string().optional().nullable(),
+  light_level: z.string().optional().nullable(),
+  indoor: z.string().optional().nullable(),
+  latitude: z.coerce.number().min(-90).max(90).optional().nullable(),
+  longitude: z.coerce.number().min(-180).max(180).optional().nullable(),
+  humidity: z.coerce.number().min(0).max(100).optional().nullable(),
+  care_plan: z.string().optional().nullable(),
+});
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
 
-    const name = formData.get("name") as string;
-    const species = formData.get("species") as string;
-    const common_name = formData.get("common_name") as string | null;
-    const room = formData.get("room") as string | null;
-    const pot_size = formData.get("pot_size") as string | null;
-    const pot_material = formData.get("pot_material") as string | null;
-    const drainage = formData.get("drainage") as string | null;
-    const soil_type = formData.get("soil_type") as string | null;
-    const light_level = formData.get("light_level") as string | null;
-    const indoor = formData.get("indoor") as string | null;
-    const latitudeRaw = formData.get("latitude") as string | null;
-    const longitudeRaw = formData.get("longitude") as string | null;
-    const humidityRaw = formData.get("humidity") as string | null;
-    const latitude = latitudeRaw ? parseFloat(latitudeRaw) : null;
-    const longitude = longitudeRaw ? parseFloat(longitudeRaw) : null;
-    const humidity = humidityRaw ? parseFloat(humidityRaw) : null;
-    const care_plan = formData.get("care_plan");
-    let image_url: string | undefined;
+    const rawData = Object.fromEntries(formData.entries());
+    const file = rawData.photo;
+    delete (rawData as Record<string, unknown>).photo;
 
-    if (!name) {
-      return NextResponse.json({ error: "Plant name is required" }, { status: 400 });
+    const parsed = plantSchema.safeParse(rawData);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.flatten() },
+        { status: 400 },
+      );
     }
 
-    const file = formData.get("photo");
+    const {
+      name,
+      species,
+      common_name,
+      room,
+      pot_size,
+      pot_material,
+      drainage,
+      soil_type,
+      light_level,
+      indoor,
+      latitude,
+      longitude,
+      humidity,
+      care_plan,
+    } = parsed.data;
+    let image_url: string | undefined;
+
     if (file instanceof File) {
       const bytes = await file.arrayBuffer();
       const fileName = `${randomUUID()}-${file.name}`;
@@ -52,25 +76,25 @@ export async function POST(req: Request) {
       image_url = publicUrl.publicUrl;
     }
 
-  const { data, error } = await supabase
+    const { data, error } = await supabase
       .from("plants")
       .insert([
         {
           user_id: getCurrentUserId(),
           name,
           species,
-          common_name,
-          room,
-          pot_size,
-          pot_material,
-          drainage,
-          soil_type,
-          light_level,
-          indoor,
-          latitude,
-          longitude,
-          humidity,
-          care_plan,
+          common_name: common_name ?? null,
+          room: room ?? null,
+          pot_size: pot_size ?? null,
+          pot_material: pot_material ?? null,
+          drainage: drainage ?? null,
+          soil_type: soil_type ?? null,
+          light_level: light_level ?? null,
+          indoor: indoor ?? null,
+          latitude: latitude ?? null,
+          longitude: longitude ?? null,
+          humidity: humidity ?? null,
+          care_plan: care_plan ?? null,
           image_url,
         },
       ])
