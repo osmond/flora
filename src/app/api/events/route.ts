@@ -81,23 +81,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Plant not found" }, { status: 404 });
     }
 
-    let image_url: string | undefined;
-    if (file) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const uploadResult = await new Promise<import("cloudinary").UploadApiResponse>((resolve, reject) =>
-        cloudinary.uploader
-          .upload_stream({ folder: "plant-photos" }, (error, result) =>
-            error ? reject(error) : resolve(result!)
-          )
-          .end(buffer)
-      );
-      image_url = uploadResult.secure_url;
-    }
+  let image_url: string | undefined;
+  let public_id: string | undefined;
+  if (file) {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadResult = await new Promise<import("cloudinary").UploadApiResponse>((resolve, reject) =>
+      cloudinary.uploader
+        .upload_stream({ folder: "plant-photos" }, (error, result) =>
+          error ? reject(error) : resolve(result!)
+        )
+        .end(buffer)
+    );
+    image_url = uploadResult.secure_url;
+    public_id = uploadResult.public_id;
+  }
 
-    const { data, error } = await supabase
-      .from("events")
-      .insert([{ plant_id, type, note, image_url }])
-      .select();
+  const { data, error } = await supabase
+    .from("events")
+    .insert([{ plant_id, type, note, image_url, public_id }])
+    .select();
 
     if (error) throw error;
 
