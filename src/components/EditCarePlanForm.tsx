@@ -11,12 +11,16 @@ export default function EditCarePlanForm({
   plantId: string;
   initialCarePlan: {
     waterEvery?: string;
+    waterAmountMl?: number;
     fertEvery?: string;
     fertFormula?: string;
   } | null;
 }) {
   const router = useRouter();
   const [waterEvery, setWaterEvery] = useState(initialCarePlan?.waterEvery || "");
+  const [waterAmountMl, setWaterAmountMl] = useState(
+    initialCarePlan?.waterAmountMl ? String(initialCarePlan.waterAmountMl) : "",
+  );
   const [fertEvery, setFertEvery] = useState(initialCarePlan?.fertEvery || "");
   const [fertFormula, setFertFormula] = useState(initialCarePlan?.fertFormula || "");
 
@@ -28,6 +32,9 @@ export default function EditCarePlanForm({
       body: JSON.stringify({
         care_plan: {
           waterEvery: waterEvery || undefined,
+          waterAmountMl: waterAmountMl
+            ? Number(waterAmountMl)
+            : undefined,
           fertEvery: fertEvery || undefined,
           fertFormula: fertFormula || undefined,
         },
@@ -48,6 +55,17 @@ export default function EditCarePlanForm({
           type="text"
           value={waterEvery}
           onChange={(e) => setWaterEvery(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="water-amount" className="mb-1 block text-sm font-medium">
+          Water amount (mL)
+        </Label>
+        <Input
+          id="water-amount"
+          type="number"
+          value={waterAmountMl}
+          onChange={(e) => setWaterAmountMl(e.target.value)}
         />
       </div>
       <div>
