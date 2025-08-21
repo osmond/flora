@@ -117,6 +117,6 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 - [x] Wrap up Plant Detail timeline view
 - [x] Build Rooms + Plant List page
-- [ ] Add `/app/today` for task view
+- [x] Add `/app/today` for task view
 - [ ] Evaluate Supabase Auth vs hardcoded single-user fallback
 - [ ] Polish visual style, typography, and interactions
