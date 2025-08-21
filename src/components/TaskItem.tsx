@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type PlantInfo = { id: string; name: string };
@@ -13,14 +13,17 @@ export type Task = {
 export default function TaskItem({ task, today }: { task: Task; today: string }) {
   const router = useRouter();
   const touchStartX = useRef<number | null>(null);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const handleComplete = async () => {
+    setIsCompleting(true);
     await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "complete" }),
     });
-    router.refresh();
+    // allow animation to play before refreshing
+    setTimeout(() => router.refresh(), 300);
   };
 
   const handleSnooze = async () => {
@@ -52,7 +55,7 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
 
   return (
     <li
-      className="rounded border p-4"
+      className={`rounded border p-4 transition-all duration-300 ${isCompleting ? "opacity-0 translate-x-full" : ""}`}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
