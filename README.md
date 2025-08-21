@@ -42,8 +42,14 @@ Set the following environment variables in `.env.local` to connect to Supabase:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `PERENUAL_API_KEY` (species search via Perenual)
+- `TREFLE_API_KEY` (species search via Trefle)
 - `BASIC_AUTH_USER` (optional)
 - `BASIC_AUTH_PASSWORD` (optional)
+
+Get API keys from [Perenual](https://perenual.com/) and [Trefle](https://trefle.io/).
+Flora uses Perenual first and falls back to Trefle, so at least one key is
+required for species search.
 
 Create a storage bucket named `plant-photos` in your Supabase project to store uploaded plant images.
 
