@@ -6,8 +6,10 @@ const CACHE_TTL_MS = 1000 * 60 * 5; // 5 minutes
 const cache = new Map<string, { data: unknown; expires: number }>();
 
 async function fetchPerenual(q: string) {
+  const key = process.env.PERENUAL_API_KEY;
+  if (!key) throw new Error("Missing PERENUAL_API_KEY");
   const res = await fetch(
-    `https://perenual.com/api/species-list?key=${process.env.PERENUAL_API_KEY}&q=${encodeURIComponent(q)}`
+    `https://perenual.com/api/species-list?key=${key}&q=${encodeURIComponent(q)}`
   );
   if (!res.ok) throw new Error(`Perenual API error: ${res.status}`);
   const body = await res.json();
@@ -30,8 +32,10 @@ async function fetchPerenual(q: string) {
 }
 
 async function fetchTrefle(q: string) {
+  const key = process.env.TREFLE_API_KEY;
+  if (!key) throw new Error("Missing TREFLE_API_KEY");
   const res = await fetch(
-    `https://trefle.io/api/v1/plants/search?token=${process.env.TREFLE_API_KEY}&q=${encodeURIComponent(q)}`
+    `https://trefle.io/api/v1/plants/search?token=${key}&q=${encodeURIComponent(q)}`
   );
   if (!res.ok) throw new Error(`Trefle API error: ${res.status}`);
   const body = await res.json();
@@ -68,11 +72,23 @@ export async function GET(req: Request) {
   }
 
   try {
-    let results = [];
-    try {
-      results = await fetchPerenual(q);
-    } catch (err) {
-      console.warn("Perenual failed, falling back to Trefle:", err);
+    // If no API keys are configured, just return an empty result set.
+    if (!process.env.PERENUAL_API_KEY && !process.env.TREFLE_API_KEY) {
+      console.warn("Species search requested but no API keys configured");
+      return NextResponse.json({ data: [] });
+    }
+
+    let results: unknown[] = [];
+
+    if (process.env.PERENUAL_API_KEY) {
+      try {
+        results = await fetchPerenual(q);
+      } catch (err) {
+        console.warn("Perenual failed, falling back to Trefle:", err);
+      }
+    }
+
+    if ((!results || (Array.isArray(results) && results.length === 0)) && process.env.TREFLE_API_KEY) {
       results = await fetchTrefle(q);
     }
 
