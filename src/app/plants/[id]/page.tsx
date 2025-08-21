@@ -2,22 +2,13 @@ import { createClient } from "@supabase/supabase-js";
 import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
 import CareTimeline from "@/components/CareTimeline";
+import DeletePhotoButton from "@/components/DeletePhotoButton";
 import Link from "next/link";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui";
 import { getCurrentUserId } from "@/lib/auth";
+import type { PlantEvent } from "@/types/event";
 
 export const revalidate = 0;
 
@@ -47,13 +38,6 @@ type Plant = {
   care_plan: CarePlan | null;
 };
 
-type PlantEvent = {
-  id: string;
-  type: string;
-  note: string | null;
-  image_url: string | null;
-  created_at: string;
-};
 
 export default async function PlantDetailPage({
   params,
@@ -83,7 +67,7 @@ export default async function PlantDetailPage({
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, type, note, image_url, created_at")
+    .select("id, plant_id, type, note, image_url, image_public_id, created_at")
     .eq("plant_id", id)
     .order("created_at", { ascending: false });
 
@@ -237,11 +221,16 @@ export default async function PlantDetailPage({
                 {photoEvents.map((evt) => (
                   <div key={evt.id}>
                     {evt.image_url && (
-                      <img
-                        src={evt.image_url}
-                        alt={plant.name}
-                        className="h-32 w-full rounded object-cover"
-                      />
+                      <div className="relative">
+                        <img
+                          src={evt.image_url}
+                          alt={plant.name}
+                          className="h-32 w-full rounded object-cover"
+                        />
+                        <div className="absolute right-1 top-1">
+                          <DeletePhotoButton eventId={evt.id} />
+                        </div>
+                      </div>
                     )}
                     {evt.note && (
                       <div className="text-xs text-muted-foreground">{evt.note}</div>

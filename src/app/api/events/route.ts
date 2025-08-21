@@ -82,6 +82,7 @@ export async function POST(req: Request) {
     }
 
     let image_url: string | undefined;
+    let image_public_id: string | undefined;
     if (file) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const uploadResult = await new Promise<import("cloudinary").UploadApiResponse>((resolve, reject) =>
@@ -92,11 +93,12 @@ export async function POST(req: Request) {
           .end(buffer)
       );
       image_url = uploadResult.secure_url;
+      image_public_id = uploadResult.public_id;
     }
 
     const { data, error } = await supabase
       .from("events")
-      .insert([{ plant_id, type, note, image_url }])
+      .insert([{ plant_id, type, note, image_url, image_public_id }])
       .select();
 
     if (error) throw error;

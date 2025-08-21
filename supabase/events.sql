@@ -8,6 +8,7 @@ create table if not exists public.events (
   type text not null,
   note text,
   image_url text,
+  image_public_id text,
   created_at timestamptz default now()
 );
 
@@ -21,6 +22,12 @@ drop policy if exists "public write events" on public.events;
 create policy "public write events" on public.events
   for insert with check (true);
 
+drop policy if exists "public delete events" on public.events;
+create policy "public delete events" on public.events
+  for delete using (true);
+
 -- Ensure column exists for existing installations
 alter table if exists public.events
   add column if not exists image_url text;
+alter table if exists public.events
+  add column if not exists image_public_id text;

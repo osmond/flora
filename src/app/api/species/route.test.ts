@@ -53,7 +53,7 @@ describe("species API route", () => {
       }
       throw new Error(`Unexpected fetch call: ${input}`);
     });
-    (global as any).fetch = fetchMock;
+    vi.stubGlobal("fetch", fetchMock);
 
     const { GET } = await import("./route");
     const req = new Request("http://localhost/api/species?q=rose");
