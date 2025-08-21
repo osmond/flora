@@ -21,8 +21,14 @@ import { getCurrentUserId } from "@/lib/auth";
 
 export const revalidate = 0;
 
+function formatWaterAmount(ml: number) {
+  const oz = ml / 29.5735;
+  return `${oz.toFixed(1)} oz (${ml} mL)`;
+}
+
 type CarePlan = {
   waterEvery?: string;
+  waterAmountMl?: number;
   fertEvery?: string;
   fertFormula?: string;
   rationale?: string;
@@ -181,6 +187,11 @@ export default async function PlantDetailPage({
                   <li>
                     <span className="font-medium">Water every:</span>{" "}
                     {plant.care_plan.waterEvery}
+                    {plant.care_plan.waterAmountMl && (
+                      <span className="block text-muted-foreground">
+                        {formatWaterAmount(plant.care_plan.waterAmountMl)}
+                      </span>
+                    )}
                     {lastWatered && (
                       <span className="block text-muted-foreground">
                         Last watered: {lastWatered.toLocaleDateString()}
