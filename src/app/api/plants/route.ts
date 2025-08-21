@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
-import { getCurrentUserId } from "@/lib/auth";
+import { getCurrentUserId } from "../../../lib/auth";
 import { z } from "zod";
 
 const supabase = createClient(
