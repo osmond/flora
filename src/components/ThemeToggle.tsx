@@ -2,6 +2,7 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { Switch, Label } from '@/components/ui';
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -12,11 +13,15 @@ export default function ThemeToggle() {
   if (!mounted) return null;
 
   return (
-    <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="rounded border px-2 py-1 text-sm dark:border-gray-600"
-    >
-      {theme === 'dark' ? 'Light' : 'Dark'}
-    </button>
+    <div className="flex items-center space-x-2">
+      <Switch
+        id="theme-toggle"
+        checked={theme === 'dark'}
+        onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+      />
+      <Label htmlFor="theme-toggle" className="text-sm">
+        Dark mode
+      </Label>
+    </div>
   );
 }
