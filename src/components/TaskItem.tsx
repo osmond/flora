@@ -5,7 +5,6 @@ import { Badge, Button, Card } from "@/components/ui";
 import { toast } from "@/components/ui/sonner";
 import { Check, Clock } from "lucide-react";
 import SnoozeDialog from "./SnoozeDialog";
-import { Check, Clock } from "lucide-react";
 
 type PlantInfo = { id: string; name: string };
 export type Task = {
