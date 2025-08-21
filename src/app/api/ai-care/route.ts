@@ -6,6 +6,7 @@ export async function POST(req: Request) {
     };
 
   const weather: { temperature?: number; humidity?: number } = {};
+  let climateZone: string | undefined;
 
   if (typeof latitude === "number" && typeof longitude === "number") {
     try {
@@ -15,14 +16,28 @@ export async function POST(req: Request) {
       const weatherData = await weatherRes.json();
       weather.temperature = weatherData.current?.temperature_2m;
       weather.humidity = weatherData.current?.relativehumidity_2m;
+
+      const climateRes = await fetch(
+        `https://climate-api.open-meteo.com/v1/climate?latitude=${latitude}&longitude=${longitude}&start_date=2020-01-01&end_date=2020-12-31&daily=usda_hardiness_zone`
+      );
+      const climateData = await climateRes.json();
+      const zone = climateData.daily?.usda_hardiness_zone?.[0];
+      if (zone !== undefined) climateZone = zone.toString();
     } catch (err) {
-      console.error("Failed to fetch weather:", err);
+      console.error("Failed to fetch weather or climate zone:", err);
     }
   }
 
-  const rationale = weather.temperature
-    ? `Based on your plant’s pot size, light, humidity, and the current temperature of ${weather.temperature}°C.`
-    : "Based on your plant’s pot size, light, and humidity.";
+  const rationaleParts = [
+    "Based on your plant’s pot size, light, and humidity",
+  ];
+  if (weather.temperature)
+    rationaleParts.push(
+      `the current temperature of ${weather.temperature}°C`
+    );
+  if (climateZone)
+    rationaleParts.push(`your climate zone ${climateZone}`);
+  const rationale = `${rationaleParts.join(", ")}.`;
 
   return Response.json({
     waterEvery: "7 days",
@@ -30,5 +45,6 @@ export async function POST(req: Request) {
     fertFormula: "10-10-10",
     rationale,
     weather,
+    climateZone,
   });
 }
