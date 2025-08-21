@@ -31,7 +31,7 @@ export default async function PlantsPage() {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h1 className="mb-4 text-2xl font-bold">Plants</h1>
       {plants && plants.length > 0 ? (
         Object.entries(
