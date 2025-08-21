@@ -9,12 +9,16 @@ create table if not exists public.plants (
   name text not null,
   species text not null,
   room text,
+  common_name text,
+  image_url text,
   care_plan jsonb,
   created_at timestamptz default now()
 );
 
--- Ensure room column exists for existing installations
+-- Ensure columns exist for existing installations
 alter table if exists public.plants add column if not exists room text;
+alter table if exists public.plants add column if not exists common_name text;
+alter table if exists public.plants add column if not exists image_url text;
 
 -- Species table
 create table if not exists public.species (
