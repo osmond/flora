@@ -21,6 +21,7 @@ const formSchema = z.object({
     .optional(),
   potUnit: z.enum(["cm", "in"]).optional(),
   potMaterial: z.string().optional(),
+  potMaterialOther: z.string().optional(),
   drainage: z.string().optional(),
   soilType: z.string().optional(),
   lightLevel: z.string().optional(),
@@ -70,6 +71,7 @@ export default function AddPlantForm() {
       potSize: undefined,
       potUnit: "cm",
       potMaterial: "",
+      potMaterialOther: "",
       drainage: "",
       soilType: "",
       lightLevel: "",
@@ -88,6 +90,7 @@ export default function AddPlantForm() {
 
 
   const photoFile = watch("photo");
+  const selectedPotMaterial = watch("potMaterial");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   useEffect(() => {
     if (photoFile && photoFile.length > 0) {
@@ -165,7 +168,9 @@ export default function AddPlantForm() {
         ? `${data.potSize}${data.potUnit ? ` ${data.potUnit}` : ""}`
         : ""
     );
-    formData.append("pot_material", data.potMaterial || "");
+    const potMaterial =
+      data.potMaterial === "Other" ? data.potMaterialOther : data.potMaterial;
+    formData.append("pot_material", potMaterial || "");
     formData.append("drainage", data.drainage || "");
     formData.append("soil_type", data.soilType || "");
     formData.append("light_level", data.lightLevel || "");
@@ -361,11 +366,26 @@ export default function AddPlantForm() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Pot Material</label>
-              <input
-                type="text"
+              <select
                 {...register("potMaterial")}
                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+              >
+                <option value="">Select material</option>
+                <option value="Terracotta">Terracotta</option>
+                <option value="Plastic">Plastic</option>
+                <option value="Ceramic">Ceramic</option>
+                <option value="Metal">Metal</option>
+                <option value="Glass">Glass</option>
+                <option value="Other">Other</option>
+              </select>
+              {selectedPotMaterial === "Other" && (
+                <input
+                  type="text"
+                  {...register("potMaterialOther")}
+                  className="mt-2 w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Specify material"
+                />
+              )}
             </div>
           </div>
           <div>
