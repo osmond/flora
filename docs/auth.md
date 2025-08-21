@@ -12,3 +12,10 @@ Given Flora's single-user focus at this stage, we chose the hardcoded fallback. 
 ## Current Implementation
 
 The app reads a single user ID from the `NEXT_PUBLIC_SINGLE_USER_ID` environment variable (defaulting to `"flora-single-user"`). This value is exposed via `src/lib/auth.ts`, stored in `user_id` columns on tables like `plants` and `tasks`, and enforced by Supabase row-level security policies.
+
+## Route Protection
+
+For deployments, routes can be gated with simple HTTP Basic Auth. Set the
+`BASIC_AUTH_USER` and `BASIC_AUTH_PASSWORD` environment variables to require a
+username and password for all pages. Leaving these unset disables the auth
+layer, which is useful for local development.
