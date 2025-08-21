@@ -7,6 +7,7 @@ create table if not exists public.events (
   plant_id uuid references public.plants(id) on delete cascade,
   type text not null,
   note text,
+  image_url text,
   created_at timestamptz default now()
 );
 
@@ -19,3 +20,7 @@ create policy "public read events" on public.events
 drop policy if exists "public write events" on public.events;
 create policy "public write events" on public.events
   for insert with check (true);
+
+-- Ensure column exists for existing installations
+alter table if exists public.events
+  add column if not exists image_url text;

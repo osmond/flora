@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import AddNoteForm from "@/components/AddNoteForm";
+import AddPhotoForm from "@/components/AddPhotoForm";
 import Link from "next/link";
 
 export const revalidate = 0;
@@ -28,6 +29,7 @@ type PlantEvent = {
   id: string;
   type: string;
   note: string | null;
+  image_url: string | null;
   created_at: string;
 };
 
@@ -58,13 +60,16 @@ export default async function PlantDetailPage({
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, type, note, created_at")
+    .select("id, type, note, image_url, created_at")
     .eq("plant_id", id)
     .order("created_at", { ascending: false });
 
   const timeline = events as PlantEvent[] | null;
   const notes = timeline?.filter((e) => e.type === "note") || [];
-  const otherEvents = timeline?.filter((e) => e.type !== "note") || [];
+  const photoEvents =
+    timeline?.filter((e) => e.type === "photo" && e.image_url) || [];
+  const otherEvents =
+    timeline?.filter((e) => e.type !== "note" && e.type !== "photo") || [];
 
   const lastWaterEvent = otherEvents.find((e) => e.type === "water") || null;
   const lastWatered = lastWaterEvent
@@ -153,6 +158,31 @@ export default async function PlantDetailPage({
           </ul>
         ) : (
           <p className="text-sm text-gray-600">No care plan.</p>
+        )}
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="mb-2 font-semibold">Photo Gallery</h2>
+        <AddPhotoForm plantId={plant.id} />
+        {photoEvents.length > 0 ? (
+          <div className="grid grid-cols-2 gap-2">
+            {photoEvents.map((evt) => (
+              <div key={evt.id}>
+                {evt.image_url && (
+                  <img
+                    src={evt.image_url}
+                    alt={plant.name}
+                    className="h-32 w-full rounded object-cover"
+                  />
+                )}
+                {evt.note && (
+                  <div className="text-xs text-gray-600">{evt.note}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No photos yet.</p>
         )}
       </section>
 
