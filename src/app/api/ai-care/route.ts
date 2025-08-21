@@ -44,6 +44,7 @@ export async function POST(req: Request) {
 
   let aiData: {
     waterEvery: string;
+    waterAmountMl: number;
     fertEvery: string;
     fertFormula: string;
     rationale: string;
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
 
   if (process.env.OPENAI_API_KEY) {
     try {
-      const prompt = `You are a helpful gardening assistant. Based on the following data, provide watering and fertilizing guidance in JSON format with keys waterEvery, fertEvery, fertFormula, and rationale. The rationale must mention the plant species.
+      const prompt = `You are a helpful gardening assistant. Based on the following data, provide watering and fertilizing guidance in JSON format with keys waterEvery, waterAmountMl, fertEvery, fertFormula, and rationale. The rationale must mention the plant species. waterAmountMl must be a number representing the amount of water in milliliters needed each time the plant is watered.
 
 Species: ${species ?? "unknown"}
 Pot size: ${potSize ?? "unknown"}cm
@@ -85,6 +86,7 @@ Current temperature: ${weather.temperature ?? "unknown"}°C`;
   if (!aiData) {
     aiData = {
       waterEvery: "7 days",
+      waterAmountMl: 250,
       fertEvery: "Monthly",
       fertFormula: "10-10-10",
       rationale: `General care guidance for ${species ?? "this plant"}.`,
@@ -103,6 +105,7 @@ Current temperature: ${weather.temperature ?? "unknown"}°C`;
 
   return Response.json({
     waterEvery: aiData.waterEvery,
+    waterAmountMl: aiData.waterAmountMl,
     fertEvery: aiData.fertEvery,
     fertFormula: aiData.fertFormula,
     rationale,
