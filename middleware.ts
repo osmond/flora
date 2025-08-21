@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import env from "./src/lib/config";
 
 export function middleware(req: NextRequest) {
-  const expectedUser = process.env.BASIC_AUTH_USER;
-  const expectedPassword = process.env.BASIC_AUTH_PASSWORD;
+  const expectedUser = env.BASIC_AUTH_USER;
+  const expectedPassword = env.BASIC_AUTH_PASSWORD;
 
   // Skip auth if credentials are not set
   if (!expectedUser || !expectedPassword) {

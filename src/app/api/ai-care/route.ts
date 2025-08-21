@@ -1,3 +1,5 @@
+import config from "../../../lib/config";
+
 async function fetchWithTimeout(
   url: string,
   options: RequestInit = {},
@@ -80,7 +82,7 @@ export async function POST(req: Request) {
   if (infoProvided.length >= 4) confidence = "high";
   else if (infoProvided.length >= 2) confidence = "medium";
 
-    if (process.env.OPENAI_API_KEY) {
+    if (config.OPENAI_API_KEY) {
       try {
         const potSizePrompt =
           typeof potSize === "number"
@@ -105,7 +107,7 @@ Current temperature: ${weather.temperature ?? "unknown"}°C`;
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+              Authorization: `Bearer ${config.OPENAI_API_KEY}`,
             },
             body: JSON.stringify({
               model: "gpt-4o-mini",
