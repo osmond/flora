@@ -84,7 +84,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 ## 🧠 Phase 6 – Smart Enhancements
 
 - [ ] Improve AI-generated care plan with:
-  - [ ] Real weather data
+  - [x] Real weather data
   - [ ] Climate zone inference
   - [ ] Historical behavior
 - [ ] “Care coach” suggestions on plant detail page
