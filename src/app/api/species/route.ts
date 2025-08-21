@@ -40,11 +40,24 @@ async function fetchOpenAISpecies(q: string): Promise<Species[]> {
   if (!res.ok) throw new Error(`OpenAI API error: ${res.status}`);
   const body = await res.json();
   const content = body?.choices?.[0]?.message?.content;
+  if (typeof content !== "string") return [];
+
+  // The OpenAI responses are not always plain JSON. They might include
+  // explanations or wrap the JSON in markdown code fences. Attempt to
+  // extract the first JSON block and parse it. If parsing fails, return an
+  // empty array rather than throwing so the API can respond gracefully.
+  let jsonText = content.trim();
+  const match = jsonText.match(/```(?:json)?\n([\s\S]*?)```/i);
+  if (match) {
+    jsonText = match[1];
+  }
+
   let parsed: unknown;
   try {
-    parsed = JSON.parse(content);
+    parsed = JSON.parse(jsonText);
   } catch {
-    throw new Error("Invalid JSON from OpenAI");
+    console.warn("Invalid JSON from OpenAI", jsonText);
+    return [];
   }
   if (!Array.isArray(parsed)) return [];
   return (parsed as unknown[]).map((p, idx) => {
