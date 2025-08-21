@@ -73,6 +73,38 @@ describe("species API route", () => {
       expect.objectContaining({ method: "HEAD" })
     );
   });
+
+  it("evicts the oldest cache entry when the size limit is exceeded", async () => {
+    vi.resetModules();
+    const fetchMock = vi.fn(async (input: RequestInfo) => {
+      if (typeof input === "string" && input.includes("api.openai.com")) {
+        return new Response(
+          JSON.stringify({
+            choices: [{ message: { content: "[]" } }],
+          }),
+          { status: 200 }
+        );
+      }
+      throw new Error(`Unexpected fetch call: ${input}`);
+    });
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const { GET } = await import("./route");
+
+    const firstReq = new Request("http://localhost/api/species?q=0");
+    await GET(firstReq);
+    await GET(firstReq);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    for (let i = 1; i <= 100; i++) {
+      const req = new Request(`http://localhost/api/species?q=${i}`);
+      await GET(req);
+    }
+
+    const req = new Request("http://localhost/api/species?q=0");
+    await GET(req);
+    expect(fetchMock).toHaveBeenCalledTimes(102);
+  });
 });
 
 export {};
