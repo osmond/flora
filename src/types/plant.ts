@@ -3,7 +3,7 @@ export type Plant = {
   species: string;
   potSize: string;
   potMaterial: string;
-  light: string;
+  lightLevel: string;
   indoor: 'Indoor' | 'Outdoor';
   drainage: string;
   soil: string;
