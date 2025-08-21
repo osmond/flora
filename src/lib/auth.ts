@@ -5,9 +5,9 @@
  * Supabase Auth is added. The fallback must be a valid UUID so that queries
  * against columns typed as `uuid` do not error.
  */
-export const SINGLE_USER_ID =
-  process.env.NEXT_PUBLIC_SINGLE_USER_ID ??
-  "00000000-0000-0000-0000-000000000000";
+import config from "./config";
+
+export const SINGLE_USER_ID = config.SINGLE_USER_ID;
 
 export function getCurrentUserId() {
   return SINGLE_USER_ID;

@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import config from "../../../lib/config";
 import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
 import CareTimeline from "@/components/CareTimeline";
@@ -66,8 +67,8 @@ export default async function PlantDetailPage({
   const { id } = await params;
 
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    config.NEXT_PUBLIC_SUPABASE_URL,
+    config.SUPABASE_SERVICE_ROLE_KEY,
   );
 
   const { data: plant, error: plantError } = await supabase
