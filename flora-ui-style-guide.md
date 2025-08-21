@@ -19,15 +19,18 @@ Foundations for colors, typography, spacing, motion.
 ---
 
 ## 1.2 Typography
-- **Headlines** → `Cabinet Grotesk` (600–700 weight)  
+- **Headlines** → `Space Grotesk` (600–700 weight)
 - **Body/UI** → `Inter` (400–500 weight)
 
 Sizes: `xs, sm, base, lg, xl, 2xl` (≤ 3 per view).
 
 ```tsx
-import { Inter, Cabin } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const cabinet = Cabin({ subsets: ["latin"], variable: "--font-cabinet" });
+const cabinet = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-cabinet",
+});
 // <html className={`${inter.variable} ${cabinet.variable}`}>
 ```
 
