@@ -6,10 +6,10 @@ import cloudinary from "@/lib/cloudinary";
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const { data: event, error: eventError } = await supabase
       .from("events")
       .select("id, plant_id, public_id")
