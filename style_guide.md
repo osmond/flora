@@ -323,7 +323,7 @@ export const buttonVariants = cva(
 - **Rooms + List/Grid**: toolbar with room select + toggle; card/list patterns.
 - **Detail Page**: photo hero, quick-stat pills, timeline (filterable), notes & gallery.
 - **Care Coach**: accent card only when overdue; up to 2 suggestions + CTA.
-- **/today**: sectioned lists; swipe + button alternatives; snooze modal with optional reason.
+- **Home (/)**: sectioned lists; swipe + button alternatives; snooze modal with optional reason.
 - **Push Notifications**: tone and iconography align with toasts.
 - **Import/Export**: grouped actions, guardrails, confirmation.
 - **Theme Toggle**: navbar action; persists via `next-themes`.
