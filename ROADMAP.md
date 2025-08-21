@@ -102,7 +102,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 ---
 
-## 📦 Optional – Backup & Export
+## 📦  Backup & Export
 
 - [ ] Export all plant data to JSON or CSV
 - [ ] Import feature for recovery
