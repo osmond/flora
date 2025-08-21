@@ -1,4 +1,5 @@
 // src/app/api/species/route.ts
+export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 
 async function fetchPerenual(q: string) {
