@@ -4,6 +4,7 @@ import ToasterProvider from "@/components/ToasterProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import Navigation from "@/components/Navigation";
 import { Providers } from "./providers";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
