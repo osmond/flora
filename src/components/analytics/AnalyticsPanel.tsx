@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { Card, CardContent } from "@/components/ui";
 
 const LineChart = dynamic(() => import("@/components/ui/line-chart").then(m => m.LineChart), {
   ssr: false,
@@ -36,12 +37,16 @@ export default function AnalyticsPanel() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <div className="rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 ease-out hover:shadow-md hover:-translate-y-px motion-reduce:transition-none motion-reduce:hover:shadow-sm motion-reduce:hover:translate-y-0">
-        <LineChart data={stats.daily} />
-      </div>
-      <div className="rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 ease-out hover:shadow-md hover:-translate-y-px motion-reduce:transition-none motion-reduce:hover:shadow-sm motion-reduce:hover:translate-y-0">
-        <BarChart data={stats.weekly} />
-      </div>
+      <Card>
+        <CardContent>
+          <LineChart data={stats.daily} />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent>
+          <BarChart data={stats.weekly} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
