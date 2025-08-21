@@ -22,16 +22,24 @@ type PlantEvent = {
   created_at: string;
 };
 
-export default async function PlantDetailPage({ params }: { params: { id: string } }) {
+export default async function PlantDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
   const { data: plant, error: plantError } = await supabase
     .from("plants")
+
     .select("id, name, species, common_name, pot_size, pot_material, drainage, soil_type, image_url")
     .eq("id", params.id)
+
     .single<Plant>();
 
   if (plantError || !plant) {
@@ -42,7 +50,7 @@ export default async function PlantDetailPage({ params }: { params: { id: string
   const { data: events } = await supabase
     .from("events")
     .select("id, type, note, created_at")
-    .eq("plant_id", params.id)
+    .eq("plant_id", id)
     .order("created_at", { ascending: false });
 
   const timeline = events as PlantEvent[] | null;
@@ -122,4 +130,3 @@ export default async function PlantDetailPage({ params }: { params: { id: string
     </div>
   );
 }
-
