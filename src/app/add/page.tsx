@@ -9,6 +9,7 @@ export default function AddPlantForm() {
   const [commonName, setCommonName] = useState("");
   const [room, setRoom] = useState("");
   const [rooms, setRooms] = useState<string[]>([]);
+  const [photo, setPhoto] = useState<File | null>(null);
 
   useEffect(() => {
     fetch("/api/rooms")
@@ -20,10 +21,18 @@ export default function AddPlantForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("species", species);
+    formData.append("common_name", commonName);
+    formData.append("room", room);
+    if (photo) {
+      formData.append("photo", photo);
+    }
+
     const res = await fetch("/api/plants", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, species, commonName, room }),
+      body: formData,
     });
 
     if (res.ok) {
@@ -31,6 +40,7 @@ export default function AddPlantForm() {
       setSpecies("");
       setCommonName("");
       setRoom("");
+      setPhoto(null);
     }
   };
 
@@ -77,6 +87,16 @@ export default function AddPlantForm() {
           value={commonName}
           onChange={(e) => setCommonName(e.target.value)}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+        />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium">Photo (optional)</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+          className="w-full"
         />
       </div>
 
