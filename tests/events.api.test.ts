@@ -21,9 +21,9 @@ vi.mock("@supabase/supabase-js", () => ({
               eq: () => ({
                 single: () =>
                   Promise.resolve({
-                    data: {
-                      id: "123e4567-e89b-12d3-a456-426614174000",
-                    },
+
+                    data: { id: "4aa97bee-71f1-428e-843b-4c3c77493994" },
+
                     error: null,
                   }),
               }),
@@ -38,7 +38,9 @@ vi.mock("@supabase/supabase-js", () => ({
           }),
         };
       }
-      return {} as Record<string, never>;
+
+      return {} as unknown as Record<string, never>;
+
     },
   }),
 }));
@@ -50,8 +52,11 @@ describe("POST /api/events", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        plant_id: "123e4567-e89b-12d3-a456-426614174000",
+
+        plant_id: "4aa97bee-71f1-428e-843b-4c3c77493994",
         type: "note",
+        note: "hello",
+
       }),
     });
     const res = await POST(req);
