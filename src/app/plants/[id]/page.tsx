@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import AddNoteForm from "@/components/AddNoteForm";
+import Link from "next/link";
 
 export const revalidate = 0;
 
@@ -122,7 +123,10 @@ export default async function PlantDetailPage({
       </div>
 
       <section>
-        <h2 className="mb-2 font-semibold">Quick Stats</h2>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="font-semibold">Quick Stats</h2>
+          <Link href={`/plants/${plant.id}/edit`} className="text-sm text-green-700 hover:underline">Edit</Link>
+        </div>
         {plant.care_plan ? (
           <ul className="space-y-1 text-sm">
             {plant.care_plan.waterEvery && (

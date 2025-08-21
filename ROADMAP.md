@@ -54,7 +54,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 - [x] Timeline of logged events (watering, fertilizing, notes)
 - [x] Notes section (freeform journaling)
 - [ ] Photo gallery
-- [ ] Edit button for care plan
+- [x] Edit button for care plan
 
 ---
 
