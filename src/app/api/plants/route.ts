@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     const drainage = formData.get("drainage") as string | null;
     const soil_type = formData.get("soil_type") as string | null;
     const light_level = formData.get("light_level") as string | null;
+    const indoor = formData.get("indoor") as string | null;
     const care_plan = formData.get("care_plan");
     let image_url: string | undefined;
 
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
           drainage,
           soil_type,
           light_level,
+          indoor,
           care_plan,
           image_url,
         },
