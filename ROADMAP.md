@@ -21,7 +21,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 - [ ] **Identify**
   - [x] Plant nickname
-  - [x] Species autosuggest (Perenual API)
+  - [x] Species autosuggest (OpenAI API)
   - [x] Optional photo upload
 
 - [ ] **Place**
