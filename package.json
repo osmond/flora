@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.1",
+    "@hookform/resolvers": "5.2.1",
     "@supabase/supabase-js": "^2.55.0",
     "cloudinary": "^2.7.0",
     "next": "15.5.0",
