@@ -8,6 +8,7 @@ create table if not exists public.events (
   type text not null,
   note text,
   image_url text,
+  public_id text,
   created_at timestamptz default now()
 );
 
@@ -23,4 +24,5 @@ create policy "public write events" on public.events
 
 -- Ensure column exists for existing installations
 alter table if exists public.events
-  add column if not exists image_url text;
+  add column if not exists image_url text,
+  add column if not exists public_id text;
