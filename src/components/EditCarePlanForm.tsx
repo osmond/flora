@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Label, Input, Button } from "@/components/ui";
 
 export default function EditCarePlanForm({
   plantId,
@@ -39,38 +40,39 @@ export default function EditCarePlanForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-1 block text-sm font-medium">Water every</label>
-        <input
+        <Label htmlFor="water-every" className="mb-1 block text-sm font-medium">
+          Water every
+        </Label>
+        <Input
+          id="water-every"
           type="text"
           value={waterEvery}
           onChange={(e) => setWaterEvery(e.target.value)}
-          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Fertilize every</label>
-        <input
+        <Label htmlFor="fert-every" className="mb-1 block text-sm font-medium">
+          Fertilize every
+        </Label>
+        <Input
+          id="fert-every"
           type="text"
           value={fertEvery}
           onChange={(e) => setFertEvery(e.target.value)}
-          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Fertilizer formula</label>
-        <input
+        <Label htmlFor="fert-formula" className="mb-1 block text-sm font-medium">
+          Fertilizer formula
+        </Label>
+        <Input
+          id="fert-formula"
           type="text"
           value={fertFormula}
           onChange={(e) => setFertFormula(e.target.value)}
-          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
-      <button
-        type="submit"
-        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-      >
-        Save Care Plan
-      </button>
+      <Button type="submit">Save Care Plan</Button>
     </form>
   );
 }
