@@ -110,6 +110,13 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 ---
 
+## 📊 Data & Insights
+
+- [ ] Plant History View: compact changelog like "Renamed from Lily to Kay", "Light level changed from Low → Medium", and "Updated care plan from 5 to 10 days".
+- [ ] Water Usage Chart: track watering volume or frequency per plant and per room to spot outliers and visualize effort.
+
+---
+
 ## 🧭 Next Steps
 
 - [x] Wrap up Plant Detail timeline view
