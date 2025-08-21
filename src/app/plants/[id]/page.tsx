@@ -10,6 +10,7 @@ type Plant = {
   common_name: string | null;
   pot_size: string | null;
   pot_material: string | null;
+  drainage: string | null;
   image_url: string | null;
 };
 
@@ -28,7 +29,7 @@ export default async function PlantDetailPage({ params }: { params: { id: string
 
   const { data: plant, error: plantError } = await supabase
     .from("plants")
-    .select("id, name, species, common_name, pot_size, pot_material, image_url")
+    .select("id, name, species, common_name, pot_size, pot_material, drainage, image_url")
     .eq("id", params.id)
     .single<Plant>();
 
@@ -71,6 +72,9 @@ export default async function PlantDetailPage({ params }: { params: { id: string
           <p className="text-sm text-gray-600">
             Pot material: {plant.pot_material}
           </p>
+        )}
+        {plant.drainage && (
+          <p className="text-sm text-gray-600">Drainage: {plant.drainage}</p>
         )}
       </div>
 
