@@ -21,15 +21,18 @@ export default function AddPlantForm() {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [humidity, setHumidity] = useState("");
-  const [carePlan, setCarePlan] = useState<
-    | {
-        waterEvery: string;
-        fertEvery: string;
-        fertFormula: string;
-        rationale: string;
-      }
-    | null
-  >(null);
+  interface CarePlan {
+    waterEvery: string;
+    fertEvery: string;
+    fertFormula: string;
+    rationale: string;
+    weather?: {
+      temperature?: number;
+      humidity?: number;
+    };
+  }
+
+  const [carePlan, setCarePlan] = useState<CarePlan | null>(null);
   const [loadingCare, setLoadingCare] = useState(false);
   const router = useRouter();
 
@@ -67,7 +70,14 @@ export default function AddPlantForm() {
   const generateCarePlan = async () => {
     try {
       setLoadingCare(true);
-      const res = await fetch("/api/ai-care", { method: "POST" });
+      const res = await fetch("/api/ai-care", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          latitude: latitude ? parseFloat(latitude) : undefined,
+          longitude: longitude ? parseFloat(longitude) : undefined,
+        }),
+      });
       if (res.ok) {
         const data = await res.json();
         setCarePlan(data);
@@ -100,7 +110,14 @@ export default function AddPlantForm() {
       formData.append("care_plan", JSON.stringify(carePlan));
     } else {
       try {
-        const res = await fetch("/api/ai-care", { method: "POST" });
+        const res = await fetch("/api/ai-care", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            latitude: latitude ? parseFloat(latitude) : undefined,
+            longitude: longitude ? parseFloat(longitude) : undefined,
+          }),
+        });
         if (res.ok) {
           const data = await res.json();
           formData.append("care_plan", JSON.stringify(data));
@@ -295,6 +312,12 @@ export default function AddPlantForm() {
             <p>Water every: {carePlan.waterEvery}</p>
             <p>Fertilize: {carePlan.fertEvery}</p>
             <p>Formula: {carePlan.fertFormula}</p>
+            {carePlan.weather && (
+              <p>
+                Current weather: {carePlan.weather.temperature ?? "?"}°C, {" "}
+                {carePlan.weather.humidity ?? "?"}% humidity
+              </p>
+            )}
             <p className="text-gray-600">{carePlan.rationale}</p>
           </div>
         )}
