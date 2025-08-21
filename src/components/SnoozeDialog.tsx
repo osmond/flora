@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button, Input, Label } from "@/components/ui";
+import { Clock } from "lucide-react";
 
 interface SnoozeDialogProps {
   open: boolean;
@@ -64,7 +65,10 @@ export default function SnoozeDialog({
             >
               Cancel
             </Button>
-            <Button type="submit">Snooze</Button>
+            <Button type="submit">
+              <Clock className="mr-1 h-4 w-4" strokeWidth={1.5} />
+              Snooze
+            </Button>
           </div>
         </form>
       </DialogContent>
