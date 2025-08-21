@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { randomUUID } from "crypto";
 import { getCurrentUserId } from "@/lib/auth";
+import cloudinary from "@/lib/cloudinary";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,18 +38,15 @@ export async function POST(req: Request) {
       let image_url: string | undefined;
       const file = formData.get("photo");
       if (file instanceof File) {
-        const bytes = await file.arrayBuffer();
-        const fileName = `${randomUUID()}-${file.name}`;
-        const { data: storageData, error: storageError } = await supabase.storage
-          .from("plant-photos")
-          .upload(fileName, new Uint8Array(bytes), {
-            contentType: file.type,
-          });
-        if (storageError) throw storageError;
-        const { data: publicUrl } = supabase.storage
-          .from("plant-photos")
-          .getPublicUrl(storageData.path);
-        image_url = publicUrl.publicUrl;
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const uploadResult = await new Promise<import("cloudinary").UploadApiResponse>((resolve, reject) =>
+          cloudinary.uploader
+            .upload_stream({ folder: "plant-photos" }, (error, result) =>
+              error ? reject(error) : resolve(result!)
+            )
+            .end(buffer)
+        );
+        image_url = uploadResult.secure_url;
       }
 
       const { data, error } = await supabase
