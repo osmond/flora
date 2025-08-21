@@ -45,6 +45,12 @@ Set the following environment variables in `.env.local` to connect to Supabase:
 
 Create a storage bucket named `plant-photos` in your Supabase project to store uploaded plant images.
 
+### Sample data
+
+To quickly try Flora with some example plants and tasks, run the SQL in
+[`supabase/sample_data.sql`](supabase/sample_data.sql) against your Supabase
+database after creating the tables.
+
 ### Authentication
 
 Flora currently runs in a single-user mode and skips Supabase Auth. Set
