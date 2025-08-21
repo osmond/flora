@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { z } from "zod";
 import { getCurrentUserId } from "@/lib/auth";
 import { logEvent } from "@/lib/analytics";
 
@@ -8,12 +9,28 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const schema = z
+  .object({
+    action: z.enum(["complete", "snooze"]),
+    days: z.number().int().positive().optional(),
+    reason: z.enum(["Too busy", "Soil still wet"]).optional(),
+  })
+  .strict();
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { action, days, reason } = await req.json();
+  const json = await req.json();
+  const parsed = schema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
+  const { action, days, reason } = parsed.data;
 
   try {
     if (action === "complete") {
