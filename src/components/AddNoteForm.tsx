@@ -22,14 +22,17 @@ export default function AddNoteForm({ plantId }: { plantId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <textarea
-        className="w-full rounded border p-2"
+        className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         placeholder="Write a note..."
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
-      <button type="submit" className="rounded bg-green-600 px-3 py-1 text-white">
+      <button
+        type="submit"
+        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+      >
         Add Note
       </button>
     </form>
