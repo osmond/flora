@@ -13,6 +13,7 @@ create table if not exists public.plants (
   pot_size text,
   pot_material text,
   drainage text,
+  soil_type text,
   light_level text,
   image_url text,
   care_plan jsonb,
@@ -26,6 +27,7 @@ alter table if exists public.plants add column if not exists image_url text;
 alter table if exists public.plants add column if not exists pot_size text;
 alter table if exists public.plants add column if not exists pot_material text;
 alter table if exists public.plants add column if not exists drainage text;
+alter table if exists public.plants add column if not exists soil_type text;
 alter table if exists public.plants add column if not exists light_level text;
 
 -- Species table
