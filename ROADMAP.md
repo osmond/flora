@@ -51,7 +51,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 - [ ] Photo + Name hero section
 - [ ] Quick Stats: care plan values, last watered, next due
-- [ ] Timeline of logged events (watering, fertilizing, notes)
+- [x] Timeline of logged events (watering, fertilizing, notes)
 - [ ] Notes section (freeform journaling)
 - [ ] Photo gallery
 - [ ] Edit button for care plan
@@ -115,7 +115,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 ## 🧭 Next Steps
 
-- [ ] Wrap up Plant Detail timeline view
+- [x] Wrap up Plant Detail timeline view
 - [ ] Build Rooms + Plant List page
 - [ ] Add `/app/today` for task view
 - [ ] Evaluate Supabase Auth vs hardcoded single-user fallback

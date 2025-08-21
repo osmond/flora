@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 
 export const revalidate = 0;
@@ -34,6 +35,7 @@ export default async function PlantsPage() {
       {plants && plants.length > 0 ? (
         <ul className="space-y-4">
           {plants.map((plant) => (
+
             <li key={plant.id} className="rounded border p-4">
               {plant.image_url && (
                 <img
@@ -49,6 +51,7 @@ export default async function PlantsPage() {
               {plant.species && (
                 <div className="text-sm italic text-gray-600">{plant.species}</div>
               )}
+
             </li>
           ))}
         </ul>
