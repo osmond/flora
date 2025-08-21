@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin as supabase } from "../../../lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 const schema = z.object({
   plant_id: z.string().uuid(),
