@@ -72,7 +72,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 - [ ] “Today” view: show plants needing care today
 - [ ] Show overdue, due today, and upcoming
 - [ ] Swipe to mark as done
-- [ ] Floating Action Button (FAB) to add new task (manual)
+
 
 ---
 
