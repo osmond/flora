@@ -32,7 +32,7 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 
 ## Rate limits and caching
 
-Species suggestions are fetched from third-party APIs that may enforce rate
+Species suggestions are powered by the OpenAI API, which may enforce rate
 limits. The `/api/species` endpoint keeps a short-lived in-memory cache keyed by
 query string to avoid hitting those limits repeatedly.
 
@@ -45,19 +45,18 @@ pnpm install
 pnpm dev
 ```
 
-Set the following environment variables in `.env.local` to connect to Supabase:
+Set the following environment variables in `.env.local`:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `PERENUAL_API_KEY` (species search via Perenual)
-- `TREFLE_API_KEY` (species search via Trefle)
+- `OPENAI_API_KEY` (species suggestions)
 - `BASIC_AUTH_USER` (optional)
 - `BASIC_AUTH_PASSWORD` (optional)
 
-Get API keys from [Perenual](https://perenual.com/) and [Trefle](https://trefle.io/).
-Flora uses Perenual first and falls back to Trefle, so at least one key is
-required for species search.
+Get an API key from [OpenAI](https://platform.openai.com/). Flora uses the
+OpenAI API to suggest plant species when adding a plant. If `OPENAI_API_KEY` is
+not set, species suggestions will be unavailable.
 
 Create a storage bucket named `plant-photos` in your Supabase project to store uploaded plant images.
 
