@@ -22,6 +22,12 @@ export async function POST(req: Request) {
     const soil_type = formData.get("soil_type") as string | null;
     const light_level = formData.get("light_level") as string | null;
     const indoor = formData.get("indoor") as string | null;
+    const latitudeRaw = formData.get("latitude") as string | null;
+    const longitudeRaw = formData.get("longitude") as string | null;
+    const humidityRaw = formData.get("humidity") as string | null;
+    const latitude = latitudeRaw ? parseFloat(latitudeRaw) : null;
+    const longitude = longitudeRaw ? parseFloat(longitudeRaw) : null;
+    const humidity = humidityRaw ? parseFloat(humidityRaw) : null;
     const care_plan = formData.get("care_plan");
     let image_url: string | undefined;
 
@@ -59,6 +65,9 @@ export async function POST(req: Request) {
           soil_type,
           light_level,
           indoor,
+          latitude,
+          longitude,
+          humidity,
           care_plan,
           image_url,
         },
