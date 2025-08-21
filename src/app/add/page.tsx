@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -199,13 +199,13 @@ export default function AddPlantForm() {
       const { data: responseData } = await res.json();
       reset();
       setCarePlan(null);
-      toast.success("Plant saved!");
+      toast({ title: "Plant saved!" });
       const id = responseData?.[0]?.id;
       if (id) {
         router.push(`/plants/${id}`);
       }
     } else {
-      toast.error("Failed to save plant");
+      toast({ title: "Failed to save plant", variant: "destructive" });
     }
   };
 
