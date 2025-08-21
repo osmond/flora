@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form, Textarea, Button } from "@/components/ui";
+import { StickyNote } from "lucide-react";
 
 export default function AddNoteForm({ plantId }: { plantId: string }) {
   const [note, setNote] = useState("");
@@ -32,7 +33,10 @@ export default function AddNoteForm({ plantId }: { plantId: string }) {
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
-        <Button type="submit">Add Note</Button>
+        <Button type="submit" className="flex items-center gap-2">
+          <StickyNote strokeWidth={1.5} className="h-4 w-4" />
+          Add Note
+        </Button>
       </form>
     </Form>
   );

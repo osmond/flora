@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button, Card } from "@/components/ui";
 import { toast } from "@/components/ui/sonner";
 import SnoozeDialog from "./SnoozeDialog";
+import { Check, Clock } from "lucide-react";
 
 type PlantInfo = { id: string; name: string };
 export type Task = {
@@ -92,8 +93,16 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
           <div className="text-xs text-muted-foreground">{task.due_date}</div>
         )}
         <div className="mt-4 flex gap-3 text-sm">
-          <Button onClick={handleComplete}>Done</Button>
-          <Button variant="secondary" onClick={() => setSnoozeOpen(true)}>
+          <Button onClick={handleComplete} className="flex items-center gap-2">
+            <Check strokeWidth={1.5} className="h-4 w-4" />
+            Done
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setSnoozeOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Clock strokeWidth={1.5} className="h-4 w-4" />
             Snooze
           </Button>
         </div>

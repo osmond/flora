@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 
 interface Props {
@@ -35,10 +36,22 @@ export default function CareSuggestion({ plantId, suggestion }: Props) {
       </p>
       {!submitted ? (
         <div className="mt-2 flex gap-2">
-          <Button size="sm" variant="secondary" onClick={() => sendFeedback("helpful")}>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => sendFeedback("helpful")}
+            className="flex items-center gap-1.5"
+          >
+            <ThumbsUp strokeWidth={1.5} className="h-4 w-4" />
             Helpful
           </Button>
-          <Button size="sm" variant="secondary" onClick={() => sendFeedback("not_helpful")}>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => sendFeedback("not_helpful")}
+            className="flex items-center gap-1.5"
+          >
+            <ThumbsDown strokeWidth={1.5} className="h-4 w-4" />
             Not Helpful
           </Button>
         </div>
