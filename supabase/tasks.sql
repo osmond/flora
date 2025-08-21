@@ -7,6 +7,7 @@ create extension if not exists pgcrypto;
 create table if not exists public.tasks (
   id uuid primary key default gen_random_uuid(),
   plant_id uuid references public.plants(id) on delete cascade,
+  user_id text not null,
   type text not null,
   due_date date not null,
   completed_at timestamptz
@@ -14,12 +15,24 @@ create table if not exists public.tasks (
 
 -- Row Level Security
 alter table public.tasks enable row level security;
+alter table if exists public.tasks add column if not exists user_id text not null default 'flora-single-user';
 
--- Policies: open read/write for development
+-- Policies: user-specific access to tasks
 drop policy if exists "public read tasks" on public.tasks;
-create policy "public read tasks" on public.tasks
-  for select using (true);
-
 drop policy if exists "public write tasks" on public.tasks;
-create policy "public write tasks" on public.tasks
-  for insert with check (true);
+drop policy if exists "user read tasks" on public.tasks;
+drop policy if exists "user insert tasks" on public.tasks;
+drop policy if exists "user update tasks" on public.tasks;
+drop policy if exists "user delete tasks" on public.tasks;
+
+create policy "user read tasks" on public.tasks
+  for select using (auth.uid()::text = user_id);
+
+create policy "user insert tasks" on public.tasks
+  for insert with check (auth.uid()::text = user_id);
+
+create policy "user update tasks" on public.tasks
+  for update using (auth.uid()::text = user_id);
+
+create policy "user delete tasks" on public.tasks
+  for delete using (auth.uid()::text = user_id);

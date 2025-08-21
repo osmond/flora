@@ -38,10 +38,12 @@ Create a storage bucket named `plant-photos` in your Supabase project to store u
 
 ### Authentication
 
-Flora currently runs in a single-user mode and skips Supabase Auth.  You can
-optionally set `NEXT_PUBLIC_SINGLE_USER_ID` to control which user ID is used
-in database queries.  See [docs/auth.md](docs/auth.md) for more details on the
-decision and future plans.
+Flora currently runs in a single-user mode and skips Supabase Auth. Set
+`NEXT_PUBLIC_SINGLE_USER_ID` to control which user ID is used in database
+queries. Database rows in `plants` and `tasks` are now protected with
+row-level security scoped to this ID, so be sure to run the SQL setup files in
+`supabase/` on your project. See [docs/auth.md](docs/auth.md) for more details
+on the decision and future plans.
 
 ## Roadmap
 

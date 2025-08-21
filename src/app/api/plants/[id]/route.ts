@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getCurrentUserId } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,6 +18,7 @@ export async function PATCH(
       .from("plants")
       .update({ care_plan })
       .eq("id", id)
+      .eq("user_id", getCurrentUserId())
       .select();
     if (error) throw error;
     return NextResponse.json({ data });

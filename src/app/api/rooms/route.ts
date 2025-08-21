@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getCurrentUserId } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,6 +12,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("plants")
       .select("room")
+      .eq("user_id", getCurrentUserId())
       .not("room", "is", null)
       .neq("room", "");
 
