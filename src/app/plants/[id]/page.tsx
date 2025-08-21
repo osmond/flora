@@ -3,6 +3,19 @@ import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
 import CareTimeline from "@/components/CareTimeline";
 import Link from "next/link";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { getCurrentUserId } from "@/lib/auth";
 
 export const revalidate = 0;
@@ -141,90 +154,139 @@ export default async function PlantDetailPage({
         )}
       </div>
 
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-semibold">Quick Stats</h2>
-          <Link href={`/plants/${plant.id}/edit`} className="text-sm text-green-700 hover:underline">Edit</Link>
-        </div>
-        {plant.care_plan ? (
-          <ul className="space-y-1 text-sm">
-            {plant.care_plan.waterEvery && (
-              <li>
-                <span className="font-medium">Water every:</span> {plant.care_plan.waterEvery}
-                {lastWatered && (
-                  <span className="block text-gray-500">
-                    Last watered: {lastWatered.toLocaleDateString()}
-                    {nextWaterDue && ` (next due ${nextWaterDue.toLocaleDateString()})`}
-                  </span>
-                )}
-              </li>
-            )}
-            {plant.care_plan.fertEvery && (
-              <li>
-                <span className="font-medium">Fertilize every:</span> {plant.care_plan.fertEvery}
-                {plant.care_plan.fertFormula && (
-                  <span className="block text-gray-500">
-                    {plant.care_plan.fertFormula}
-                  </span>
-                )}
-              </li>
-            )}
-          </ul>
-        ) : (
-          <p className="text-sm text-gray-600">No care plan.</p>
-        )}
-      </section>
+      <Tabs defaultValue="stats" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="stats">Quick Stats</TabsTrigger>
+          <TabsTrigger value="photos">Photo Gallery</TabsTrigger>
+          <TabsTrigger value="notes">Notes</TabsTrigger>
+        </TabsList>
 
-      {careSuggestion && (
-        <section className="rounded border-l-4 border-green-600 bg-green-50 p-4 text-sm text-green-700">
-          <h2 className="mb-1 font-semibold">Care Coach</h2>
-          <p>{careSuggestion}</p>
-        </section>
-      )}
+        <TabsContent value="stats" className="space-y-4">
+          <section>
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="font-semibold">Quick Stats</h2>
+              <Link
+                href={`/plants/${plant.id}/edit`}
+                className="text-sm text-green-700 hover:underline"
+              >
+                Edit
+              </Link>
+            </div>
+            {plant.care_plan ? (
+              <ul className="space-y-1 text-sm">
+                {plant.care_plan.waterEvery && (
+                  <li>
+                    <span className="font-medium">Water every:</span>{" "}
+                    {plant.care_plan.waterEvery}
+                    {lastWatered && (
+                      <span className="block text-gray-500">
+                        Last watered: {lastWatered.toLocaleDateString()}
+                        {nextWaterDue &&
+                          ` (next due ${nextWaterDue.toLocaleDateString()})`}
+                      </span>
+                    )}
+                  </li>
+                )}
+                {plant.care_plan.fertEvery && (
+                  <li>
+                    <span className="font-medium">Fertilize every:</span>{" "}
+                    {plant.care_plan.fertEvery}
+                    {plant.care_plan.fertFormula && (
+                      <span className="block text-gray-500">
+                        {plant.care_plan.fertFormula}
+                      </span>
+                    )}
+                  </li>
+                )}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-600">No care plan.</p>
+            )}
+          </section>
+          {careSuggestion && (
+            <section className="rounded border-l-4 border-green-600 bg-green-50 p-4 text-sm text-green-700">
+              <h2 className="mb-1 font-semibold">Care Coach</h2>
+              <p>{careSuggestion}</p>
+            </section>
+          )}
+        </TabsContent>
 
-      <section className="space-y-4">
-        <h2 className="mb-2 font-semibold">Photo Gallery</h2>
-        <AddPhotoForm plantId={plant.id} />
-        {photoEvents.length > 0 ? (
-          <div className="grid grid-cols-2 gap-2">
-            {photoEvents.map((evt) => (
-              <div key={evt.id}>
-                {evt.image_url && (
-                  <img
-                    src={evt.image_url}
-                    alt={plant.name}
-                    className="h-32 w-full rounded object-cover"
-                  />
-                )}
-                {evt.note && (
-                  <div className="text-xs text-gray-600">{evt.note}</div>
-                )}
+        <TabsContent value="photos" className="space-y-4">
+          <section className="space-y-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="font-semibold">Photo Gallery</h2>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="rounded bg-green-600 px-4 py-2 text-sm text-white transition-colors hover:bg-green-700">
+                    Add Photo
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Photo</DialogTitle>
+                  </DialogHeader>
+                  <AddPhotoForm plantId={plant.id} />
+                </DialogContent>
+              </Dialog>
+            </div>
+            {photoEvents.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {photoEvents.map((evt) => (
+                  <div key={evt.id}>
+                    {evt.image_url && (
+                      <img
+                        src={evt.image_url}
+                        alt={plant.name}
+                        className="h-32 w-full rounded object-cover"
+                      />
+                    )}
+                    {evt.note && (
+                      <div className="text-xs text-gray-600">{evt.note}</div>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        ) : (
-          <p>No photos yet.</p>
-        )}
-      </section>
+            ) : (
+              <p>No photos yet.</p>
+            )}
+          </section>
+        </TabsContent>
 
-      <section className="space-y-4">
-        <h2 className="mb-2 font-semibold">Notes</h2>
-        <AddNoteForm plantId={plant.id} />
-        {notes.length > 0 ? (
-          <ul className="space-y-2">
-            {notes.map((evt) => (
-              <li key={evt.id} className="rounded border p-2">
-                <div className="text-sm text-gray-500">
-                  {new Date(evt.created_at).toLocaleString()}
-                </div>
-                {evt.note && <div className="text-sm">{evt.note}</div>}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No notes yet.</p>
-        )}
-      </section>
+        <TabsContent value="notes" className="space-y-4">
+          <section className="space-y-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="font-semibold">Notes</h2>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="rounded bg-green-600 px-4 py-2 text-sm text-white transition-colors hover:bg-green-700">
+                    Add Note
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Note</DialogTitle>
+                  </DialogHeader>
+                  <AddNoteForm plantId={plant.id} />
+                </DialogContent>
+              </Dialog>
+            </div>
+            {notes.length > 0 ? (
+              <ul className="space-y-2">
+                {notes.map((evt) => (
+                  <li key={evt.id} className="rounded border p-2">
+                    <div className="text-sm text-gray-500">
+                      {new Date(evt.created_at).toLocaleString()}
+                    </div>
+                    {evt.note && <div className="text-sm">{evt.note}</div>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No notes yet.</p>
+            )}
+          </section>
+        </TabsContent>
+      </Tabs>
 
       <section>
         <h2 className="mb-2 font-semibold">Timeline</h2>
