@@ -30,7 +30,7 @@ export default async function TodayPage() {
   const tasks = (data ?? []) as Task[];
 
   return (
-    <div className="p-4">
+    <div>
       <h1 className="mb-4 text-2xl font-bold">Today&apos;s Tasks</h1>
       {tasks && tasks.length > 0 ? (
         <ul className="space-y-4">

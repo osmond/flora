@@ -48,25 +48,25 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
   }
 
   return (
-    <div className="w-full max-w-md relative">
-      <label className="block font-medium mb-1">Species</label>
+    <div className="relative w-full">
+      <label className="mb-1 block text-sm font-medium">Species</label>
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search for a plant..."
-        className="w-full border rounded px-2 py-1"
+        className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
       />
 
-      {loading && <p className="text-sm text-gray-500 mt-2">Searching…</p>}
+      {loading && <p className="mt-2 text-sm text-gray-500">Searching…</p>}
 
       {results.length > 0 && (
-        <ul className="absolute z-10 bg-white border rounded w-full mt-1 shadow-lg max-h-60 overflow-y-auto">
+        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-white shadow-lg">
           {results.map((species) => (
             <li
               key={species.id}
               onClick={() => handleSelect(species)}
-              className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
+              className="flex cursor-pointer items-center gap-3 p-2 transition-colors hover:bg-gray-100"
             >
               <img
                 src={
@@ -74,11 +74,11 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
                   "https://placehold.co/48x48?text=🌱"
                 }
                 alt={species.common_name || species.scientific_name}
-                className="w-10 h-10 rounded object-cover bg-gray-100"
+                className="h-10 w-10 rounded bg-gray-100 object-cover"
               />
               <div>
                 <p className="font-medium">{species.common_name || "Unknown"}</p>
-                <p className="text-sm text-gray-500 italic">
+                <p className="italic text-sm text-gray-500">
                   {species.scientific_name}
                 </p>
               </div>
