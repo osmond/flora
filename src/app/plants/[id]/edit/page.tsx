@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import EditCarePlanForm from "@/components/EditCarePlanForm";
+import { getCurrentUserId } from "@/lib/auth";
 
 export const revalidate = 0;
 
@@ -19,6 +20,7 @@ export default async function EditCarePlanPage({
     .from("plants")
     .select("id, care_plan")
     .eq("id", id)
+    .eq("user_id", getCurrentUserId())
     .single();
 
   if (error || !plant) {

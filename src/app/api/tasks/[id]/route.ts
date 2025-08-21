@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getCurrentUserId } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,7 +19,8 @@ export async function PATCH(
       const { error } = await supabase
         .from("tasks")
         .update({ completed_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", getCurrentUserId());
       if (error) throw error;
     } else if (action === "snooze") {
       const addDays = typeof days === "number" ? days : 1;
@@ -26,6 +28,7 @@ export async function PATCH(
         .from("tasks")
         .select("due_date")
         .eq("id", id)
+        .eq("user_id", getCurrentUserId())
         .single();
       if (fetchError) throw fetchError;
       const due = new Date(data.due_date);
@@ -33,7 +36,8 @@ export async function PATCH(
       const { error } = await supabase
         .from("tasks")
         .update({ due_date: due.toISOString().slice(0, 10) })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", getCurrentUserId());
       if (error) throw error;
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });

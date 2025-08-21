@@ -6,6 +6,7 @@ create extension if not exists pgcrypto;
 -- Plants table
 create table if not exists public.plants (
   id uuid primary key default gen_random_uuid(),
+  user_id text not null,
   name text not null,
   species text not null,
   room text,
@@ -31,6 +32,7 @@ alter table if exists public.plants add column if not exists drainage text;
 alter table if exists public.plants add column if not exists soil_type text;
 alter table if exists public.plants add column if not exists light_level text;
 alter table if exists public.plants add column if not exists indoor text;
+alter table if exists public.plants add column if not exists user_id text not null default 'flora-single-user';
 
 -- Species table
 create table if not exists public.species (
@@ -45,15 +47,27 @@ create table if not exists public.species (
 alter table public.plants enable row level security;
 alter table public.species enable row level security;
 
--- Policies: open read/write (safe for single-user dev)
+-- Policies: user-specific access to plants
 drop policy if exists "public read plants" on public.plants;
-create policy "public read plants" on public.plants
-  for select using (true);
-
 drop policy if exists "public write plants" on public.plants;
-create policy "public write plants" on public.plants
-  for insert with check (true);
+drop policy if exists "user read plants" on public.plants;
+drop policy if exists "user insert plants" on public.plants;
+drop policy if exists "user update plants" on public.plants;
+drop policy if exists "user delete plants" on public.plants;
 
+create policy "user read plants" on public.plants
+  for select using (auth.uid()::text = user_id);
+
+create policy "user insert plants" on public.plants
+  for insert with check (auth.uid()::text = user_id);
+
+create policy "user update plants" on public.plants
+  for update using (auth.uid()::text = user_id);
+
+create policy "user delete plants" on public.plants
+  for delete using (auth.uid()::text = user_id);
+
+-- Species remain open for reads/writes
 drop policy if exists "public read species" on public.species;
 create policy "public read species" on public.species
   for select using (true);
