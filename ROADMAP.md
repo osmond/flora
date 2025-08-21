@@ -39,9 +39,9 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
    - [x] Call `/api/ai-care` to get AI-generated defaults (watering interval, amount, fertilizer needs)
  
 
-- [ ] **Confirm**
-  - [ ] Save plant to Supabase
-  - [ ] Show success toast + redirect to detail view
+  - [x] **Confirm**
+    - [x] Save plant to Supabase
+    - [x] Show success toast + redirect to detail view
 
 ---
 

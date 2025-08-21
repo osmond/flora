@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
 export default function AddPlantForm() {
@@ -29,6 +31,7 @@ export default function AddPlantForm() {
     | null
   >(null);
   const [loadingCare, setLoadingCare] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("/api/rooms")
@@ -116,6 +119,7 @@ export default function AddPlantForm() {
     });
 
     if (res.ok) {
+      const { data } = await res.json();
       setName("");
       setSpecies("");
       setCommonName("");
@@ -128,6 +132,13 @@ export default function AddPlantForm() {
       setIndoor("");
       setPhoto(null);
       setCarePlan(null);
+      toast.success("Plant saved!");
+      const id = data?.[0]?.id;
+      if (id) {
+        router.push(`/plants/${id}`);
+      }
+    } else {
+      toast.error("Failed to save plant");
     }
   };
 
