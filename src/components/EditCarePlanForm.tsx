@@ -1,7 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function EditCarePlanForm({
   plantId,
@@ -15,20 +26,31 @@ export default function EditCarePlanForm({
   } | null;
 }) {
   const router = useRouter();
-  const [waterEvery, setWaterEvery] = useState(initialCarePlan?.waterEvery || "");
-  const [fertEvery, setFertEvery] = useState(initialCarePlan?.fertEvery || "");
-  const [fertFormula, setFertFormula] = useState(initialCarePlan?.fertFormula || "");
+  const form = useForm<{
+    waterEvery: string;
+    fertEvery: string;
+    fertFormula: string;
+  }>({
+    defaultValues: {
+      waterEvery: initialCarePlan?.waterEvery || "",
+      fertEvery: initialCarePlan?.fertEvery || "",
+      fertFormula: initialCarePlan?.fertFormula || "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: {
+    waterEvery: string;
+    fertEvery: string;
+    fertFormula: string;
+  }) => {
     await fetch(`/api/plants/${plantId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         care_plan: {
-          waterEvery: waterEvery || undefined,
-          fertEvery: fertEvery || undefined,
-          fertFormula: fertFormula || undefined,
+          waterEvery: data.waterEvery || undefined,
+          fertEvery: data.fertEvery || undefined,
+          fertFormula: data.fertFormula || undefined,
         },
       }),
     });
@@ -37,40 +59,55 @@ export default function EditCarePlanForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="mb-1 block text-sm font-medium">Water every</label>
-        <input
-          type="text"
-          value={waterEvery}
-          onChange={(e) => setWaterEvery(e.target.value)}
-          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="waterEvery"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Water every</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  {...field}
+                  className="w-full"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium">Fertilize every</label>
-        <input
-          type="text"
-          value={fertEvery}
-          onChange={(e) => setFertEvery(e.target.value)}
-          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+        <FormField
+          control={form.control}
+          name="fertEvery"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fertilize every</FormLabel>
+              <FormControl>
+                <Input type="text" {...field} className="w-full" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium">Fertilizer formula</label>
-        <input
-          type="text"
-          value={fertFormula}
-          onChange={(e) => setFertFormula(e.target.value)}
-          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+        <FormField
+          control={form.control}
+          name="fertFormula"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fertilizer formula</FormLabel>
+              <FormControl>
+                <Input type="text" {...field} className="w-full" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <button
-        type="submit"
-        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-      >
-        Save Care Plan
-      </button>
-    </form>
+        <Button type="submit" className="bg-green-600 hover:bg-green-700">
+          Save Care Plan
+        </Button>
+      </form>
+    </Form>
   );
 }

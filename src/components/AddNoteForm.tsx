@@ -1,14 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export default function AddNoteForm({ plantId }: { plantId: string }) {
-  const [note, setNote] = useState("");
   const router = useRouter();
+  const form = useForm<{ note: string }>({
+    defaultValues: { note: "" },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async ({ note }: { note: string }) => {
     if (!note.trim()) return;
 
     await fetch("/api/events", {
@@ -17,24 +29,34 @@ export default function AddNoteForm({ plantId }: { plantId: string }) {
       body: JSON.stringify({ plant_id: plantId, type: "note", note }),
     });
 
-    setNote("");
+    form.reset();
     router.refresh();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <textarea
-        className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
-        placeholder="Write a note..."
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-      />
-      <button
-        type="submit"
-        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-      >
-        Add Note
-      </button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="note"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Note</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Write a note..."
+                  className="w-full"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="bg-green-600 hover:bg-green-700">
+          Add Note
+        </Button>
+      </form>
+    </Form>
   );
 }

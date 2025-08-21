@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type CareEvent = {
   id: string;
@@ -24,16 +25,16 @@ export default function CareTimeline({ events }: { events: CareEvent[] }) {
   return (
     <div>
       <div className="mb-2 flex space-x-2">
-        <button
+        <Button
           onClick={() => setFilter("all")}
           className={`rounded-full px-3 py-1 text-sm capitalize ${
             filter === "all" ? "bg-green-600 text-white" : "bg-gray-200"
           }`}
         >
           all
-        </button>
+        </Button>
         {types.map((t) => (
-          <button
+          <Button
             key={t}
             onClick={() => setFilter(t)}
             className={`rounded-full px-3 py-1 text-sm capitalize ${
@@ -41,7 +42,7 @@ export default function CareTimeline({ events }: { events: CareEvent[] }) {
             }`}
           >
             {t}
-          </button>
+          </Button>
         ))}
       </div>
       <div className="flex space-x-4 overflow-x-auto py-2">

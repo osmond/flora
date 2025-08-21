@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export type Plant = {
   id: string;
@@ -25,12 +26,12 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
   return (
     <div>
       <div className="mb-4 flex justify-end">
-        <button
+        <Button
           onClick={() => setView(view === "list" ? "grid" : "list")}
           className="rounded border px-3 py-1 text-sm"
         >
           {view === "list" ? "Grid view" : "List view"}
-        </button>
+        </Button>
       </div>
       {Object.entries(grouped).map(([room, plants]) => (
         <section key={room} className="mb-8">

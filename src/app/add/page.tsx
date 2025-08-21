@@ -7,6 +7,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
+import { Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   name: z.string().min(1, "Plant name is required"),
@@ -44,15 +48,7 @@ export default function AddPlantForm() {
   const [loadingCare, setLoadingCare] = useState(false);
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    getValues,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<FormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
     shouldUnregister: false,
@@ -72,6 +68,16 @@ export default function AddPlantForm() {
       humidity: "",
     },
   });
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    reset,
+    formState: { errors },
+  } = form;
 
   const [step, setStep] = useState(1);
   const totalSteps = 6;
@@ -222,7 +228,8 @@ export default function AddPlantForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-6">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-6">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           {Array.from({ length: totalSteps }).map((_, i) => (
@@ -241,20 +248,20 @@ export default function AddPlantForm() {
         <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Identify</h2>
           <div>
-            <label className="mb-1 block text-sm font-medium">Nickname</label>
+            <Label className="mb-1 block text-sm font-medium">Nickname</Label>
             <div className="flex gap-2">
-              <input
+              <Input
                 type="text"
                 {...register("name")}
                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
               />
-              <button
+              <Button
                 type="button"
                 onClick={surpriseName}
                 className="rounded bg-green-100 px-2 text-sm font-medium text-green-700 hover:bg-green-200"
               >
                 Surprise me
-              </button>
+              </Button>
             </div>
             {errors.name && (
               <p className="text-sm text-red-600">{errors.name.message}</p>
@@ -273,8 +280,8 @@ export default function AddPlantForm() {
             )}
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Photo</label>
-            <input
+            <Label className="mb-1 block text-sm font-medium">Photo</Label>
+            <Input
               type="file"
               accept="image/*"
               {...register("photo")}
@@ -295,8 +302,8 @@ export default function AddPlantForm() {
         <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Place</h2>
           <div>
-            <label className="mb-1 block text-sm font-medium">Room</label>
-            <input
+            <Label className="mb-1 block text-sm font-medium">Room</Label>
+            <Input
               type="text"
               list="room-options"
               {...register("room")}
@@ -309,7 +316,7 @@ export default function AddPlantForm() {
             </datalist>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Location</label>
+            <Label className="mb-1 block text-sm font-medium">Location</Label>
             <select
               {...register("indoor")}
               className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -320,7 +327,7 @@ export default function AddPlantForm() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Light Level</label>
+            <Label className="mb-1 block text-sm font-medium">Light Level</Label>
             <select
               {...register("lightLevel")}
               className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -339,16 +346,16 @@ export default function AddPlantForm() {
           <h2 className="text-lg font-medium">Pot Setup</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">Pot Size</label>
-              <input
+              <Label className="mb-1 block text-sm font-medium">Pot Size</Label>
+              <Input
                 type="text"
                 {...register("potSize")}
                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Pot Material</label>
-              <input
+              <Label className="mb-1 block text-sm font-medium">Pot Material</Label>
+              <Input
                 type="text"
                 {...register("potMaterial")}
                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -356,7 +363,7 @@ export default function AddPlantForm() {
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Drainage</label>
+            <Label className="mb-1 block text-sm font-medium">Drainage</Label>
             <select
               {...register("drainage")}
               className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -368,8 +375,8 @@ export default function AddPlantForm() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Soil Type</label>
-            <input
+            <Label className="mb-1 block text-sm font-medium">Soil Type</Label>
+            <Input
               type="text"
               {...register("soilType")}
               className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -381,9 +388,9 @@ export default function AddPlantForm() {
       {step === 4 && (
         <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Environment</h2>
-          <input type="hidden" {...register("latitude")} />
-          <input type="hidden" {...register("longitude")} />
-          <input type="hidden" {...register("humidity")} />
+          <Input type="hidden" {...register("latitude")} />
+          <Input type="hidden" {...register("longitude")} />
+          <Input type="hidden" {...register("humidity")} />
           {(latitude || longitude || humidity) ? (
             <p className="text-sm text-gray-600">
               {latitude && longitude && (
@@ -402,7 +409,7 @@ export default function AddPlantForm() {
       {step === 5 && (
         <div className="space-y-4 rounded-xl border bg-gray-50 p-6 text-gray-900 dark:text-gray-100 shadow-sm">
           <h2 className="text-lg font-medium">Smart Plan</h2>
-          <button
+          <Button
             type="button"
             onClick={generateCarePlan}
             disabled={loadingCare}
@@ -412,7 +419,7 @@ export default function AddPlantForm() {
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             )}
             {loadingCare ? "Generating..." : "Generate Care Plan"}
-          </button>
+          </Button>
           {carePlan && (
             <div className="mt-2 space-y-1 rounded border bg-white p-3 text-sm text-gray-900 dark:text-gray-100">
               <p>Water every: {carePlan.waterEvery}</p>
@@ -458,34 +465,35 @@ export default function AddPlantForm() {
 
       <div className="flex justify-between pt-2">
         {step > 1 && (
-          <button
+          <Button
             type="button"
             onClick={prevStep}
-            className="rounded bg-gray-100 px-4 py-2 text-sm"
+            className="bg-gray-100 text-sm"
           >
             Back
-          </button>
+          </Button>
         )}
         {step < totalSteps && (
-          <button
+          <Button
             type="button"
             onClick={nextStep}
             disabled={!canProceed()}
-            className="ml-auto rounded bg-green-600 px-4 py-2 text-sm text-white disabled:opacity-50"
+            className="ml-auto bg-green-600 text-sm text-white disabled:opacity-50"
           >
             Next
-          </button>
+          </Button>
         )}
         {step === totalSteps && (
-          <button
+          <Button
             type="submit"
-            className="ml-auto rounded bg-green-600 px-4 py-2 text-sm text-white"
+            className="ml-auto bg-green-600 text-sm text-white"
           >
             Save Plant
-          </button>
+          </Button>
         )}
       </div>
-    </form>
+      </form>
+    </Form>
   );
 }
 

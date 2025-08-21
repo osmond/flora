@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 type PlantInfo = { id: string; name: string };
 export type Task = {
@@ -66,18 +67,18 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
         <div className="text-xs text-gray-500">{task.due_date}</div>
       )}
       <div className="mt-2 flex gap-2 text-sm">
-        <button
+        <Button
           onClick={handleComplete}
-          className="rounded bg-green-600 px-2 py-1 text-white"
+          className="bg-green-600 px-2 py-1 text-white"
         >
           Done
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleSnooze}
-          className="rounded bg-gray-300 px-2 py-1"
+          className="bg-gray-300 px-2 py-1"
         >
           Snooze
-        </button>
+        </Button>
       </div>
     </li>
   );
