@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
 export default function AddPlantForm() {
   const [name, setName] = useState("");
   const [species, setSpecies] = useState("");
-  const [commonName, setCommonName] = useState(""); // 👈
+  const [commonName, setCommonName] = useState("");
   const [room, setRoom] = useState("");
+  const [rooms, setRooms] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/rooms")
+      .then((res) => res.json())
+      .then((data) => setRooms(data.data || []))
+      .catch((err) => console.error("Failed to load rooms:", err));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +51,7 @@ export default function AddPlantForm() {
           value={species}
           onSelect={(scientificName: string, common?: string) => {
             setSpecies(scientificName);
-            setCommonName(common || ""); // 👈 auto-fill
+            setCommonName(common || "");
           }}
         />
       </div>
@@ -52,9 +60,15 @@ export default function AddPlantForm() {
         <label>Room</label>
         <input
           type="text"
+          list="room-options"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
         />
+        <datalist id="room-options">
+          {rooms.map((r) => (
+            <option key={r} value={r} />
+          ))}
+        </datalist>
       </div>
 
       <div>
@@ -62,7 +76,7 @@ export default function AddPlantForm() {
         <input
           type="text"
           value={commonName}
-          onChange={(e) => setCommonName(e.target.value)} // 👈 editable override
+          onChange={(e) => setCommonName(e.target.value)}
         />
       </div>
 
@@ -70,3 +84,4 @@ export default function AddPlantForm() {
     </form>
   );
 }
+
