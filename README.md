@@ -19,6 +19,7 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 - Cached data fetching with friendly loading states on list pages.
 - Generate an AI-powered care plan when creating a plant.
 - Care plan suggestions now factor in real-time local weather data.
+- Care plan suggestions now incorporate your climate zone.
 - Polished UI with Inter typography and improved form interactions.
 - Saving a plant now shows a success toast and redirects to its detail page.
 - Switch between light and dark themes with a simple toggle.

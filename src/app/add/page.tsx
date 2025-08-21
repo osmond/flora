@@ -30,6 +30,7 @@ export default function AddPlantForm() {
       temperature?: number;
       humidity?: number;
     };
+    climateZone?: string;
   }
 
   const [carePlan, setCarePlan] = useState<CarePlan | null>(null);
