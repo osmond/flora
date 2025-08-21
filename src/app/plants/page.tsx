@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
 import PlantList from "@/components/PlantList";
-import { getCurrentUserId } from "@/lib/auth";
+import { getPlants } from "@/lib/data";
 
 export const revalidate = 0;
 
@@ -15,22 +14,11 @@ type Plant = {
 };
 
 export default async function PlantsPage() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
-  const { data, error } = await supabase
-    .from("plants")
-    .select("id, name, room, species, common_name, image_url")
-    .eq("user_id", getCurrentUserId())
-    .order("room")
-    .order("name");
-
-  const plants = data as Plant[] | null;
-
-  if (error) {
-    console.error("Error fetching plants:", error.message);
+  let plants: Plant[] | null = null;
+  try {
+    plants = (await getPlants()) as Plant[] | null;
+  } catch (error) {
+    console.error("Error fetching plants:", error);
     return <div>Failed to load plants.</div>;
   }
 

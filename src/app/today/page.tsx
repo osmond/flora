@@ -1,24 +1,15 @@
-import { createClient } from "@supabase/supabase-js";
 import TaskItem, { Task } from "@/components/TaskItem";
-import { getCurrentUserId } from "@/lib/auth";
+import { getTasks } from "@/lib/data";
 
 export const revalidate = 0;
 
 export default async function TodayPage() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
   const today = new Date().toISOString().slice(0, 10);
-  const { data, error } = await supabase
-    .from("tasks")
-    .select("id, type, due_date, plant:plants(id, name)")
-    .eq("user_id", getCurrentUserId())
-    .order("due_date");
-
-  if (error) {
-    console.error("Error fetching tasks:", error.message);
+  let data;
+  try {
+    data = await getTasks();
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
     return <div>Failed to load tasks.</div>;
   }
 
