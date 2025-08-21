@@ -25,7 +25,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
   - [ ] Optional photo upload
 
 - [ ] **Place**
-  - [ ] Room selector or creator
+  - [x] Room selector or creator
 
 - [ ] **Describe**
   - [ ] Pot size + material
