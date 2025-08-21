@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
+import { getCurrentUserId } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,6 +23,16 @@ export async function POST(req: Request) {
           { error: "plant_id and type are required" },
           { status: 400 },
         );
+      }
+
+      const { error: plantCheckError } = await supabase
+        .from("plants")
+        .select("id")
+        .eq("id", plant_id)
+        .eq("user_id", getCurrentUserId())
+        .single();
+      if (plantCheckError) {
+        return NextResponse.json({ error: "Plant not found" }, { status: 404 });
       }
 
       let image_url: string | undefined;
@@ -58,6 +69,16 @@ export async function POST(req: Request) {
         { error: "plant_id and type are required" },
         { status: 400 },
       );
+    }
+
+    const { error: plantCheckError } = await supabase
+      .from("plants")
+      .select("id")
+      .eq("id", plant_id)
+      .eq("user_id", getCurrentUserId())
+      .single();
+    if (plantCheckError) {
+      return NextResponse.json({ error: "Plant not found" }, { status: 404 });
     }
 
     const { data, error } = await supabase

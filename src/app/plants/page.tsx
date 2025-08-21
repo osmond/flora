@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 import PlantList from "@/components/PlantList";
+import { getCurrentUserId } from "@/lib/auth";
 
 export const revalidate = 0;
 
@@ -22,6 +23,7 @@ export default async function PlantsPage() {
   const { data, error } = await supabase
     .from("plants")
     .select("id, name, room, species, common_name, image_url")
+    .eq("user_id", getCurrentUserId())
     .order("room")
     .order("name");
 

@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import TaskItem, { Task } from "@/components/TaskItem";
+import { getCurrentUserId } from "@/lib/auth";
 
 export const revalidate = 0;
 
@@ -13,6 +14,7 @@ export default async function TodayPage() {
   const { data, error } = await supabase
     .from("tasks")
     .select("id, type, due_date, plant:plants(id, name)")
+    .eq("user_id", getCurrentUserId())
     .order("due_date");
 
   if (error) {
