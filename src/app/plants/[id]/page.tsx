@@ -175,14 +175,11 @@ export default async function PlantDetailPage({
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="font-semibold">Quick Stats</h2>
-              <Link
-                href={`/plants/${plant.id}/edit`}
-                className="flex items-center gap-1 text-sm text-primary hover:underline"
-                title="Only affects watering and fertilizer settings"
-              >
-                <DropletIcon className="size-4 stroke-[1.5]" />
-                Edit Care Plan
-              </Link>
+
+              <Button asChild size="sm" variant="secondary">
+                <Link href={`/plants/${plant.id}/edit`}>Edit Plant</Link>
+              </Button>
+
             </div>
             {plant.care_plan ? (
               <ul className="space-y-1 text-sm">
