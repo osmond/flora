@@ -94,6 +94,8 @@ export default async function PlantDetailPage({
   const otherEvents =
     timeline?.filter((e) => e.type !== "note" && e.type !== "photo") || [];
 
+  const headerImageUrl = plant.image_url ?? photoEvents[0]?.image_url ?? null;
+
   const lastWaterEvent = otherEvents.find((e) => e.type === "water") || null;
   const lastWatered = lastWaterEvent
     ? new Date(lastWaterEvent.created_at)
@@ -116,10 +118,10 @@ export default async function PlantDetailPage({
   return (
     <div className="space-y-6 p-4">
       <div>
-        {plant.image_url ? (
+        {headerImageUrl ? (
           <div className="relative mb-4">
             <img
-              src={plant.image_url}
+              src={headerImageUrl}
               alt={plant.name}
               className="h-48 w-full rounded object-cover"
             />

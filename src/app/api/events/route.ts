@@ -101,6 +101,19 @@ export async function POST(req: Request) {
 
     if (error) throw error;
 
+    if (type === "photo" && image_url) {
+      const { error: updateError } = await supabase
+        .from("plants")
+        .update({ image_url })
+        .eq("id", plant_id)
+        .eq("user_id", getCurrentUserId())
+        .is("image_url", null);
+      if (updateError) {
+        console.error("Error updating plant image_url:", updateError.message);
+        return NextResponse.json({ error: updateError.message }, { status: 500 });
+      }
+    }
+
     return NextResponse.json({ data });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);

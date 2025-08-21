@@ -8,9 +8,19 @@ vi.mock("@/lib/auth", () => ({
 }));
 
 vi.mock("@/lib/cloudinary", () => ({
-  uploader: { upload_stream: () => ({ end: () => {} }) },
+  default: {
+    uploader: {
+      upload_stream: (
+        _opts: unknown,
+        cb: (err: unknown, res?: { secure_url: string }) => void,
+      ) => ({
+        end: () => cb(null, { secure_url: "https://example.com/uploaded.jpg" }),
+      }),
+    },
+  },
 }));
 
+let updatedImageUrl: string | null = null;
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
     from: (table: string) => {
@@ -21,26 +31,37 @@ vi.mock("@supabase/supabase-js", () => ({
               eq: () => ({
                 single: () =>
                   Promise.resolve({
-
-                    data: { id: "4aa97bee-71f1-428e-843b-4c3c77493994" },
-
+                    data: { id: "4aa97bee-71f1-428e-843b-4c3c77493994", image_url: null },
                     error: null,
                   }),
               }),
             }),
           }),
+          update: (values: { image_url: string }) => {
+            updatedImageUrl = values.image_url;
+            return {
+              eq: () => ({
+                eq: () => ({
+                  is: () => Promise.resolve({ error: null }),
+                }),
+              }),
+            };
+          },
         };
       }
       if (table === "events") {
         return {
           insert: () => ({
-            select: () => Promise.resolve({ data: [{ id: "1" }], error: null }),
+            select: () =>
+              Promise.resolve({
+                data: [{ id: "1", image_url: "https://example.com/uploaded.jpg" }],
+                error: null,
+              }),
           }),
         };
       }
 
       return {} as unknown as Record<string, never>;
-
     },
   }),
 }));
@@ -83,5 +104,18 @@ describe("POST /api/events", () => {
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
+  });
+
+  it("updates plant image_url when uploading a photo", async () => {
+    const { POST } = await import("../src/app/api/events/route");
+    const form = new FormData();
+    form.set("plant_id", "4aa97bee-71f1-428e-843b-4c3c77493994");
+    form.set("type", "photo");
+    const file = new File(["dummy"], "test.jpg", { type: "image/jpeg" });
+    form.set("photo", file);
+    const req = new Request("http://localhost", { method: "POST", body: form });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(updatedImageUrl).toBe("https://example.com/uploaded.jpg");
   });
 });
