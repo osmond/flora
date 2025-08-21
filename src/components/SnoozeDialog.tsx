@@ -38,7 +38,7 @@ export default function SnoozeDialog({
           <DialogTitle>Snooze Task</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label htmlFor="days">Days</Label>
             <Input
               id="days"
@@ -48,7 +48,7 @@ export default function SnoozeDialog({
               onChange={(e) => setDays(parseInt(e.target.value, 10) || 1)}
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label htmlFor="reason">Reason (optional)</Label>
             <Input
               id="reason"
@@ -56,7 +56,7 @@ export default function SnoozeDialog({
               onChange={(e) => setReason(e.target.value)}
             />
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3">
             <Button
               type="button"
               variant="secondary"
