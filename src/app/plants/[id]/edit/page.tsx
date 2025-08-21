@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import EditCarePlanForm from "@/components/EditCarePlanForm";
 import EditPlantForm from "@/components/EditPlantForm";
 import { getCurrentUserId } from "@/lib/auth";
 
@@ -36,10 +35,6 @@ export default async function EditPlantPage({
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Edit Plant</h1>
         <EditPlantForm plant={plant} />
-      </div>
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Edit Care Plan</h2>
-        <EditCarePlanForm plantId={plant.id} initialCarePlan={plant.care_plan} />
       </div>
     </div>
   );
