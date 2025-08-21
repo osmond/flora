@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import config from "../../../lib/config";
+import config from "@/lib/config";
 import EditPlantForm from "@/components/EditPlantForm";
 import { getCurrentUserId } from "@/lib/auth";
 
