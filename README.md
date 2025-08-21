@@ -25,6 +25,13 @@ Set the following environment variables in `.env.local` to connect to Supabase:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
+### Authentication
+
+Flora currently runs in a single-user mode and skips Supabase Auth.  You can
+optionally set `NEXT_PUBLIC_SINGLE_USER_ID` to control which user ID is used
+in database queries.  See [docs/auth.md](docs/auth.md) for more details on the
+decision and future plans.
+
 ## Roadmap
 
 See [ROADMAP.md](ROADMAP.md) for planned and in‑progress work.
