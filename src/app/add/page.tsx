@@ -1,26 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
+const formSchema = z.object({
+  name: z.string().min(1, "Plant name is required"),
+  species: z.string().min(1, "Species is required"),
+  commonName: z.string().optional(),
+  room: z.string().optional(),
+  potSize: z.string().optional(),
+  potMaterial: z.string().optional(),
+  drainage: z.string().optional(),
+  soilType: z.string().optional(),
+  lightLevel: z.string().optional(),
+  indoor: z.string().optional(),
+  photo: z.any().optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
+  humidity: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
 export default function AddPlantForm() {
-  const [name, setName] = useState("");
-  const [species, setSpecies] = useState("");
-  const [commonName, setCommonName] = useState("");
-  const [room, setRoom] = useState("");
   const [rooms, setRooms] = useState<string[]>([]);
-  const [potSize, setPotSize] = useState("");
-  const [potMaterial, setPotMaterial] = useState("");
-  const [drainage, setDrainage] = useState("");
-  const [soilType, setSoilType] = useState("");
-  const [lightLevel, setLightLevel] = useState("");
-  const [indoor, setIndoor] = useState("");
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-  const [humidity, setHumidity] = useState("");
   interface CarePlan {
     waterEvery: string;
     fertEvery: string;
@@ -32,10 +40,37 @@ export default function AddPlantForm() {
     };
     climateZone?: string;
   }
-
   const [carePlan, setCarePlan] = useState<CarePlan | null>(null);
   const [loadingCare, setLoadingCare] = useState(false);
   const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    mode: "onChange",
+    defaultValues: {
+      name: "",
+      species: "",
+      commonName: "",
+      room: "",
+      potSize: "",
+      potMaterial: "",
+      drainage: "",
+      soilType: "",
+      lightLevel: "",
+      indoor: "",
+      latitude: "",
+      longitude: "",
+      humidity: "",
+    },
+  });
 
   useEffect(() => {
     fetch("/api/rooms")
@@ -49,8 +84,8 @@ export default function AddPlantForm() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        setLatitude(latitude.toString());
-        setLongitude(longitude.toString());
+        setValue("latitude", latitude.toString());
+        setValue("longitude", longitude.toString());
         try {
           const res = await fetch(
             `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relativehumidity_2m`
@@ -58,7 +93,7 @@ export default function AddPlantForm() {
           const data = await res.json();
           const h = data.current?.relativehumidity_2m;
           if (typeof h === "number") {
-            setHumidity(h.toString());
+            setValue("humidity", h.toString());
           }
         } catch (err) {
           console.error("Failed to fetch humidity:", err);
@@ -66,11 +101,12 @@ export default function AddPlantForm() {
       },
       (err) => console.error("Geolocation error:", err)
     );
-  }, []);
+  }, [setValue]);
 
   const generateCarePlan = async () => {
     try {
       setLoadingCare(true);
+      const { latitude, longitude } = getValues();
       const res = await fetch("/api/ai-care", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -90,23 +126,21 @@ export default function AddPlantForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: FormValues) => {
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("species", species);
-    formData.append("common_name", commonName);
-    formData.append("room", room);
-    formData.append("pot_size", potSize);
-    formData.append("pot_material", potMaterial);
-    formData.append("drainage", drainage);
-    formData.append("soil_type", soilType);
-    formData.append("light_level", lightLevel);
-    formData.append("indoor", indoor);
-    formData.append("latitude", latitude);
-    formData.append("longitude", longitude);
-    formData.append("humidity", humidity);
+    formData.append("name", data.name);
+    formData.append("species", data.species);
+    formData.append("common_name", data.commonName || "");
+    formData.append("room", data.room || "");
+    formData.append("pot_size", data.potSize || "");
+    formData.append("pot_material", data.potMaterial || "");
+    formData.append("drainage", data.drainage || "");
+    formData.append("soil_type", data.soilType || "");
+    formData.append("light_level", data.lightLevel || "");
+    formData.append("indoor", data.indoor || "");
+    formData.append("latitude", data.latitude || "");
+    formData.append("longitude", data.longitude || "");
+    formData.append("humidity", data.humidity || "");
     if (carePlan) {
       formData.append("care_plan", JSON.stringify(carePlan));
     } else {
@@ -115,20 +149,20 @@ export default function AddPlantForm() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            latitude: latitude ? parseFloat(latitude) : undefined,
-            longitude: longitude ? parseFloat(longitude) : undefined,
+            latitude: data.latitude ? parseFloat(data.latitude) : undefined,
+            longitude: data.longitude ? parseFloat(data.longitude) : undefined,
           }),
         });
         if (res.ok) {
-          const data = await res.json();
-          formData.append("care_plan", JSON.stringify(data));
+          const cp = await res.json();
+          formData.append("care_plan", JSON.stringify(cp));
         }
       } catch (err) {
         console.error("Failed to generate care plan:", err);
       }
     }
-    if (photo) {
-      formData.append("photo", photo);
+    if (data.photo && data.photo.length > 0) {
+      formData.append("photo", data.photo[0]);
     }
 
     const res = await fetch("/api/plants", {
@@ -137,21 +171,11 @@ export default function AddPlantForm() {
     });
 
     if (res.ok) {
-      const { data } = await res.json();
-      setName("");
-      setSpecies("");
-      setCommonName("");
-      setRoom("");
-      setPotSize("");
-      setPotMaterial("");
-      setDrainage("");
-      setSoilType("");
-      setLightLevel("");
-      setIndoor("");
-      setPhoto(null);
+      const { data: responseData } = await res.json();
+      reset();
       setCarePlan(null);
       toast.success("Plant saved!");
-      const id = data?.[0]?.id;
+      const id = responseData?.[0]?.id;
       if (id) {
         router.push(`/plants/${id}`);
       }
@@ -160,33 +184,41 @@ export default function AddPlantForm() {
     }
   };
 
+  const latitude = watch("latitude");
+  const longitude = watch("longitude");
+  const humidity = watch("humidity");
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <label className="mb-1 block text-sm font-medium">Plant Name</label>
         <input
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          {...register("name")}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
+        {errors.name && (
+          <p className="text-sm text-red-600">{errors.name.message}</p>
+        )}
       </div>
 
       <SpeciesAutosuggest
-        value={species}
+        value={watch("species")}
         onSelect={(scientificName: string, common?: string) => {
-          setSpecies(scientificName);
-          setCommonName(common || "");
+          setValue("species", scientificName, { shouldValidate: true });
+          setValue("commonName", common || "", { shouldValidate: true });
         }}
       />
+      {errors.species && (
+        <p className="text-sm text-red-600">{errors.species.message}</p>
+      )}
 
       <div>
         <label className="mb-1 block text-sm font-medium">Room</label>
         <input
           type="text"
           list="room-options"
-          value={room}
-          onChange={(e) => setRoom(e.target.value)}
+          {...register("room")}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
         <datalist id="room-options">
@@ -200,8 +232,7 @@ export default function AddPlantForm() {
         <label className="mb-1 block text-sm font-medium">Common Name</label>
         <input
           type="text"
-          value={commonName}
-          onChange={(e) => setCommonName(e.target.value)}
+          {...register("commonName")}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
@@ -211,8 +242,7 @@ export default function AddPlantForm() {
           <label className="mb-1 block text-sm font-medium">Pot Size</label>
           <input
             type="text"
-            value={potSize}
-            onChange={(e) => setPotSize(e.target.value)}
+            {...register("potSize")}
             className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
         </div>
@@ -220,8 +250,7 @@ export default function AddPlantForm() {
           <label className="mb-1 block text-sm font-medium">Pot Material</label>
           <input
             type="text"
-            value={potMaterial}
-            onChange={(e) => setPotMaterial(e.target.value)}
+            {...register("potMaterial")}
             className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
         </div>
@@ -230,8 +259,7 @@ export default function AddPlantForm() {
       <div>
         <label className="mb-1 block text-sm font-medium">Drainage Quality</label>
         <select
-          value={drainage}
-          onChange={(e) => setDrainage(e.target.value)}
+          {...register("drainage")}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         >
           <option value="">Select</option>
@@ -245,8 +273,7 @@ export default function AddPlantForm() {
         <label className="mb-1 block text-sm font-medium">Soil Type</label>
         <input
           type="text"
-          value={soilType}
-          onChange={(e) => setSoilType(e.target.value)}
+          {...register("soilType")}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
@@ -254,8 +281,7 @@ export default function AddPlantForm() {
       <div>
         <label className="mb-1 block text-sm font-medium">Location</label>
         <select
-          value={indoor}
-          onChange={(e) => setIndoor(e.target.value)}
+          {...register("indoor")}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         >
           <option value="">Select</option>
@@ -267,8 +293,7 @@ export default function AddPlantForm() {
       <div>
         <label className="mb-1 block text-sm font-medium">Light Level</label>
         <select
-          value={lightLevel}
-          onChange={(e) => setLightLevel(e.target.value)}
+          {...register("lightLevel")}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         >
           <option value="">Select</option>
@@ -283,10 +308,14 @@ export default function AddPlantForm() {
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+          {...register("photo")}
           className="w-full"
         />
       </div>
+
+      <input type="hidden" {...register("latitude")} />
+      <input type="hidden" {...register("longitude")} />
+      <input type="hidden" {...register("humidity")} />
 
       {(latitude || longitude || humidity) && (
         <div className="text-sm text-gray-600">
@@ -326,7 +355,8 @@ export default function AddPlantForm() {
 
       <button
         type="submit"
-        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+        disabled={!isValid}
+        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
       >
         Save Plant
       </button>
