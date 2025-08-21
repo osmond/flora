@@ -11,6 +11,7 @@ export default function AddPlantForm() {
   const [rooms, setRooms] = useState<string[]>([]);
   const [potSize, setPotSize] = useState("");
   const [potMaterial, setPotMaterial] = useState("");
+  const [drainage, setDrainage] = useState("");
   const [lightLevel, setLightLevel] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
 
@@ -31,6 +32,7 @@ export default function AddPlantForm() {
     formData.append("room", room);
     formData.append("pot_size", potSize);
     formData.append("pot_material", potMaterial);
+    formData.append("drainage", drainage);
     formData.append("light_level", lightLevel);
     if (photo) {
       formData.append("photo", photo);
@@ -48,6 +50,7 @@ export default function AddPlantForm() {
       setRoom("");
       setPotSize("");
       setPotMaterial("");
+      setDrainage("");
       setLightLevel("");
       setPhoto(null);
     }
@@ -118,6 +121,20 @@ export default function AddPlantForm() {
             className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
         </div>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium">Drainage Quality</label>
+        <select
+          value={drainage}
+          onChange={(e) => setDrainage(e.target.value)}
+          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+        >
+          <option value="">Select</option>
+          <option value="Poor">Poor</option>
+          <option value="Average">Average</option>
+          <option value="Good">Good</option>
+        </select>
       </div>
 
       <div>

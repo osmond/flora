@@ -18,6 +18,7 @@ export async function POST(req: Request) {
     const room = formData.get("room") as string | null;
     const pot_size = formData.get("pot_size") as string | null;
     const pot_material = formData.get("pot_material") as string | null;
+    const drainage = formData.get("drainage") as string | null;
     const light_level = formData.get("light_level") as string | null;
     const care_plan = formData.get("care_plan");
     let image_url: string | undefined;
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
           room,
           pot_size,
           pot_material,
+          drainage,
           light_level,
           care_plan,
           image_url,
