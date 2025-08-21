@@ -1,8 +1,9 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card } from "@/components/ui";
+import { Badge, Button, Card } from "@/components/ui";
 import { toast } from "@/components/ui/sonner";
+import { Check, Clock } from "lucide-react";
 import SnoozeDialog from "./SnoozeDialog";
 import { Check, Clock } from "lucide-react";
 
@@ -83,16 +84,21 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
         onConfirm={handleSnooze}
       />
       <Card
-        className={`p-4 transition-all duration-200 ease-out motion-reduce:transition-none ${isCompleting ? "opacity-0 translate-x-full" : ""}`}
+        className={`p-4 transition-all duration-200 ease-out motion-reduce:transition-none hover:shadow-md hover:translate-y-[-1px] ${
+          isCompleting ? "opacity-0 translate-x-full shadow-md translate-y-[-1px]" : ""
+        }`}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <div className="font-semibold">{task.type}</div>
+        <Badge variant="outline" className="mb-1">
+          {task.type}
+        </Badge>
         {plant && <div className="text-sm text-muted-foreground">{plant.name}</div>}
         {task.due_date !== today && (
           <div className="text-xs text-muted-foreground">{task.due_date}</div>
         )}
         <div className="mt-4 flex gap-3 text-sm">
+
           <Button onClick={handleComplete} className="flex items-center gap-2">
             <Check strokeWidth={1.5} className="h-4 w-4" />
             Done
@@ -103,6 +109,7 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
             className="flex items-center gap-2"
           >
             <Clock strokeWidth={1.5} className="h-4 w-4" />
+
             Snooze
           </Button>
         </div>
