@@ -20,25 +20,31 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!query) {
+    // Only query the API when the user has entered enough characters
+    if (!query || query.length < 3) {
       setResults([]);
+      setLoading(false);
       return;
     }
 
     const controller = new AbortController();
-
-    setLoading(true);
-    fetch(`/api/species?q=${encodeURIComponent(query)}`, {
-      signal: controller.signal,
-    })
-      .then((res) => res.json())
-      .then((data) => setResults(data.data || []))
-      .catch((err) => {
-        if (err.name !== "AbortError") console.error(err);
+    const handler = setTimeout(() => {
+      setLoading(true);
+      fetch(`/api/species?q=${encodeURIComponent(query)}`, {
+        signal: controller.signal,
       })
-      .finally(() => setLoading(false));
+        .then((res) => res.json())
+        .then((data) => setResults(data.data || []))
+        .catch((err) => {
+          if (err.name !== "AbortError") console.error(err);
+        })
+        .finally(() => setLoading(false));
+    }, 300);
 
-    return () => controller.abort();
+    return () => {
+      clearTimeout(handler);
+      controller.abort();
+    };
   }, [query]);
 
   function handleSelect(species: Species) {
