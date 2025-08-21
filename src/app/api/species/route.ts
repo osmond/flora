@@ -8,12 +8,21 @@ async function fetchPerenual(q: string) {
   if (!res.ok) throw new Error(`Perenual API error: ${res.status}`);
   const body = await res.json();
 
-  return body?.data?.map((p: any) => ({
-    id: `perenual-${p.id}`,
-    common_name: p.common_name,
-    scientific_name: p.scientific_name,
-    image_url: p.default_image?.thumbnail,
-  })) ?? [];
+  type PerenualPlant = {
+    id: number;
+    common_name: string;
+    scientific_name: string;
+    default_image?: { thumbnail?: string };
+  };
+
+  return (
+    body?.data?.map((p: PerenualPlant) => ({
+      id: `perenual-${p.id}`,
+      common_name: p.common_name,
+      scientific_name: p.scientific_name,
+      image_url: p.default_image?.thumbnail,
+    })) ?? []
+  );
 }
 
 async function fetchTrefle(q: string) {
@@ -23,12 +32,21 @@ async function fetchTrefle(q: string) {
   if (!res.ok) throw new Error(`Trefle API error: ${res.status}`);
   const body = await res.json();
 
-  return body?.data?.map((p: any) => ({
-    id: `trefle-${p.id}`,
-    common_name: p.common_name,
-    scientific_name: p.scientific_name,
-    image_url: p.image_url,
-  })) ?? [];
+  type TreflePlant = {
+    id: number;
+    common_name: string;
+    scientific_name: string;
+    image_url?: string;
+  };
+
+  return (
+    body?.data?.map((p: TreflePlant) => ({
+      id: `trefle-${p.id}`,
+      common_name: p.common_name,
+      scientific_name: p.scientific_name,
+      image_url: p.image_url,
+    })) ?? []
+  );
 }
 
 export async function GET(req: Request) {
@@ -46,8 +64,9 @@ export async function GET(req: Request) {
     }
 
     return NextResponse.json({ data: results });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Species API error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
