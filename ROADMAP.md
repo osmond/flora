@@ -95,7 +95,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 ## 🧪 Phase 7 – Polish & UX
 
  - [x] Dark mode toggle
-- [ ] Animations (task done, photo upload, etc.)
+ - [x] Animations (task done, photo upload, etc.)
  - [x] Cache API calls + loading states
 - [ ] Micro-interactions (emoji feedback, care badges)
 
