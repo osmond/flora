@@ -389,16 +389,80 @@ export default function AddPlantForm() {
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Drainage</label>
-            <select
-              {...register("drainage")}
-              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="">Select</option>
-              <option value="Poor">💧 Poor</option>
-              <option value="Average">🪴 Average</option>
-              <option value="Good">🌿 Good</option>
-            </select>
+            <fieldset>
+              <legend className="mb-1 block text-sm font-medium">Drainage</legend>
+              <div className="space-y-2">
+                <div>
+                  <label
+                    htmlFor="drainage-poor"
+                    className="flex items-center gap-2"
+                    title="Water drains slowly; high risk of root rot"
+                  >
+                    <input
+                      type="radio"
+                      id="drainage-poor"
+                      value="Poor"
+                      {...register("drainage")}
+                      aria-label="Poor drainage"
+                      aria-describedby="drainage-poor-desc"
+                    />
+                    <span>💧 Poor</span>
+                  </label>
+                  <p
+                    id="drainage-poor-desc"
+                    className="ml-6 text-xs text-muted-foreground"
+                  >
+                    Water drains slowly; high risk of root rot
+                  </p>
+                </div>
+                <div>
+                  <label
+                    htmlFor="drainage-average"
+                    className="flex items-center gap-2"
+                    title="Standard drainage with moderate watering"
+                  >
+                    <input
+                      type="radio"
+                      id="drainage-average"
+                      value="Average"
+                      {...register("drainage")}
+                      aria-label="Average drainage"
+                      aria-describedby="drainage-average-desc"
+                    />
+                    <span>🪴 Average</span>
+                  </label>
+                  <p
+                    id="drainage-average-desc"
+                    className="ml-6 text-xs text-muted-foreground"
+                  >
+                    Standard drainage with moderate watering
+                  </p>
+                </div>
+                <div>
+                  <label
+                    htmlFor="drainage-good"
+                    className="flex items-center gap-2"
+                    title="Excellent drainage; water flows quickly"
+                  >
+                    <input
+                      type="radio"
+                      id="drainage-good"
+                      value="Good"
+                      {...register("drainage")}
+                      aria-label="Good drainage"
+                      aria-describedby="drainage-good-desc"
+                    />
+                    <span>🌿 Good</span>
+                  </label>
+                  <p
+                    id="drainage-good-desc"
+                    className="ml-6 text-xs text-muted-foreground"
+                  >
+                    Excellent drainage; water flows quickly
+                  </p>
+                </div>
+              </div>
+            </fieldset>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Soil Type</label>

@@ -2,7 +2,7 @@ import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { renderToString } from "react-dom/server";
 
-(global as any).React = React;
+(globalThis as unknown as { React: typeof React }).React = React;
 
 process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
@@ -85,7 +85,7 @@ vi.mock("@supabase/supabase-js", () => ({
           }),
         };
       }
-      return {} as any;
+      return {} as Record<string, unknown>;
     },
   }),
 }));
