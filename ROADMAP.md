@@ -32,7 +32,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
   - [x] Light level
   - [x] Drainage quality
   - [x] Soil type
-  - [ ] Indoor/outdoor
+  - [x] Indoor/outdoor
   - [ ] Local humidity + lat/lon (for climate context)
 
 - [ ] **Care Plan**
