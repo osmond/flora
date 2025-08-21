@@ -3,6 +3,7 @@ import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
 import CareTimeline from "@/components/CareTimeline";
 import Link from "next/link";
+import { DropletIcon } from "lucide-react";
 import {
   Tabs,
   TabsList,
@@ -176,9 +177,11 @@ export default async function PlantDetailPage({
               <h2 className="font-semibold">Quick Stats</h2>
               <Link
                 href={`/plants/${plant.id}/edit`}
-                className="text-sm text-primary hover:underline"
+                className="flex items-center gap-1 text-sm text-primary hover:underline"
+                title="Only affects watering and fertilizer settings"
               >
-                Edit
+                <DropletIcon className="size-4 stroke-[1.5]" />
+                Edit Care Plan
               </Link>
             </div>
             {plant.care_plan ? (
