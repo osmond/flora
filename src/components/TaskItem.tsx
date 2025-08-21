@@ -2,6 +2,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card } from "@/components/ui";
+import { toast } from "@/components/ui/sonner";
+import SnoozeDialog from "./SnoozeDialog";
 
 type PlantInfo = { id: string; name: string };
 export type Task = {
@@ -15,6 +17,7 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
   const router = useRouter();
   const touchStartX = useRef<number | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [snoozeOpen, setSnoozeOpen] = useState(false);
 
   const handleComplete = async () => {
     setIsCompleting(true);
@@ -27,14 +30,22 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
     setTimeout(() => router.refresh(), 300);
   };
 
-  const handleSnooze = async () => {
-    const reason = prompt("Why snooze? (optional)")?.trim();
-    await fetch(`/api/tasks/${task.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "snooze", reason: reason || undefined }),
-    });
-    router.refresh();
+  const handleSnooze = async ({ days, reason }: { days: number; reason?: string }) => {
+    try {
+      const res = await fetch(`/api/tasks/${task.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "snooze", days, reason }),
+      });
+      if (res.ok) {
+        toast("Task snoozed");
+        router.refresh();
+      } else {
+        toast("Failed to snooze task");
+      }
+    } catch {
+      toast("Failed to snooze task");
+    }
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -48,7 +59,7 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
     if (deltaX > 50) {
       handleComplete();
     } else if (deltaX < -50) {
-      handleSnooze();
+      setSnoozeOpen(true);
     }
     touchStartX.current = null;
   };
@@ -57,6 +68,11 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
 
   return (
     <li>
+      <SnoozeDialog
+        open={snoozeOpen}
+        onOpenChange={setSnoozeOpen}
+        onConfirm={handleSnooze}
+      />
       <Card
         className={`p-4 transition-all duration-300 ${isCompleting ? "opacity-0 translate-x-full" : ""}`}
         onTouchStart={onTouchStart}
@@ -68,10 +84,8 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
           <div className="text-xs text-muted-foreground">{task.due_date}</div>
         )}
         <div className="mt-2 flex gap-2 text-sm">
-          <Button onClick={handleComplete}>
-            Done
-          </Button>
-          <Button variant="secondary" onClick={handleSnooze}>
+          <Button onClick={handleComplete}>Done</Button>
+          <Button variant="secondary" onClick={() => setSnoozeOpen(true)}>
             Snooze
           </Button>
         </div>
