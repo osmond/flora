@@ -1,6 +1,20 @@
 // src/app/api/species/route.ts
 import { NextResponse } from "next/server";
 
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeout = 10_000
+) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 // Simple in-memory cache to avoid hammering third-party APIs
 const CACHE_TTL_MS = 1000 * 60 * 5; // 5 minutes
 const cache = new Map<string, { data: unknown; expires: number }>();
@@ -14,12 +28,13 @@ type Species = {
 
 async function validateImageUrl(url: string): Promise<boolean> {
   try {
-    const head = await fetch(url, { method: "HEAD" });
+    const head = await fetchWithTimeout(url, { method: "HEAD" });
     if (head.ok) return true;
     // Some hosts don't support HEAD; fall back to GET
-    const get = await fetch(url, { method: "GET" });
+    const get = await fetchWithTimeout(url, { method: "GET" });
     return get.ok;
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") throw err;
     return false;
   }
 }
@@ -27,28 +42,31 @@ async function validateImageUrl(url: string): Promise<boolean> {
 async function fetchOpenAISpecies(q: string): Promise<Species[]> {
   const key = process.env.OPENAI_API_KEY;
   if (!key) throw new Error("Missing OPENAI_API_KEY");
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful botany assistant.",
-        },
-        {
-          role: "user",
-          content:
-            `List up to 5 plant species that match the query "${q}". ` +
-            "Return a JSON array where each item has id, common_name, scientific_name, and image_url.",
-        },
-      ],
-    }),
-  });
+  const res = await fetchWithTimeout(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful botany assistant.",
+          },
+          {
+            role: "user",
+            content:
+              `List up to 5 plant species that match the query "${q}". ` +
+              "Return a JSON array where each item has id, common_name, scientific_name, and image_url.",
+          },
+        ],
+      }),
+    }
+  );
   if (!res.ok) throw new Error(`OpenAI API error: ${res.status}`);
   const body = await res.json();
   const content = body?.choices?.[0]?.message?.content;
@@ -121,6 +139,12 @@ export async function GET(req: Request) {
     return NextResponse.json({ data: results });
   } catch (err: unknown) {
     console.error("Species API error:", err);
+    if (err instanceof Error && err.name === "AbortError") {
+      return NextResponse.json(
+        { error: "Upstream request timed out" },
+        { status: 504 }
+      );
+    }
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
   }
