@@ -1,6 +1,7 @@
 // src/app/api/plants/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { randomUUID } from "crypto";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,12 +10,33 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const formData = await req.formData();
 
-    const { name, species, common_name, room, care_plan } = body;
+    const name = formData.get("name") as string;
+    const species = formData.get("species") as string;
+    const common_name = formData.get("common_name") as string | null;
+    const room = formData.get("room") as string | null;
+    const care_plan = formData.get("care_plan");
+    let image_url: string | undefined;
 
     if (!name) {
       return NextResponse.json({ error: "Plant name is required" }, { status: 400 });
+    }
+
+    const file = formData.get("photo");
+    if (file instanceof File) {
+      const bytes = await file.arrayBuffer();
+      const fileName = `${randomUUID()}-${file.name}`;
+      const { data: storageData, error: storageError } = await supabase.storage
+        .from("plant-photos")
+        .upload(fileName, new Uint8Array(bytes), {
+          contentType: file.type,
+        });
+      if (storageError) throw storageError;
+      const { data: publicUrl } = supabase.storage
+        .from("plant-photos")
+        .getPublicUrl(storageData.path);
+      image_url = publicUrl.publicUrl;
     }
 
     const { data, error } = await supabase
@@ -26,6 +48,7 @@ export async function POST(req: Request) {
           common_name,
           room,
           care_plan,
+          image_url,
         },
       ])
       .select();
