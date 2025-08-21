@@ -62,7 +62,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 - [ ] Room view: show each room and its plants as image tiles
 - [ ] Empty state CTA: “Add your first plant”
-- [ ] Grid or list toggle (mobile-first)
+- [ ] Grid or list toggle 
 - [ ] Tap = go to plant detail
 
 ---
@@ -71,7 +71,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 - [ ] “Today” view: show plants needing care today
 - [ ] Show overdue, due today, and upcoming
-- [ ] Swipe to mark as done
+- [ ] Swipe to mark as done and swipe to snooze
 
 
 ---
