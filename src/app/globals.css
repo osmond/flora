@@ -42,7 +42,6 @@
 
 :root {
   --font-inter: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-  --font-cabinet: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
   --radius: 1rem;
   --background: 0 0% 100%;
   --foreground: 222.2 47.4% 11.2%;
@@ -119,13 +118,5 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-inter);
-  }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-cabinet);
   }
 }
