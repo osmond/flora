@@ -19,6 +19,16 @@ export default function AddPlantForm() {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [humidity, setHumidity] = useState("");
+  const [carePlan, setCarePlan] = useState<
+    | {
+        waterEvery: string;
+        fertEvery: string;
+        fertFormula: string;
+        rationale: string;
+      }
+    | null
+  >(null);
+  const [loadingCare, setLoadingCare] = useState(false);
 
   useEffect(() => {
     fetch("/api/rooms")
@@ -51,6 +61,21 @@ export default function AddPlantForm() {
     );
   }, []);
 
+  const generateCarePlan = async () => {
+    try {
+      setLoadingCare(true);
+      const res = await fetch("/api/ai-care", { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        setCarePlan(data);
+      }
+    } catch (err) {
+      console.error("Failed to generate care plan:", err);
+    } finally {
+      setLoadingCare(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -68,6 +93,19 @@ export default function AddPlantForm() {
     formData.append("latitude", latitude);
     formData.append("longitude", longitude);
     formData.append("humidity", humidity);
+    if (carePlan) {
+      formData.append("care_plan", JSON.stringify(carePlan));
+    } else {
+      try {
+        const res = await fetch("/api/ai-care", { method: "POST" });
+        if (res.ok) {
+          const data = await res.json();
+          formData.append("care_plan", JSON.stringify(data));
+        }
+      } catch (err) {
+        console.error("Failed to generate care plan:", err);
+      }
+    }
     if (photo) {
       formData.append("photo", photo);
     }
@@ -89,6 +127,7 @@ export default function AddPlantForm() {
       setLightLevel("");
       setIndoor("");
       setPhoto(null);
+      setCarePlan(null);
     }
   };
 
@@ -230,6 +269,25 @@ export default function AddPlantForm() {
           {humidity && <p>Local humidity: {humidity}%</p>}
         </div>
       )}
+
+      <div>
+        <button
+          type="button"
+          onClick={generateCarePlan}
+          disabled={loadingCare}
+          className="rounded bg-green-100 px-3 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 disabled:opacity-50"
+        >
+          {loadingCare ? "Generating…" : "Generate Care Plan"}
+        </button>
+        {carePlan && (
+          <div className="mt-2 space-y-1 rounded border p-3 text-sm">
+            <p>Water every: {carePlan.waterEvery}</p>
+            <p>Fertilize: {carePlan.fertEvery}</p>
+            <p>Formula: {carePlan.fertFormula}</p>
+            <p className="text-gray-600">{carePlan.rationale}</p>
+          </div>
+        )}
+      </div>
 
       <button
         type="submit"
