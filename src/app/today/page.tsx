@@ -1,19 +1,25 @@
 import TaskItem, { Task } from "@/components/TaskItem";
-import { getTasks } from "@/lib/data";
+import OnboardingProgress from "@/components/OnboardingProgress";
+import EmptyStateCTA from "@/components/EmptyStateCTA";
+import { getTasks, getPlants } from "@/lib/data";
 
 export const revalidate = 0;
 
 export default async function TodayPage() {
   const today = new Date().toISOString().slice(0, 10);
   let data;
+  let plants;
   try {
     data = await getTasks();
+    plants = await getPlants();
   } catch (error) {
     console.error("Error fetching tasks:", error);
     return <div>Failed to load tasks.</div>;
   }
 
   const tasks = (data ?? []) as Task[];
+  const hasPlants = (plants ?? []).length > 0;
+  const hasTasks = tasks.length > 0;
   const overdue = tasks.filter((t) => t.due_date < today);
   const dueToday = tasks.filter((t) => t.due_date === today);
   const upcoming = tasks.filter((t) => t.due_date > today);
@@ -28,6 +34,7 @@ export default async function TodayPage() {
 
   return (
     <div>
+      <OnboardingProgress hasPlants={hasPlants} hasTasks={hasTasks} />
       <h1 className="mb-4 text-2xl font-bold">Today&apos;s Tasks</h1>
 
       {overdue.length > 0 && (
@@ -53,7 +60,7 @@ export default async function TodayPage() {
 
       {overdue.length === 0 &&
         dueToday.length === 0 &&
-        upcoming.length === 0 && <p>No tasks.</p>}
+        upcoming.length === 0 && <EmptyStateCTA />}
     </div>
   );
 }

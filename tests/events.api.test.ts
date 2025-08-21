@@ -19,7 +19,13 @@ vi.mock("@supabase/supabase-js", () => ({
           select: () => ({
             eq: () => ({
               eq: () => ({
-                single: () => Promise.resolve({ data: { id: "1" }, error: null }),
+                single: () =>
+                  Promise.resolve({
+                    data: {
+                      id: "123e4567-e89b-12d3-a456-426614174000",
+                    },
+                    error: null,
+                  }),
               }),
             }),
           }),
@@ -32,7 +38,7 @@ vi.mock("@supabase/supabase-js", () => ({
           }),
         };
       }
-      return {} as any;
+      return {} as Record<string, never>;
     },
   }),
 }));
@@ -43,7 +49,10 @@ describe("POST /api/events", () => {
     const req = new Request("http://localhost", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plant_id: "1", type: "water" }),
+      body: JSON.stringify({
+        plant_id: "123e4567-e89b-12d3-a456-426614174000",
+        type: "note",
+      }),
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
@@ -65,7 +74,7 @@ describe("POST /api/events", () => {
     const req = new Request("http://localhost", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plant_id: 0, type: "water" }),
+      body: JSON.stringify({ plant_id: "not-a-uuid", type: "note" }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
