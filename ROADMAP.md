@@ -76,10 +76,6 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 ---
 
-## 🔒 Phase 5 – Auth & RLS (even if single user)
-
-- [ ] Enable Supabase Auth
-- [ ] Sign in screen (email magic link)
 - [ ] Add Row-Level Security (RLS) to `plants` and `tasks`
 - [ ] Protect routes (e.g. `/app`)
 
