@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
+import CareTimeline from "@/components/CareTimeline";
 import Link from "next/link";
 import { getCurrentUserId } from "@/lib/auth";
 
@@ -227,8 +228,9 @@ export default async function PlantDetailPage({
 
       <section>
         <h2 className="mb-2 font-semibold">Timeline</h2>
+        <CareTimeline events={timeline ?? []} />
         {otherEvents.length > 0 ? (
-          <ul className="space-y-2">
+          <ul className="mt-4 space-y-2">
             {otherEvents.map((evt) => (
               <li key={evt.id} className="rounded border p-2">
                 <div className="text-sm text-gray-500">
@@ -240,7 +242,7 @@ export default async function PlantDetailPage({
             ))}
           </ul>
         ) : (
-          <p>No events logged yet.</p>
+          <p className="mt-4">No events logged yet.</p>
         )}
       </section>
     </div>
