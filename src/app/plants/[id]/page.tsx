@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
 import Link from "next/link";
+import { getCurrentUserId } from "@/lib/auth";
 
 export const revalidate = 0;
 
@@ -51,6 +52,7 @@ export default async function PlantDetailPage({
       "id, name, species, common_name, pot_size, pot_material, drainage, soil_type, image_url, indoor, care_plan",
     )
     .eq("id", id)
+    .eq("user_id", getCurrentUserId())
     .single<Plant>();
 
   if (plantError || !plant) {

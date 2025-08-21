@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
+import { getCurrentUserId } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -51,10 +52,11 @@ export async function POST(req: Request) {
       image_url = publicUrl.publicUrl;
     }
 
-    const { data, error } = await supabase
+  const { data, error } = await supabase
       .from("plants")
       .insert([
         {
+          user_id: getCurrentUserId(),
           name,
           species,
           common_name,
@@ -86,7 +88,11 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const { data, error } = await supabase.from("plants").select("*").order("name");
+    const { data, error } = await supabase
+      .from("plants")
+      .select("*")
+      .eq("user_id", getCurrentUserId())
+      .order("name");
 
     if (error) throw error;
 
