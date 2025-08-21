@@ -87,6 +87,8 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
   - [x] Real weather data
   - [x] Climate zone inference
   - [ ] Historical behavior
+- [ ] Dynamic care plan updates
+  - Re-run AI-care weekly or when humidity, season, or repeated snoozes suggest adjustments
 - [x] “Care coach” suggestions on plant detail page
 - [ ] Timeline trend insights (“you’ve watered 5 days late lately…”)
 
