@@ -69,7 +69,15 @@ export default async function PlantsPage() {
           </section>
         ))
       ) : (
-        <p>No plants saved yet.</p>
+        <div className="text-center">
+          <p className="mb-4">No plants saved yet.</p>
+          <Link
+            href="/add"
+            className="inline-block rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+          >
+            Add your first plant
+          </Link>
+        </div>
       )}
     </div>
   );

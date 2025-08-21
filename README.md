@@ -6,6 +6,7 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 
 - Add plants with species autosuggest, room suggestions, optional photo uploads, pot size/material/light level/drainage/soil/indoor–outdoor fields, and automatic geolocation + local humidity capture.
 - Assign plants to rooms and view them grouped by room.
+- If you have no plants yet, a friendly CTA helps you add your first one.
 - Open a plant to see its detail page with a photo hero and timeline of care events.
 - Jot down freeform notes on each plant's detail page.
 - See quick stats for each plant's care plan, including watering schedule and last/next watering dates.
