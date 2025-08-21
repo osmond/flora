@@ -18,25 +18,32 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<Species[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Only query the API when the user has entered enough characters
     if (!query || query.length < 3) {
       setResults([]);
       setLoading(false);
+      setError(null);
       return;
     }
 
     const controller = new AbortController();
     const handler = setTimeout(() => {
       setLoading(true);
+      setError(null);
       fetch(`/api/species?q=${encodeURIComponent(query)}`, {
         signal: controller.signal,
       })
         .then((res) => res.json())
         .then((data) => setResults(data.data || []))
         .catch((err) => {
-          if (err.name !== "AbortError") console.error(err);
+          if (err.name !== "AbortError") {
+            console.error(err);
+            setError("Failed to load species suggestions.");
+            setResults([]);
+          }
         })
         .finally(() => setLoading(false));
     }, 300);
@@ -60,11 +67,17 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onBlur={() => onSelect(query)}
         placeholder="Search for a plant..."
         className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
       />
 
       {loading && <p className="mt-2 text-sm text-gray-500">Searching…</p>}
+      {error && (
+        <p className="mt-2 text-sm text-red-600">
+          {error} You can enter a species name manually.
+        </p>
+      )}
 
       {results.length > 0 && (
         <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-white shadow-lg">
