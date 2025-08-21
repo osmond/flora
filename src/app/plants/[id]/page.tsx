@@ -10,6 +10,12 @@ type CarePlan = {
   waterEvery?: string;
   fertEvery?: string;
   fertFormula?: string;
+  rationale?: string;
+  weather?: {
+    temperature?: number;
+    humidity?: number;
+  };
+  climateZone?: string;
 };
 
 type Plant = {
