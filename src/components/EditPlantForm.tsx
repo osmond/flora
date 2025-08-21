@@ -3,7 +3,23 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/sonner";
-import { Button } from "@/components/ui";
+import {
+  Button,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Input,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -90,13 +106,7 @@ export default function EditPlantForm({ plant }: EditPlantFormProps) {
   const defaultSoilTypeOther =
     defaultSoilType === "Other" ? plant.soil_type || "" : "";
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<EditPlantFormValues>({
+  const form = useForm<EditPlantFormValues>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
     defaultValues: {
@@ -116,9 +126,9 @@ export default function EditPlantForm({ plant }: EditPlantFormProps) {
     },
   });
 
-  const selectedPotMaterial = watch("potMaterial");
-  const selectedSoilType = watch("soilType");
-  const speciesValue = watch("species");
+  const selectedPotMaterial = form.watch("potMaterial");
+  const selectedSoilType = form.watch("soilType");
+  const speciesValue = form.watch("species");
 
   const onSubmit = async (data: EditPlantFormValues) => {
     const pot_size =
@@ -169,240 +179,324 @@ export default function EditPlantForm({ plant }: EditPlantFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
-        <h2 className="text-lg font-medium">Plant Details</h2>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Nickname</label>
-          <input
-            type="text"
-            {...register("name")}
-            className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Plant Details</h2>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nickname</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.name && (
-            <p className="text-sm text-red-600">{errors.name.message}</p>
-          )}
-        </div>
-        <div>
-          <SpeciesAutosuggest
-            value={speciesValue}
-            onSelect={(scientific: string, common?: string) => {
-              setValue("species", scientific, { shouldValidate: true });
-              setValue("commonName", common || "", { shouldValidate: true });
-            }}
+          <FormField
+            control={form.control}
+            name="species"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <SpeciesAutosuggest
+                    value={speciesValue}
+                    onSelect={(scientific: string, common?: string) => {
+                      field.onChange(scientific);
+                      form.setValue("commonName", common || "", {
+                        shouldValidate: true,
+                      });
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.species && (
-            <p className="text-sm text-red-600">{errors.species.message}</p>
-          )}
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Room</label>
-          <input
-            type="text"
-            list="room-options"
-            {...register("room")}
-            className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+          <FormField
+            control={form.control}
+            name="room"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Room</FormLabel>
+                <FormControl>
+                  <Input list="room-options" {...field} />
+                </FormControl>
+                <datalist id="room-options">
+                  {rooms.map((r) => (
+                    <option key={r} value={r} />
+                  ))}
+                </datalist>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          <datalist id="room-options">
-            {rooms.map((r) => (
-              <option key={r} value={r} />
-            ))}
-          </datalist>
+          <FormField
+            control={form.control}
+            name="indoor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Indoor">🏠 Indoor</SelectItem>
+                    <SelectItem value="Outdoor">🌳 Outdoor</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lightLevel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Light Level</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Low">☁️ Low</SelectItem>
+                    <SelectItem value="Medium">⛅ Medium</SelectItem>
+                    <SelectItem value="Bright">☀️ Bright</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Location</label>
-          <select
-            {...register("indoor")}
-            className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="">Select</option>
-            <option value="Indoor">🏠 Indoor</option>
-            <option value="Outdoor">🌳 Outdoor</option>
-          </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Light Level</label>
-          <select
-            {...register("lightLevel")}
-            className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="">Select</option>
-            <option value="Low">☁️ Low</option>
-            <option value="Medium">⛅ Medium</option>
-            <option value="Bright">☀️ Bright</option>
-          </select>
-        </div>
-      </div>
 
-      <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
-        <h2 className="text-lg font-medium">Pot Setup</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1 block text-sm font-medium">Pot Size</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min={1}
-                max={100}
-                step={1}
-                {...register("potSize", { valueAsNumber: true })}
-                className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <select
-                {...register("potUnit")}
-                className="rounded border px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="cm">cm</option>
-                <option value="in">in</option>
-              </select>
-            </div>
-            {errors.potSize && (
-              <p className="text-sm text-red-600">{errors.potSize.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">Pot Material</label>
-            <select
-              {...register("potMaterial")}
-              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="">Select material</option>
-              <option value="Terracotta">Terracotta</option>
-              <option value="Plastic">Plastic</option>
-              <option value="Ceramic">Ceramic</option>
-              <option value="Metal">Metal</option>
-              <option value="Glass">Glass</option>
-              <option value="Other">Other</option>
-            </select>
-            {selectedPotMaterial === "Other" && (
-              <input
-                type="text"
-                {...register("potMaterialOther")}
-                className="mt-2 w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Specify material"
-              />
-            )}
-          </div>
-        </div>
-        <div>
-          <fieldset>
-            <legend className="mb-1 block text-sm font-medium">Drainage</legend>
-            <div className="space-y-2">
-              <div>
-                <label
-                  htmlFor="drainage-poor"
-                  className="flex items-center gap-2"
-                  title="Water drains slowly; high risk of root rot"
-                >
-                  <input
-                    type="radio"
-                    id="drainage-poor"
-                    value="Poor"
-                    {...register("drainage")}
-                    aria-label="Poor drainage"
-                    aria-describedby="drainage-poor-desc"
-                  />
-                  <span>💧 Poor</span>
-                </label>
-                <p
-                  id="drainage-poor-desc"
-                  className="ml-6 text-xs text-muted-foreground"
-                >
-                  Water drains slowly; high risk of root rot
-                </p>
-              </div>
-              <div>
-                <label
-                  htmlFor="drainage-average"
-                  className="flex items-center gap-2"
-                  title="Standard drainage with moderate watering"
-                >
-                  <input
-                    type="radio"
-                    id="drainage-average"
-                    value="Average"
-                    {...register("drainage")}
-                    aria-label="Average drainage"
-                    aria-describedby="drainage-average-desc"
-                  />
-                  <span>🪴 Average</span>
-                </label>
-                <p
-                  id="drainage-average-desc"
-                  className="ml-6 text-xs text-muted-foreground"
-                >
-                  Standard drainage with moderate watering
-                </p>
-              </div>
-              <div>
-                <label
-                  htmlFor="drainage-good"
-                  className="flex items-center gap-2"
-                  title="Excellent drainage; water flows quickly"
-                >
-                  <input
-                    type="radio"
-                    id="drainage-good"
-                    value="Good"
-                    {...register("drainage")}
-                    aria-label="Good drainage"
-                    aria-describedby="drainage-good-desc"
-                  />
-                  <span>🌿 Good</span>
-                </label>
-                <p
-                  id="drainage-good-desc"
-                  className="ml-6 text-xs text-muted-foreground"
-                >
-                  Excellent drainage; water flows quickly
-                </p>
-              </div>
-            </div>
-          </fieldset>
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Soil Type</label>
-          <select
-            {...register("soilType")}
-            className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="">Select soil</option>
-            <option value="Loamy">Loamy</option>
-            <option value="Sandy">Sandy</option>
-            <option value="Clay">Clay</option>
-            <option value="Silty">Silty</option>
-            <option value="Peaty">Peaty</option>
-            <option value="Chalky">Chalky</option>
-            <option value="Other">Other</option>
-          </select>
-          {selectedSoilType === "Other" && (
-            <input
-              type="text"
-              {...register("soilTypeOther")}
-              className="mt-2 w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Specify soil type"
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Pot Setup</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="potSize"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pot Size</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input type="number" min={1} max={100} step={1} {...field} />
+                      <FormField
+                        control={form.control}
+                        name="potUnit"
+                        render={({ field: unitField }) => (
+                          <FormControl>
+                            <Select
+                              onValueChange={unitField.onChange}
+                              value={unitField.value}
+                            >
+                              <SelectTrigger className="w-20">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="cm">cm</SelectItem>
+                                <SelectItem value="in">in</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                        )}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          )}
-          {errors.soilType && (
-            <p className="text-sm text-red-600">{errors.soilType.message}</p>
-          )}
-          {errors.soilTypeOther && (
-            <p className="text-sm text-red-600">{errors.soilTypeOther.message}</p>
-          )}
+            <FormField
+              control={form.control}
+              name="potMaterial"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pot Material</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || undefined}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select material" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Terracotta">Terracotta</SelectItem>
+                      <SelectItem value="Plastic">Plastic</SelectItem>
+                      <SelectItem value="Ceramic">Ceramic</SelectItem>
+                      <SelectItem value="Metal">Metal</SelectItem>
+                      <SelectItem value="Glass">Glass</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {selectedPotMaterial === "Other" && (
+                    <FormField
+                      control={form.control}
+                      name="potMaterialOther"
+                      render={({ field }) => (
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Specify material"
+                            className="mt-2"
+                          />
+                        </FormControl>
+                      )}
+                    />
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="drainage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Drainage</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    className="space-y-2"
+                  >
+                    <div className="space-y-2">
+                      <FormItem className="flex items-center gap-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Poor" id="drainage-poor" />
+                        </FormControl>
+                        <FormLabel htmlFor="drainage-poor" className="font-normal">
+                          💧 Poor
+                        </FormLabel>
+                      </FormItem>
+                      <p
+                        id="drainage-poor-desc"
+                        className="ml-6 text-xs text-muted-foreground"
+                      >
+                        Water drains slowly; high risk of root rot
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <FormItem className="flex items-center gap-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem
+                            value="Average"
+                            id="drainage-average"
+                          />
+                        </FormControl>
+                        <FormLabel
+                          htmlFor="drainage-average"
+                          className="font-normal"
+                        >
+                          🪴 Average
+                        </FormLabel>
+                      </FormItem>
+                      <p
+                        id="drainage-average-desc"
+                        className="ml-6 text-xs text-muted-foreground"
+                      >
+                        Standard drainage with moderate watering
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <FormItem className="flex items-center gap-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Good" id="drainage-good" />
+                        </FormControl>
+                        <FormLabel htmlFor="drainage-good" className="font-normal">
+                          🌿 Good
+                        </FormLabel>
+                      </FormItem>
+                      <p
+                        id="drainage-good-desc"
+                        className="ml-6 text-xs text-muted-foreground"
+                      >
+                        Excellent drainage; water flows quickly
+                      </p>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="soilType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Soil Type</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select soil" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Loamy">Loamy</SelectItem>
+                    <SelectItem value="Sandy">Sandy</SelectItem>
+                    <SelectItem value="Clay">Clay</SelectItem>
+                    <SelectItem value="Silty">Silty</SelectItem>
+                    <SelectItem value="Peaty">Peaty</SelectItem>
+                    <SelectItem value="Chalky">Chalky</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                {selectedSoilType === "Other" && (
+                  <FormField
+                    control={form.control}
+                    name="soilTypeOther"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Specify soil type"
+                          className="mt-2"
+                        />
+                      </FormControl>
+                    )}
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
-      </div>
 
-      <div className="flex gap-2">
-        <Button type="submit">Save Plant</Button>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={handleDelete}
-        >
-          Delete Plant
-        </Button>
-      </div>
-    </form>
+        <div className="flex gap-2">
+          <Button type="submit">Save Plant</Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleDelete}
+          >
+            Delete Plant
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
 
