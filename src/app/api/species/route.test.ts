@@ -68,7 +68,10 @@ describe("species API route", () => {
         image_url: null,
       },
     ]);
-    expect(fetchMock).toHaveBeenCalledWith(mockResponse[0].image_url, { method: "HEAD" });
+    expect(fetchMock).toHaveBeenCalledWith(
+      mockResponse[0].image_url,
+      expect.objectContaining({ method: "HEAD" })
+    );
   });
 });
 
