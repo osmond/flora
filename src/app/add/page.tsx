@@ -9,6 +9,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
+function formatWaterAmount(ml: number) {
+  const oz = ml / 29.5735;
+  return `${oz.toFixed(1)} oz (${ml} mL)`;
+}
+
 const formSchema = z
   .object({
     name: z.string().min(1, "Plant name is required"),
@@ -44,6 +49,7 @@ export default function AddPlantForm() {
   const [rooms, setRooms] = useState<string[]>([]);
   interface CarePlan {
     waterEvery: string;
+    waterAmountMl: number;
     fertEvery: string;
     fertFormula: string;
     rationale: string;
@@ -558,6 +564,9 @@ export default function AddPlantForm() {
           {carePlan && (
             <div className="mt-2 space-y-1 rounded border bg-card p-3 text-sm text-foreground">
               <p>Water every: {carePlan.waterEvery}</p>
+              <p>
+                Water amount: {formatWaterAmount(carePlan.waterAmountMl)}
+              </p>
               <p>Fertilize: {carePlan.fertEvery} ({carePlan.fertFormula})</p>
               {carePlan.weather && (
                 <p>
@@ -584,7 +593,7 @@ export default function AddPlantForm() {
             )}
             {carePlan && (
               <p>
-                <strong>Care Plan:</strong> water {carePlan.waterEvery}, fertilize {carePlan.fertEvery}
+                <strong>Care Plan:</strong> water {carePlan.waterEvery} ({formatWaterAmount(carePlan.waterAmountMl)}), fertilize {carePlan.fertEvery}
               </p>
             )}
             {photoPreview && (
