@@ -1,13 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import TaskItem, { Task } from "@/components/TaskItem";
 
 export const revalidate = 0;
-
-type Task = {
-  id: string;
-  type: string;
-  due_date: string;
-  plant: { id: string; name: string }[];
-};
 
 export default async function TodayPage() {
   const supabase = createClient(
@@ -33,20 +27,9 @@ export default async function TodayPage() {
 
   const renderTasks = (list: Task[]) => (
     <ul className="space-y-4">
-      {list.map((task) => {
-        const plant = task.plant?.[0];
-        return (
-          <li key={task.id} className="rounded border p-4">
-            <div className="font-semibold">{task.type}</div>
-            {plant && (
-              <div className="text-sm text-gray-600">{plant.name}</div>
-            )}
-            {task.due_date !== today && (
-              <div className="text-xs text-gray-500">{task.due_date}</div>
-            )}
-          </li>
-        );
-      })}
+      {list.map((task) => (
+        <TaskItem key={task.id} task={task} today={today} />
+      ))}
     </ul>
   );
 

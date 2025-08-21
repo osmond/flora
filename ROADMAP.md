@@ -71,7 +71,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 - [x] “Today” view: show plants needing care today
 - [x] Show overdue, due today, and upcoming
-- [ ] Swipe to mark as done and swipe to snooze
+- [x] Swipe to mark as done and swipe to snooze
 
 
 ---
