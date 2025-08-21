@@ -7,6 +7,7 @@ export default function AddPlantForm() {
   const [name, setName] = useState("");
   const [species, setSpecies] = useState("");
   const [commonName, setCommonName] = useState(""); // 👈
+  const [room, setRoom] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,13 +15,14 @@ export default function AddPlantForm() {
     const res = await fetch("/api/plants", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, species, commonName }),
+      body: JSON.stringify({ name, species, commonName, room }),
     });
 
     if (res.ok) {
       setName("");
       setSpecies("");
       setCommonName("");
+      setRoom("");
     }
   };
 
@@ -43,6 +45,15 @@ export default function AddPlantForm() {
             setSpecies(scientificName);
             setCommonName(common || ""); // 👈 auto-fill
           }}
+        />
+      </div>
+
+      <div>
+        <label>Room</label>
+        <input
+          type="text"
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
         />
       </div>
 

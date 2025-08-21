@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { name, species, common_name, care_plan } = body;
+    const { name, species, common_name, room, care_plan } = body;
 
     if (!name) {
       return NextResponse.json({ error: "Plant name is required" }, { status: 400 });
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
           name,
           species,
           common_name,
+          room,
           care_plan,
         },
       ])

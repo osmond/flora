@@ -8,9 +8,13 @@ create table if not exists public.plants (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   species text not null,
+  room text,
   care_plan jsonb,
   created_at timestamptz default now()
 );
+
+-- Ensure room column exists for existing installations
+alter table if exists public.plants add column if not exists room text;
 
 -- Species table
 create table if not exists public.species (
