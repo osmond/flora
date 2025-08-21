@@ -20,6 +20,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "@/components/ui";
+import { Save, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -486,12 +487,17 @@ export default function EditPlantForm({ plant }: EditPlantFormProps) {
         </div>
 
         <div className="flex gap-2">
-          <Button type="submit">Save Plant</Button>
+          <Button type="submit" className="flex items-center gap-2">
+            <Save strokeWidth={1.5} className="h-4 w-4" />
+            Save Plant
+          </Button>
           <Button
             type="button"
             variant="destructive"
             onClick={handleDelete}
+            className="flex items-center gap-2"
           >
+            <Trash2 strokeWidth={1.5} className="h-4 w-4" />
             Delete Plant
           </Button>
         </div>
