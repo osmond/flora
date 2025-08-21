@@ -33,7 +33,7 @@ export default function DeletePhotoButton({ eventId }: { eventId: string }) {
         type="button"
         onClick={handleDelete}
         disabled={loading}
-        className="rounded bg-black/60 p-1 text-white hover:bg-black/80 disabled:opacity-50"
+        className="rounded bg-black/60 p-2 text-white transition-colors duration-150 ease-out motion-reduce:transition-none hover:bg-black/80 disabled:opacity-50"
         aria-label="Delete photo"
       >
         <Trash2Icon className="h-4 w-4" />

@@ -29,7 +29,7 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
       if (res.ok) {
         setIsCompleting(true);
         // allow animation to play before refreshing
-        setTimeout(() => router.refresh(), 300);
+        setTimeout(() => router.refresh(), 200);
       } else {
         toast("Failed to complete task");
       }
@@ -82,7 +82,7 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
         onConfirm={handleSnooze}
       />
       <Card
-        className={`p-4 transition-all duration-300 ${isCompleting ? "opacity-0 translate-x-full" : ""}`}
+        className={`p-4 transition-all duration-200 ease-out motion-reduce:transition-none ${isCompleting ? "opacity-0 translate-x-full" : ""}`}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -91,7 +91,7 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
         {task.due_date !== today && (
           <div className="text-xs text-muted-foreground">{task.due_date}</div>
         )}
-        <div className="mt-2 flex gap-2 text-sm">
+        <div className="mt-4 flex gap-3 text-sm">
           <Button onClick={handleComplete}>Done</Button>
           <Button variant="secondary" onClick={() => setSnoozeOpen(true)}>
             Snooze

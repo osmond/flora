@@ -24,7 +24,7 @@ export default function Navigation() {
               <Link
                 href={href}
                 aria-current={isActive ? "page" : undefined}
-                className={`rounded px-2 py-1 hover:bg-accent ${
+                className={`rounded px-4 py-2 transition-colors duration-200 ease-out motion-reduce:transition-none hover:bg-accent ${
                   isActive ? "bg-accent text-accent-foreground font-semibold" : ""
                 }`}
               >

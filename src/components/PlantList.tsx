@@ -83,7 +83,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                           {plant.name}
                         </div>
                       )}
-                      <CardContent className="p-2 text-center text-sm font-medium">
+                      <CardContent className="p-4 text-center text-sm font-medium">
                         {plant.name}
                       </CardContent>
                     </Card>
