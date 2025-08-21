@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { supabaseAdmin as supabase } from "../../../lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 const allowedTypes = ["note", "photo"] as const;
 
