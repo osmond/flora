@@ -8,4 +8,6 @@ export type Plant = {
   drainage: string;
   soilType: string;
   humidity: string;
+  latitude: string;
+  longitude: string;
 };

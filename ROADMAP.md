@@ -33,7 +33,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
   - [x] Drainage quality
   - [x] Soil type
   - [x] Indoor/outdoor
-  - [ ] Local humidity + lat/lon (for climate context)
+  - [x] Local humidity + lat/lon (for climate context)
 
 - [ ] **Care Plan**
   - [ ] Call `/api/ai-care` to get AI-generated defaults (watering interval, amount, fertilizer needs)
