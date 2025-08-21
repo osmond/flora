@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import AddNoteForm from "@/components/AddNoteForm";
 
 export const revalidate = 0;
 
@@ -40,6 +41,8 @@ export default async function PlantDetailPage({ params }: { params: { id: string
     .order("created_at", { ascending: false });
 
   const timeline = events as PlantEvent[] | null;
+  const notes = timeline?.filter((e) => e.type === "note") || [];
+  const otherEvents = timeline?.filter((e) => e.type !== "note") || [];
 
   return (
     <div className="space-y-6 p-4">
@@ -53,11 +56,30 @@ export default async function PlantDetailPage({ params }: { params: { id: string
         )}
       </div>
 
+      <section className="space-y-4">
+        <h2 className="mb-2 font-semibold">Notes</h2>
+        <AddNoteForm plantId={plant.id} />
+        {notes.length > 0 ? (
+          <ul className="space-y-2">
+            {notes.map((evt) => (
+              <li key={evt.id} className="rounded border p-2">
+                <div className="text-sm text-gray-500">
+                  {new Date(evt.created_at).toLocaleString()}
+                </div>
+                {evt.note && <div className="text-sm">{evt.note}</div>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No notes yet.</p>
+        )}
+      </section>
+
       <section>
         <h2 className="mb-2 font-semibold">Timeline</h2>
-        {timeline && timeline.length > 0 ? (
+        {otherEvents.length > 0 ? (
           <ul className="space-y-2">
-            {timeline.map((evt) => (
+            {otherEvents.map((evt) => (
               <li key={evt.id} className="rounded border p-2">
                 <div className="text-sm text-gray-500">
                   {new Date(evt.created_at).toLocaleString()}
