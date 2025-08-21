@@ -1,15 +1,11 @@
 // src/app/api/plants/route.ts
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
+import { supabaseAdmin as supabase } from "../../../lib/supabaseAdmin";
 import { getCurrentUserId } from "../../../lib/auth";
 import { logEvent } from "../../../lib/analytics";
 import { z } from "zod";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // must be service role for inserts
-);
 
 export const plantSchema = z.object({
   name: z.string().min(1),
