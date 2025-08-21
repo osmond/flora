@@ -156,6 +156,18 @@ export default function EditPlantForm({ plant }: EditPlantFormProps) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirm("Delete this plant?")) return;
+    const res = await fetch(`/api/plants/${plant.id}`, { method: "DELETE" });
+    if (res.ok) {
+      toast("Plant deleted");
+      router.push("/plants");
+      router.refresh();
+    } else {
+      toast("Failed to delete plant");
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
@@ -380,7 +392,16 @@ export default function EditPlantForm({ plant }: EditPlantFormProps) {
         </div>
       </div>
 
-      <Button type="submit">Save Plant</Button>
+      <div className="flex gap-2">
+        <Button type="submit">Save Plant</Button>
+        <Button
+          type="button"
+          variant="destructive"
+          onClick={handleDelete}
+        >
+          Delete Plant
+        </Button>
+      </div>
     </form>
   );
 }
