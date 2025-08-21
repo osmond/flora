@@ -3,6 +3,7 @@ import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
 import CareTimeline from "@/components/CareTimeline";
 import Link from "next/link";
+import { DropletIcon } from "lucide-react";
 import {
   Tabs,
   TabsList,
@@ -174,9 +175,11 @@ export default async function PlantDetailPage({
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="font-semibold">Quick Stats</h2>
+
               <Button asChild size="sm" variant="secondary">
                 <Link href={`/plants/${plant.id}/edit`}>Edit Plant</Link>
               </Button>
+
             </div>
             {plant.care_plan ? (
               <ul className="space-y-1 text-sm">
