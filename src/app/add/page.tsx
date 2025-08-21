@@ -9,28 +9,34 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
-const formSchema = z.object({
-  name: z.string().min(1, "Plant name is required"),
-  species: z.string().min(1, "Species is required"),
-  commonName: z.string().optional(),
-  room: z.string().optional(),
-  potSize: z
-    .number({ invalid_type_error: "Pot size must be a number" })
-    .min(1, "Pot size must be at least 1")
-    .max(100, "Pot size cannot exceed 100")
-    .optional(),
-  potUnit: z.enum(["cm", "in"]).optional(),
-  potMaterial: z.string().optional(),
-  potMaterialOther: z.string().optional(),
-  drainage: z.string().optional(),
-  soilType: z.string().optional(),
-  lightLevel: z.string().optional(),
-  indoor: z.string().optional(),
-  photo: z.any().optional(),
-  latitude: z.string().optional(),
-  longitude: z.string().optional(),
-  humidity: z.string().optional(),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(1, "Plant name is required"),
+    species: z.string().min(1, "Species is required"),
+    commonName: z.string().optional(),
+    room: z.string().optional(),
+    potSize: z
+      .number({ invalid_type_error: "Pot size must be a number" })
+      .min(1, "Pot size must be at least 1")
+      .max(100, "Pot size cannot exceed 100")
+      .optional(),
+    potUnit: z.enum(["cm", "in"]).optional(),
+    potMaterial: z.string().optional(),
+    potMaterialOther: z.string().optional(),
+    drainage: z.string().optional(),
+    soilType: z.string().min(1, "Soil type is required"),
+    soilTypeOther: z.string().optional(),
+    lightLevel: z.string().optional(),
+    indoor: z.string().optional(),
+    photo: z.any().optional(),
+    latitude: z.string().optional(),
+    longitude: z.string().optional(),
+    humidity: z.string().optional(),
+  })
+  .refine((data) => data.soilType !== "Other" || !!data.soilTypeOther, {
+    message: "Please specify soil type",
+    path: ["soilTypeOther"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -74,6 +80,7 @@ export default function AddPlantForm() {
       potMaterialOther: "",
       drainage: "",
       soilType: "",
+      soilTypeOther: "",
       lightLevel: "",
       indoor: "",
       latitude: "",
@@ -91,6 +98,7 @@ export default function AddPlantForm() {
 
   const photoFile = watch("photo");
   const selectedPotMaterial = watch("potMaterial");
+  const selectedSoilType = watch("soilType");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   useEffect(() => {
     if (photoFile && photoFile.length > 0) {
@@ -172,7 +180,9 @@ export default function AddPlantForm() {
       data.potMaterial === "Other" ? data.potMaterialOther : data.potMaterial;
     formData.append("pot_material", potMaterial || "");
     formData.append("drainage", data.drainage || "");
-    formData.append("soil_type", data.soilType || "");
+    const soilType =
+      data.soilType === "Other" ? data.soilTypeOther : data.soilType;
+    formData.append("soil_type", soilType || "");
     formData.append("light_level", data.lightLevel || "");
     formData.append("indoor", data.indoor || "");
     formData.append("latitude", data.latitude || "");
@@ -466,11 +476,33 @@ export default function AddPlantForm() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Soil Type</label>
-            <input
-              type="text"
+            <select
               {...register("soilType")}
               className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            >
+              <option value="">Select soil</option>
+              <option value="Loamy">Loamy</option>
+              <option value="Sandy">Sandy</option>
+              <option value="Clay">Clay</option>
+              <option value="Silty">Silty</option>
+              <option value="Peaty">Peaty</option>
+              <option value="Chalky">Chalky</option>
+              <option value="Other">Other</option>
+            </select>
+            {selectedSoilType === "Other" && (
+              <input
+                type="text"
+                {...register("soilTypeOther")}
+                className="mt-2 w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Specify soil type"
+              />
+            )}
+            {errors.soilType && (
+              <p className="text-sm text-red-600">{errors.soilType.message}</p>
+            )}
+            {errors.soilTypeOther && (
+              <p className="text-sm text-red-600">{errors.soilTypeOther.message}</p>
+            )}
           </div>
         </div>
       )}
