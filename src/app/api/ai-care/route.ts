@@ -4,6 +4,7 @@ export async function POST(req: Request) {
     longitude,
     species,
     potSize,
+    potUnit,
     lightLevel,
     humidity,
   } = (await req.json().catch(() => ({}))) as {
@@ -11,6 +12,7 @@ export async function POST(req: Request) {
     longitude?: number;
     species?: string;
     potSize?: number;
+    potUnit?: "cm" | "in";
     lightLevel?: string;
     humidity?: number;
   };
@@ -52,10 +54,18 @@ export async function POST(req: Request) {
 
   if (process.env.OPENAI_API_KEY) {
     try {
+      const potSizePrompt =
+        typeof potSize === "number"
+          ? potUnit === "in"
+            ? `${(potSize / 2.54).toFixed(1)}in`
+            : potUnit === "cm"
+            ? `${potSize}cm`
+            : `${potSize}`
+          : "unknown";
       const prompt = `You are a helpful gardening assistant. Based on the following data, provide watering and fertilizing guidance in JSON format with keys waterEvery, waterAmountMl, fertEvery, fertFormula, and rationale. The rationale must mention the plant species. waterAmountMl must be a number representing the amount of water in milliliters needed each time the plant is watered.
 
 Species: ${species ?? "unknown"}
-Pot size: ${potSize ?? "unknown"}cm
+Pot size: ${potSizePrompt}
 Light level: ${lightLevel ?? "unknown"}
 Humidity: ${weather.humidity ?? "unknown"}%
 Climate zone: ${climateZone ?? "unknown"}
@@ -94,7 +104,14 @@ Current temperature: ${weather.temperature ?? "unknown"}°C`;
   }
 
   const extra: string[] = [];
-  if (typeof potSize === "number") extra.push(`pot size of ${potSize}cm`);
+  if (typeof potSize === "number") {
+    const displaySize =
+      potUnit === "in"
+        ? parseFloat((potSize / 2.54).toFixed(1))
+        : potSize;
+    const unitLabel = potUnit === "in" ? "in" : potUnit === "cm" ? "cm" : "";
+    extra.push(`pot size of ${displaySize}${unitLabel}`);
+  }
   if (lightLevel) extra.push(`${lightLevel.toLowerCase()} light`);
   if (typeof weather.humidity === "number")
     extra.push(`humidity around ${weather.humidity}%`);

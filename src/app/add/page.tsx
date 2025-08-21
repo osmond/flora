@@ -150,8 +150,21 @@ export default function AddPlantForm() {
   const generateCarePlan = async () => {
     try {
       setLoadingCare(true);
-      const { latitude, longitude, species, potSize, lightLevel, humidity } =
-        getValues();
+      const {
+        latitude,
+        longitude,
+        species,
+        potSize,
+        potUnit,
+        lightLevel,
+        humidity,
+      } = getValues();
+      const potSizeCm =
+        typeof potSize === "number"
+          ? potUnit === "in"
+            ? potSize * 2.54
+            : potSize
+          : undefined;
       const res = await fetch("/api/ai-care", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -159,7 +172,8 @@ export default function AddPlantForm() {
           latitude: latitude ? parseFloat(latitude) : undefined,
           longitude: longitude ? parseFloat(longitude) : undefined,
           species: species || undefined,
-          potSize: typeof potSize === "number" ? potSize : undefined,
+          potSize: potSizeCm,
+          potUnit: potUnit || undefined,
           lightLevel: lightLevel || undefined,
           humidity: humidity ? parseFloat(humidity) : undefined,
         }),
@@ -211,7 +225,12 @@ export default function AddPlantForm() {
             longitude: data.longitude ? parseFloat(data.longitude) : undefined,
             species: data.species || undefined,
             potSize:
-              typeof data.potSize === "number" ? data.potSize : undefined,
+              typeof data.potSize === "number"
+                ? data.potUnit === "in"
+                  ? data.potSize * 2.54
+                  : data.potSize
+                : undefined,
+            potUnit: data.potUnit || undefined,
             lightLevel: data.lightLevel || undefined,
             humidity: data.humidity
               ? parseFloat(data.humidity)
