@@ -29,8 +29,12 @@ export default async function PlantsPage() {
       {plants && plants.length > 0 ? (
         <PlantList plants={plants} />
       ) : (
-        <div className="text-center">
-          <p className="mb-4">No plants saved yet.</p>
+        <div className="rounded-xl border p-8 bg-muted/30 text-center shadow-sm">
+          <div className="mb-2 text-3xl">🌿</div>
+          <h3 className="mb-1 font-semibold">No plants yet</h3>
+          <p className="text-muted-foreground mb-4">
+            Add your first plant to get personalized care.
+          </p>
           <Button asChild>
             <Link href="/add">Add your first plant</Link>
           </Button>
