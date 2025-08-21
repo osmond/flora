@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Input, Label } from "@/components/ui";
 
 type Species = {
   id: string;
@@ -62,14 +63,16 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
 
   return (
     <div className="relative w-full">
-      <label className="mb-1 block text-sm font-medium">Species</label>
-      <input
+      <Label htmlFor="species" className="mb-1 block text-sm font-medium">
+        Species
+      </Label>
+      <Input
+        id="species"
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onBlur={() => onSelect(query)}
         placeholder="Search for a plant..."
-        className="w-full rounded border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
       {loading && (
