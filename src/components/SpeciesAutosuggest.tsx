@@ -80,7 +80,7 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
       )}
 
       {results.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-white shadow-lg">
+        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-white text-gray-900 dark:text-gray-100 shadow-lg">
           {results.map((species) => (
             <li
               key={species.id}
