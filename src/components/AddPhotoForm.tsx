@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button } from "@/components/ui";
+import { ImagePlus } from "lucide-react";
 
 export default function AddPhotoForm({ plantId }: { plantId: string }) {
   const [photo, setPhoto] = useState<File | null>(null);
@@ -42,7 +43,10 @@ export default function AddPhotoForm({ plantId }: { plantId: string }) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
-      <Button type="submit">Add Photo</Button>
+      <Button type="submit" className="flex items-center gap-2">
+        <ImagePlus strokeWidth={1.5} className="h-4 w-4" />
+        Add Photo
+      </Button>
     </form>
   );
 }
