@@ -17,6 +17,7 @@ async function fetchWithTimeout(
 
 // Simple in-memory cache to avoid hammering third-party APIs
 const CACHE_TTL_MS = 1000 * 60 * 5; // 5 minutes
+const CACHE_MAX_ITEMS = 100;
 const cache = new Map<string, { data: unknown; expires: number }>();
 
 type Species = {
@@ -120,6 +121,9 @@ export async function GET(req: Request) {
   const cached = cache.get(q);
   if (cached) {
     if (cached.expires > Date.now()) {
+      // Refresh recency for LRU behavior
+      cache.delete(q);
+      cache.set(q, cached);
       return NextResponse.json({ data: cached.data });
     }
     cache.delete(q);
@@ -134,6 +138,13 @@ export async function GET(req: Request) {
     }
 
     const results = await fetchOpenAISpecies(q);
+
+    // Evict the oldest entry if the cache grows beyond the limit
+    if (cache.size >= CACHE_MAX_ITEMS) {
+      const oldestKey = cache.keys().next().value;
+      if (oldestKey) cache.delete(oldestKey);
+    }
+
     cache.set(q, { data: results, expires: Date.now() + CACHE_TTL_MS });
 
     return NextResponse.json({ data: results });
