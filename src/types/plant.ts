@@ -6,6 +6,6 @@ export type Plant = {
   lightLevel: string;
   indoor: 'Indoor' | 'Outdoor';
   drainage: string;
-  soil: string;
+  soilType: string;
   humidity: string;
 };
