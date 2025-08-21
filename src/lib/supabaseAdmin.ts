@@ -1,8 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
+import {
+  SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+} from "./config";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!  // server-only
-
-export const supabaseAdmin = createClient(url, serviceRole, {
+export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
-})
+});

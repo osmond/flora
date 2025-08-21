@@ -1,14 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 import { getCurrentUserId } from "./auth";
+import {
+  SUPABASE_ANON_KEY,
+  SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+} from "./config";
 
 export async function logEvent(
   type: string,
   payload: Record<string, unknown> = {},
 ) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = SUPABASE_URL;
+  const key = SUPABASE_SERVICE_ROLE_KEY ?? SUPABASE_ANON_KEY;
 
   if (!url || !key) {
     console.warn("Supabase credentials not set; analytics event not logged");

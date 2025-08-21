@@ -2,6 +2,10 @@ import { describe, it, expect } from "vitest";
 
 process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-key";
+process.env.CLOUDINARY_CLOUD_NAME = "cloud";
+process.env.CLOUDINARY_API_KEY = "cloud-key";
+process.env.CLOUDINARY_API_SECRET = "cloud-secret";
 
 describe("plants API route", () => {
   it("plantSchema validates correct payload", async () => {

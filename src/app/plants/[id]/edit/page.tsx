@@ -1,6 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import EditPlantForm from "@/components/EditPlantForm";
 import { getCurrentUserId } from "@/lib/auth";
+import {
+  SUPABASE_SERVICE_ROLE_KEY,
+  SUPABASE_URL,
+} from "../../../../lib/config";
 
 export const revalidate = 0;
 
@@ -11,10 +15,7 @@ export default async function EditPlantPage({
 }) {
   const { id } = await params;
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   const { data: plant, error } = await supabase
     .from("plants")

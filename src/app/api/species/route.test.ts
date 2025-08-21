@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 
 process.env.OPENAI_API_KEY = "test-key";
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
+process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-key";
+process.env.CLOUDINARY_CLOUD_NAME = "cloud";
+process.env.CLOUDINARY_API_KEY = "cloud-key";
+process.env.CLOUDINARY_API_SECRET = "cloud-secret";
 
 const mockResponse = [
   {
