@@ -1,3 +1,5 @@
+import { ListSkeleton } from "@/components/list-skeleton"
+
 export default function Loading() {
-  return <p>Loading plants...</p>;
+  return <ListSkeleton />
 }
