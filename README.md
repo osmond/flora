@@ -21,6 +21,7 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 - Switch between light and dark themes with a simple toggle.
 - Optional HTTP Basic Auth to gate access when deploying.
 - Export your plant data in JSON or CSV via `/api/export?format=csv`.
+- Restore plant data by POSTing exported JSON to `/api/import`.
 
 ## Development
 
