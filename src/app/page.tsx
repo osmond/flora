@@ -1,10 +1,5 @@
 import TodayPage, { revalidate } from "./today/page";
-import dynamic from "next/dynamic";
-
-const AnalyticsPanel = dynamic(
-  () => import("@/components/analytics/AnalyticsPanel"),
-  { ssr: false }
-);
+import AnalyticsPanel from "@/components/analytics/AnalyticsPanel";
 
 export { revalidate };
 
