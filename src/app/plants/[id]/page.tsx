@@ -3,6 +3,12 @@ import AddNoteForm from "@/components/AddNoteForm";
 
 export const revalidate = 0;
 
+type CarePlan = {
+  waterEvery?: string;
+  fertEvery?: string;
+  fertFormula?: string;
+};
+
 type Plant = {
   id: string;
   name: string;
@@ -14,6 +20,7 @@ type Plant = {
   soil_type: string | null;
   image_url: string | null;
   indoor: string | null;
+  care_plan: CarePlan | null;
 };
 
 type PlantEvent = {
@@ -37,10 +44,10 @@ export default async function PlantDetailPage({
 
   const { data: plant, error: plantError } = await supabase
     .from("plants")
-
-    .select("id, name, species, common_name, pot_size, pot_material, drainage, soil_type, image_url, indoor")
+    .select(
+      "id, name, species, common_name, pot_size, pot_material, drainage, soil_type, image_url, indoor, care_plan",
+    )
     .eq("id", id)
-
     .single<Plant>();
 
   if (plantError || !plant) {
@@ -57,6 +64,20 @@ export default async function PlantDetailPage({
   const timeline = events as PlantEvent[] | null;
   const notes = timeline?.filter((e) => e.type === "note") || [];
   const otherEvents = timeline?.filter((e) => e.type !== "note") || [];
+
+  const lastWaterEvent = otherEvents.find((e) => e.type === "water") || null;
+  const lastWatered = lastWaterEvent
+    ? new Date(lastWaterEvent.created_at)
+    : null;
+  let nextWaterDue: Date | null = null;
+  if (lastWatered && plant.care_plan?.waterEvery) {
+    const match = plant.care_plan.waterEvery.match(/(\d+)/);
+    if (match) {
+      const days = parseInt(match[1], 10);
+      nextWaterDue = new Date(lastWatered);
+      nextWaterDue.setDate(nextWaterDue.getDate() + days);
+    }
+  }
 
   return (
     <div className="space-y-6 p-4">
@@ -99,6 +120,37 @@ export default async function PlantDetailPage({
           <p className="text-sm text-gray-600">Location: {plant.indoor}</p>
         )}
       </div>
+
+      <section>
+        <h2 className="mb-2 font-semibold">Quick Stats</h2>
+        {plant.care_plan ? (
+          <ul className="space-y-1 text-sm">
+            {plant.care_plan.waterEvery && (
+              <li>
+                <span className="font-medium">Water every:</span> {plant.care_plan.waterEvery}
+                {lastWatered && (
+                  <span className="block text-gray-500">
+                    Last watered: {lastWatered.toLocaleDateString()}
+                    {nextWaterDue && ` (next due ${nextWaterDue.toLocaleDateString()})`}
+                  </span>
+                )}
+              </li>
+            )}
+            {plant.care_plan.fertEvery && (
+              <li>
+                <span className="font-medium">Fertilize every:</span> {plant.care_plan.fertEvery}
+                {plant.care_plan.fertFormula && (
+                  <span className="block text-gray-500">
+                    {plant.care_plan.fertFormula}
+                  </span>
+                )}
+              </li>
+            )}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-600">No care plan.</p>
+        )}
+      </section>
 
       <section className="space-y-4">
         <h2 className="mb-2 font-semibold">Notes</h2>
