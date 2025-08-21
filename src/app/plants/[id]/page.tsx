@@ -4,6 +4,7 @@ import AddPhotoForm from "@/components/AddPhotoForm";
 import CareTimeline from "@/components/CareTimeline";
 import Link from "next/link";
 import DeletePhotoButton from "@/components/DeletePhotoButton";
+import CareSuggestion from "@/components/CareSuggestion";
 import {
   Tabs,
   TabsList,
@@ -39,6 +40,7 @@ type CarePlan = {
     humidity?: number;
   };
   climateZone?: string;
+  confidence?: "low" | "medium" | "high";
 };
 
 type Plant = {
@@ -206,16 +208,22 @@ export default async function PlantDetailPage({
                     )}
                   </li>
                 )}
+                {plant.care_plan.confidence && (
+                  <li>
+                    <span className="font-medium">Confidence:</span>{" "}
+                    {plant.care_plan.confidence}
+                  </li>
+                )}
+                <li className="text-xs text-muted-foreground">
+                  AI-generated care plan. Consult local experts for critical issues.
+                </li>
               </ul>
             ) : (
               <p className="text-sm text-muted-foreground">No care plan.</p>
             )}
           </section>
           {careSuggestion && (
-            <section className="rounded border-l-4 border-primary bg-accent p-4 text-sm text-primary">
-              <h2 className="mb-1 font-semibold">Care Coach</h2>
-              <p>{careSuggestion}</p>
-            </section>
+            <CareSuggestion plantId={plant.id} suggestion={careSuggestion} />
           )}
         </TabsContent>
 

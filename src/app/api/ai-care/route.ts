@@ -52,6 +52,18 @@ export async function POST(req: Request) {
     rationale: string;
   } | null = null;
 
+  let confidence: "low" | "medium" | "high" = "low";
+
+  const infoProvided = [
+    species,
+    typeof potSize === "number" ? potSize : null,
+    lightLevel,
+    typeof weather.humidity === "number" ? weather.humidity : null,
+    climateZone,
+  ].filter((v) => v !== undefined && v !== null);
+  if (infoProvided.length >= 4) confidence = "high";
+  else if (infoProvided.length >= 2) confidence = "medium";
+
   if (process.env.OPENAI_API_KEY) {
     try {
       const potSizePrompt =
@@ -128,5 +140,6 @@ Current temperature: ${weather.temperature ?? "unknown"}°C`;
     rationale,
     weather,
     climateZone,
+    confidence,
   });
 }

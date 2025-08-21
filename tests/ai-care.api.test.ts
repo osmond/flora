@@ -22,4 +22,15 @@ describe("POST /api/ai-care", () => {
     const json = await res.json();
     expect(json.rationale).toContain("10cm");
   });
+
+  it("returns a confidence rating", async () => {
+    const { POST } = await import("../src/app/api/ai-care/route");
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body: JSON.stringify({ species: "rose", potSize: 10, potUnit: "cm" }),
+    });
+    const res = await POST(req);
+    const json = await res.json();
+    expect(json.confidence).toBe("medium");
+  });
 });
