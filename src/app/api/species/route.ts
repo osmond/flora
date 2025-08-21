@@ -5,56 +5,57 @@ import { NextResponse } from "next/server";
 const CACHE_TTL_MS = 1000 * 60 * 5; // 5 minutes
 const cache = new Map<string, { data: unknown; expires: number }>();
 
-async function fetchPerenual(q: string) {
-  const key = process.env.PERENUAL_API_KEY;
-  if (!key) throw new Error("Missing PERENUAL_API_KEY");
-  const res = await fetch(
-    `https://perenual.com/api/species-list?key=${key}&q=${encodeURIComponent(q)}`
-  );
-  if (!res.ok) throw new Error(`Perenual API error: ${res.status}`);
+type Species = {
+  id: string;
+  common_name: string;
+  scientific_name: string;
+  image_url?: string | null;
+};
+
+async function fetchOpenAISpecies(q: string): Promise<Species[]> {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) throw new Error("Missing OPENAI_API_KEY");
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful botany assistant.",
+        },
+        {
+          role: "user",
+          content:
+            `List up to 5 plant species that match the query "${q}". ` +
+            "Return a JSON array where each item has id, common_name, scientific_name, and image_url.",
+        },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(`OpenAI API error: ${res.status}`);
   const body = await res.json();
-
-  type PerenualPlant = {
-    id: number;
-    common_name: string;
-    scientific_name: string;
-    default_image?: { thumbnail?: string };
-  };
-
-  return (
-    body?.data?.map((p: PerenualPlant) => ({
-      id: `perenual-${p.id}`,
-      common_name: p.common_name,
-      scientific_name: p.scientific_name,
-      image_url: p.default_image?.thumbnail,
-    })) ?? []
-  );
-}
-
-async function fetchTrefle(q: string) {
-  const key = process.env.TREFLE_API_KEY;
-  if (!key) throw new Error("Missing TREFLE_API_KEY");
-  const res = await fetch(
-    `https://trefle.io/api/v1/plants/search?token=${key}&q=${encodeURIComponent(q)}`
-  );
-  if (!res.ok) throw new Error(`Trefle API error: ${res.status}`);
-  const body = await res.json();
-
-  type TreflePlant = {
-    id: number;
-    common_name: string;
-    scientific_name: string;
-    image_url?: string;
-  };
-
-  return (
-    body?.data?.map((p: TreflePlant) => ({
-      id: `trefle-${p.id}`,
-      common_name: p.common_name,
-      scientific_name: p.scientific_name,
-      image_url: p.image_url,
-    })) ?? []
-  );
+  const content = body?.choices?.[0]?.message?.content;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    throw new Error("Invalid JSON from OpenAI");
+  }
+  if (!Array.isArray(parsed)) return [];
+  return (parsed as unknown[]).map((p, idx) => {
+    const obj = p as Record<string, unknown>;
+    return {
+      id: typeof obj.id === "string" ? obj.id : `openai-${idx}`,
+      common_name: String(obj.common_name ?? ""),
+      scientific_name: String(obj.scientific_name ?? ""),
+      image_url: typeof obj.image_url === "string" ? obj.image_url : null,
+    };
+  });
 }
 
 export async function GET(req: Request) {
@@ -72,26 +73,14 @@ export async function GET(req: Request) {
   }
 
   try {
-    // If no API keys are configured, just return an empty result set.
-    if (!process.env.PERENUAL_API_KEY && !process.env.TREFLE_API_KEY) {
-      console.warn("Species search requested but no API keys configured");
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn(
+        "Species search requested but no OPENAI_API_KEY configured"
+      );
       return NextResponse.json({ data: [] });
     }
 
-    let results: unknown[] = [];
-
-    if (process.env.PERENUAL_API_KEY) {
-      try {
-        results = await fetchPerenual(q);
-      } catch (err) {
-        console.warn("Perenual failed, falling back to Trefle:", err);
-      }
-    }
-
-    if ((!results || (Array.isArray(results) && results.length === 0)) && process.env.TREFLE_API_KEY) {
-      results = await fetchTrefle(q);
-    }
-
+    const results = await fetchOpenAISpecies(q);
     cache.set(q, { data: results, expires: Date.now() + CACHE_TTL_MS });
 
     return NextResponse.json({ data: results });
