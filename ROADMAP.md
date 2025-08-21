@@ -60,10 +60,10 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 ## 📋 Phase 3 – Plants List
 
-- [ ] Room view: show each room and its plants as image tiles
+- [x] Room view: show each room and its plants as image tiles
 - [x] Empty state CTA: “Add your first plant”
-- [ ] Grid or list toggle 
-- [ ] Tap = go to plant detail
+- [x] Grid or list toggle
+- [x] Tap = go to plant detail
 
 ---
 
