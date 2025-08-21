@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import ToasterProvider from "@/components/ToasterProvider";
 import ThemeToggle from "@/components/ThemeToggle";
+import Navigation from "@/components/Navigation";
 import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,7 +19,8 @@ export default function RootLayout({
       >
         <Providers>
           <ToasterProvider />
-          <header className="flex justify-end p-4">
+          <header className="flex items-center justify-between p-4">
+            <Navigation />
             <ThemeToggle />
           </header>
           <main className="mx-auto max-w-screen-md p-4">{children}</main>
