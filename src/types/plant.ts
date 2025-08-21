@@ -1,7 +1,7 @@
 export type Plant = {
   name: string;
   species: string;
-  pot: string;
+  potSize: string;
   potMaterial: string;
   light: string;
   indoor: 'Indoor' | 'Outdoor';

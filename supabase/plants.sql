@@ -10,6 +10,8 @@ create table if not exists public.plants (
   species text not null,
   room text,
   common_name text,
+  pot_size text,
+  pot_material text,
   image_url text,
   care_plan jsonb,
   created_at timestamptz default now()
@@ -19,6 +21,8 @@ create table if not exists public.plants (
 alter table if exists public.plants add column if not exists room text;
 alter table if exists public.plants add column if not exists common_name text;
 alter table if exists public.plants add column if not exists image_url text;
+alter table if exists public.plants add column if not exists pot_size text;
+alter table if exists public.plants add column if not exists pot_material text;
 
 -- Species table
 create table if not exists public.species (
