@@ -63,9 +63,9 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
         onTouchEnd={onTouchEnd}
       >
         <div className="font-semibold">{task.type}</div>
-        {plant && <div className="text-sm text-gray-600">{plant.name}</div>}
+        {plant && <div className="text-sm text-muted-foreground">{plant.name}</div>}
         {task.due_date !== today && (
-          <div className="text-xs text-gray-500">{task.due_date}</div>
+          <div className="text-xs text-muted-foreground">{task.due_date}</div>
         )}
         <div className="mt-2 flex gap-2 text-sm">
           <Button onClick={handleComplete}>

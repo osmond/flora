@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from 'react';
 import Link from 'next/link';
@@ -22,9 +22,9 @@ export default function Navigation() {
             <li key={href}>
               <Link
                 href={href}
-                aria-current={isActive ? 'page' : undefined}
-                className={`rounded px-2 py-1 hover:bg-green-200 dark:hover:bg-gray-700 ${
-                  isActive ? 'bg-green-300 font-semibold dark:bg-gray-600' : ''
+                aria-current={isActive ? "page" : undefined}
+                className={`rounded px-2 py-1 hover:bg-accent ${
+                  isActive ? "bg-accent text-accent-foreground font-semibold" : ""
                 }`}
               >
                 {label}

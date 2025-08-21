@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui";
 import { getCurrentUserId } from "@/lib/auth";
 
 export const revalidate = 0;
@@ -128,7 +129,7 @@ export default async function PlantDetailPage({
                 <p className="text-sm text-white">{plant.common_name}</p>
               )}
               {plant.species && (
-                <p className="text-xs italic text-gray-200">{plant.species}</p>
+                <p className="text-xs italic text-muted-foreground/80">{plant.species}</p>
               )}
             </div>
           </div>
@@ -136,21 +137,21 @@ export default async function PlantDetailPage({
           <h1 className="mb-4 text-2xl font-bold">{plant.name}</h1>
         )}
         {plant.pot_size && (
-          <p className="text-sm text-gray-600">Pot size: {plant.pot_size}</p>
+          <p className="text-sm text-muted-foreground">Pot size: {plant.pot_size}</p>
         )}
         {plant.pot_material && (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Pot material: {plant.pot_material}
           </p>
         )}
         {plant.drainage && (
-          <p className="text-sm text-gray-600">Drainage: {plant.drainage}</p>
+          <p className="text-sm text-muted-foreground">Drainage: {plant.drainage}</p>
         )}
         {plant.soil_type && (
-          <p className="text-sm text-gray-600">Soil type: {plant.soil_type}</p>
+          <p className="text-sm text-muted-foreground">Soil type: {plant.soil_type}</p>
         )}
         {plant.indoor && (
-          <p className="text-sm text-gray-600">Location: {plant.indoor}</p>
+          <p className="text-sm text-muted-foreground">Location: {plant.indoor}</p>
         )}
       </div>
 
@@ -167,7 +168,7 @@ export default async function PlantDetailPage({
               <h2 className="font-semibold">Quick Stats</h2>
               <Link
                 href={`/plants/${plant.id}/edit`}
-                className="text-sm text-green-700 hover:underline"
+                className="text-sm text-primary hover:underline"
               >
                 Edit
               </Link>
@@ -179,7 +180,7 @@ export default async function PlantDetailPage({
                     <span className="font-medium">Water every:</span>{" "}
                     {plant.care_plan.waterEvery}
                     {lastWatered && (
-                      <span className="block text-gray-500">
+                      <span className="block text-muted-foreground">
                         Last watered: {lastWatered.toLocaleDateString()}
                         {nextWaterDue &&
                           ` (next due ${nextWaterDue.toLocaleDateString()})`}
@@ -192,7 +193,7 @@ export default async function PlantDetailPage({
                     <span className="font-medium">Fertilize every:</span>{" "}
                     {plant.care_plan.fertEvery}
                     {plant.care_plan.fertFormula && (
-                      <span className="block text-gray-500">
+                      <span className="block text-muted-foreground">
                         {plant.care_plan.fertFormula}
                       </span>
                     )}
@@ -200,11 +201,11 @@ export default async function PlantDetailPage({
                 )}
               </ul>
             ) : (
-              <p className="text-sm text-gray-600">No care plan.</p>
+              <p className="text-sm text-muted-foreground">No care plan.</p>
             )}
           </section>
           {careSuggestion && (
-            <section className="rounded border-l-4 border-green-600 bg-green-50 p-4 text-sm text-green-700">
+            <section className="rounded border-l-4 border-primary bg-accent p-4 text-sm text-primary">
               <h2 className="mb-1 font-semibold">Care Coach</h2>
               <p>{careSuggestion}</p>
             </section>
@@ -217,9 +218,9 @@ export default async function PlantDetailPage({
               <h2 className="font-semibold">Photo Gallery</h2>
               <Dialog>
                 <DialogTrigger asChild>
-                  <button className="rounded bg-green-600 px-4 py-2 text-sm text-white transition-colors hover:bg-green-700">
+                  <Button>
                     Add Photo
-                  </button>
+                  </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
@@ -241,7 +242,7 @@ export default async function PlantDetailPage({
                       />
                     )}
                     {evt.note && (
-                      <div className="text-xs text-gray-600">{evt.note}</div>
+                      <div className="text-xs text-muted-foreground">{evt.note}</div>
                     )}
                   </div>
                 ))}
@@ -258,9 +259,9 @@ export default async function PlantDetailPage({
               <h2 className="font-semibold">Notes</h2>
               <Dialog>
                 <DialogTrigger asChild>
-                  <button className="rounded bg-green-600 px-4 py-2 text-sm text-white transition-colors hover:bg-green-700">
+                  <Button>
                     Add Note
-                  </button>
+                  </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
@@ -274,7 +275,7 @@ export default async function PlantDetailPage({
               <ul className="space-y-2">
                 {notes.map((evt) => (
                   <li key={evt.id} className="rounded border p-2">
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       {new Date(evt.created_at).toLocaleString()}
                     </div>
                     {evt.note && <div className="text-sm">{evt.note}</div>}
@@ -295,11 +296,11 @@ export default async function PlantDetailPage({
           <ul className="mt-4 space-y-2">
             {otherEvents.map((evt) => (
               <li key={evt.id} className="rounded border p-2">
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-muted-foreground">
                   {new Date(evt.created_at).toLocaleString()}
                 </div>
                 <div className="font-medium">{evt.type}</div>
-                {evt.note && <div className="text-sm">{evt.note}</div>}
+                {evt.note && <div className="text-sm text-muted-foreground">{evt.note}</div>}
               </li>
             ))}
           </ul>

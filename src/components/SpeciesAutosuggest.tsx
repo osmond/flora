@@ -69,27 +69,27 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
         onChange={(e) => setQuery(e.target.value)}
         onBlur={() => onSelect(query)}
         placeholder="Search for a plant..."
-        className="w-full rounded border bg-white px-3 py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400"
+        className="w-full rounded border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
       {loading && (
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Searching…</p>
+        <p className="mt-2 text-sm text-muted-foreground">Searching…</p>
       )}
       {error && (
-        <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+        <p className="mt-2 text-sm text-red-600">
           {error} You can enter a species name manually.
         </p>
       )}
 
       {results.length > 0 && (
 
-        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-popover shadow-lg">
 
           {results.map((species) => (
-            <li
+              <li
               key={species.id}
               onClick={() => handleSelect(species)}
-              className="flex cursor-pointer items-center gap-3 p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex cursor-pointer items-center gap-3 p-2 transition-colors hover:bg-accent"
             >
               <img
                 src={
@@ -97,13 +97,13 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
                   "https://placehold.co/48x48?text=🌱"
                 }
                 alt={species.common_name || species.scientific_name}
-                className="h-10 w-10 rounded bg-gray-100 object-cover"
+                className="h-10 w-10 rounded bg-muted object-cover"
               />
               <div>
-                <p className="font-medium dark:text-gray-100">
+                <p className="font-medium">
                   {species.common_name || "Unknown"}
                 </p>
-                <p className="italic text-sm text-gray-500 dark:text-gray-400">
+                <p className="italic text-sm text-muted-foreground">
                   {species.scientific_name}
                 </p>
               </div>
