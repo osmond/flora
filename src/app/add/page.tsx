@@ -58,6 +58,7 @@ export default function AddPlantForm() {
       humidity?: number;
     };
     climateZone?: string;
+    confidence?: "low" | "medium" | "high";
   }
   const [carePlan, setCarePlan] = useState<CarePlan | null>(null);
   const [loadingCare, setLoadingCare] = useState(false);
@@ -593,6 +594,12 @@ export default function AddPlantForm() {
                 </p>
               )}
               <p className="text-muted-foreground">{carePlan.rationale}</p>
+              {carePlan.confidence && (
+                <p>Confidence: {carePlan.confidence}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                AI-generated guidance. Verify with local experts for critical issues.
+              </p>
             </div>
           )}
         </div>
@@ -613,6 +620,11 @@ export default function AddPlantForm() {
             {carePlan && (
               <p>
                 <strong>Care Plan:</strong> water {carePlan.waterEvery} ({formatWaterAmount(carePlan.waterAmountMl)}), fertilize {carePlan.fertEvery}
+                {carePlan.confidence && (
+                  <>
+                    {" "}(confidence: {carePlan.confidence})
+                  </>
+                )}
               </p>
             )}
             {photoPreview && (
