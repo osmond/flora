@@ -1,6 +1,10 @@
 // src/app/api/species/route.ts
 import { NextResponse } from "next/server";
 
+// Simple in-memory cache to avoid hammering third-party APIs
+const CACHE_TTL_MS = 1000 * 60 * 5; // 5 minutes
+const cache = new Map<string, { data: unknown; expires: number }>();
+
 async function fetchPerenual(q: string) {
   const res = await fetch(
     `https://perenual.com/api/species-list?key=${process.env.PERENUAL_API_KEY}&q=${encodeURIComponent(q)}`
@@ -54,6 +58,15 @@ export async function GET(req: Request) {
   const q = searchParams.get("q") || "";
   if (!q) return NextResponse.json({ data: [] });
 
+  // Return cached results when available and fresh
+  const cached = cache.get(q);
+  if (cached) {
+    if (cached.expires > Date.now()) {
+      return NextResponse.json({ data: cached.data });
+    }
+    cache.delete(q);
+  }
+
   try {
     let results = [];
     try {
@@ -62,6 +75,8 @@ export async function GET(req: Request) {
       console.warn("Perenual failed, falling back to Trefle:", err);
       results = await fetchTrefle(q);
     }
+
+    cache.set(q, { data: results, expires: Date.now() + CACHE_TTL_MS });
 
     return NextResponse.json({ data: results });
   } catch (err: unknown) {
