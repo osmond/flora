@@ -16,12 +16,39 @@ export default function AddPlantForm() {
   const [lightLevel, setLightLevel] = useState("");
   const [indoor, setIndoor] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [humidity, setHumidity] = useState("");
 
   useEffect(() => {
     fetch("/api/rooms")
       .then((res) => res.json())
       .then((data) => setRooms(data.data || []))
       .catch((err) => console.error("Failed to load rooms:", err));
+  }, []);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setLatitude(latitude.toString());
+        setLongitude(longitude.toString());
+        try {
+          const res = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relativehumidity_2m`
+          );
+          const data = await res.json();
+          const h = data.current?.relativehumidity_2m;
+          if (typeof h === "number") {
+            setHumidity(h.toString());
+          }
+        } catch (err) {
+          console.error("Failed to fetch humidity:", err);
+        }
+      },
+      (err) => console.error("Geolocation error:", err)
+    );
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,6 +65,9 @@ export default function AddPlantForm() {
     formData.append("soil_type", soilType);
     formData.append("light_level", lightLevel);
     formData.append("indoor", indoor);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
+    formData.append("humidity", humidity);
     if (photo) {
       formData.append("photo", photo);
     }
@@ -189,6 +219,17 @@ export default function AddPlantForm() {
           className="w-full"
         />
       </div>
+
+      {(latitude || longitude || humidity) && (
+        <div className="text-sm text-gray-600">
+          {latitude && longitude && (
+            <p>
+              Location: {latitude}, {longitude}
+            </p>
+          )}
+          {humidity && <p>Local humidity: {humidity}%</p>}
+        </div>
+      )}
 
       <button
         type="submit"
