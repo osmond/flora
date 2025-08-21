@@ -39,10 +39,9 @@ export default function AddPlantForm() {
         <label>Species</label>
         <SpeciesAutosuggest
           value={species}
-          onChange={setSpecies}
-          onSelect={(scientificName: string, common: string) => {
+          onSelect={(scientificName: string, common?: string) => {
             setSpecies(scientificName);
-            setCommonName(common); // 👈 auto-fill
+            setCommonName(common || ""); // 👈 auto-fill
           }}
         />
       </div>
