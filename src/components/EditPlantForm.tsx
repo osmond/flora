@@ -16,7 +16,7 @@ const formSchema = z
     commonName: z.string().optional(),
     room: z.string().optional(),
     potSize: z
-      .number({ invalid_type_error: "Pot size must be a number" })
+      .number()
       .min(1, "Pot size must be at least 1")
       .max(100, "Pot size cannot exceed 100")
       .optional(),

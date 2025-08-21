@@ -1,4 +1,3 @@
-import { Inter, Cabin } from "next/font/google";
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -6,16 +5,9 @@ import Navigation from "@/components/Navigation";
 import { Providers } from "./providers";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const cabinet = Cabin({ subsets: ["latin"], variable: "--font-cabinet" });
-
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${inter.variable} ${cabinet.variable}`}
-    >
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-dvh antialiased">
         <Providers>
           <Toaster />
