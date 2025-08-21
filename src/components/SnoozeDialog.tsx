@@ -8,7 +8,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button, Input, Label } from "@/components/ui";
-import { Clock } from "lucide-react";
+
+import { Clock, X } from "lucide-react";
+
 
 interface SnoozeDialogProps {
   open: boolean;
@@ -62,11 +64,15 @@ export default function SnoozeDialog({
               type="button"
               variant="secondary"
               onClick={() => onOpenChange(false)}
+              className="flex items-center gap-2"
             >
+              <X strokeWidth={1.5} className="h-4 w-4" />
               Cancel
             </Button>
-            <Button type="submit">
-              <Clock className="mr-1 h-4 w-4" strokeWidth={1.5} />
+
+            <Button type="submit" className="flex items-center gap-2">
+              <Clock strokeWidth={1.5} className="h-4 w-4" />
+
               Snooze
             </Button>
           </div>

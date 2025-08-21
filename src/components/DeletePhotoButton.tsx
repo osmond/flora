@@ -36,7 +36,7 @@ export default function DeletePhotoButton({ eventId }: { eventId: string }) {
         className="rounded bg-black/60 p-2 text-white transition-colors duration-150 ease-out motion-reduce:transition-none hover:bg-black/80 disabled:opacity-50"
         aria-label="Delete photo"
       >
-        <Trash2Icon className="h-4 w-4" />
+        <Trash2Icon strokeWidth={1.5} className="h-4 w-4" />
       </button>
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
