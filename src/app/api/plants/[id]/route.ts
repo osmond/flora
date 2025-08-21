@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getCurrentUserId } from "@/lib/auth";
+import { plantSchema } from "../route";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,10 +14,19 @@ export async function PATCH(
 ) {
   const { id } = await params;
   try {
-    const { care_plan } = await req.json();
+    const raw = await req.json();
+    const parsed = plantSchema.partial().safeParse(raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const updateData = Object.fromEntries(
+      Object.entries(parsed.data).filter(([, v]) => v !== undefined),
+    );
+
     const { data, error } = await supabase
       .from("plants")
-      .update({ care_plan })
+      .update(updateData)
       .eq("id", id)
       .eq("user_id", getCurrentUserId())
       .select();
