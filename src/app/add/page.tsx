@@ -35,34 +35,33 @@ export default function AddPlantForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label>Plant Name</label>
+        <label className="mb-1 block text-sm font-medium">Plant Name</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
 
-      <div>
-        <label>Species</label>
-        <SpeciesAutosuggest
-          value={species}
-          onSelect={(scientificName: string, common?: string) => {
-            setSpecies(scientificName);
-            setCommonName(common || "");
-          }}
-        />
-      </div>
+      <SpeciesAutosuggest
+        value={species}
+        onSelect={(scientificName: string, common?: string) => {
+          setSpecies(scientificName);
+          setCommonName(common || "");
+        }}
+      />
 
       <div>
-        <label>Room</label>
+        <label className="mb-1 block text-sm font-medium">Room</label>
         <input
           type="text"
           list="room-options"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
+          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
         <datalist id="room-options">
           {rooms.map((r) => (
@@ -72,15 +71,21 @@ export default function AddPlantForm() {
       </div>
 
       <div>
-        <label>Common Name</label>
+        <label className="mb-1 block text-sm font-medium">Common Name</label>
         <input
           type="text"
           value={commonName}
           onChange={(e) => setCommonName(e.target.value)}
+          className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
 
-      <button type="submit">Save Plant</button>
+      <button
+        type="submit"
+        className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+      >
+        Save Plant
+      </button>
     </form>
   );
 }
