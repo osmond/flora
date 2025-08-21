@@ -9,6 +9,8 @@ export default function AddPlantForm() {
   const [commonName, setCommonName] = useState("");
   const [room, setRoom] = useState("");
   const [rooms, setRooms] = useState<string[]>([]);
+  const [potSize, setPotSize] = useState("");
+  const [potMaterial, setPotMaterial] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
 
   useEffect(() => {
@@ -26,6 +28,8 @@ export default function AddPlantForm() {
     formData.append("species", species);
     formData.append("common_name", commonName);
     formData.append("room", room);
+    formData.append("pot_size", potSize);
+    formData.append("pot_material", potMaterial);
     if (photo) {
       formData.append("photo", photo);
     }
@@ -40,6 +44,8 @@ export default function AddPlantForm() {
       setSpecies("");
       setCommonName("");
       setRoom("");
+      setPotSize("");
+      setPotMaterial("");
       setPhoto(null);
     }
   };
@@ -88,6 +94,27 @@ export default function AddPlantForm() {
           onChange={(e) => setCommonName(e.target.value)}
           className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
         />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label className="mb-1 block text-sm font-medium">Pot Size</label>
+          <input
+            type="text"
+            value={potSize}
+            onChange={(e) => setPotSize(e.target.value)}
+            className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Pot Material</label>
+          <input
+            type="text"
+            value={potMaterial}
+            onChange={(e) => setPotMaterial(e.target.value)}
+            className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+          />
+        </div>
       </div>
 
       <div>

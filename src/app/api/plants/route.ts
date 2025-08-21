@@ -16,6 +16,8 @@ export async function POST(req: Request) {
     const species = formData.get("species") as string;
     const common_name = formData.get("common_name") as string | null;
     const room = formData.get("room") as string | null;
+    const pot_size = formData.get("pot_size") as string | null;
+    const pot_material = formData.get("pot_material") as string | null;
     const care_plan = formData.get("care_plan");
     let image_url: string | undefined;
 
@@ -47,6 +49,8 @@ export async function POST(req: Request) {
           species,
           common_name,
           room,
+          pot_size,
+          pot_material,
           care_plan,
           image_url,
         },
