@@ -31,6 +31,14 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 - Export your plant data in JSON or CSV via `/api/export?format=csv`.
 - Restore plant data by POSTing exported JSON to `/api/import`.
 
+## Architecture
+
+Flora uses the Next.js App Router under `src/app` for pages and API routes,
+with Supabase providing both the Postgres database and object storage for
+uploaded plant photos. Server‑side logic lives in route handlers in
+`src/app/api`, and push notifications are delivered via Supabase Edge
+Functions.
+
 ## Rate limits and caching
 
 Species suggestions are powered by the OpenAI API, which may enforce rate
@@ -40,6 +48,13 @@ is verified with a `HEAD` request, and inaccessible links are omitted so the
 client can fall back to a placeholder image.
 
 ## Development
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm 10+
+
+### Setup
 
 Install dependencies and start the development server:
 
@@ -62,6 +77,14 @@ OpenAI API to suggest plant species when adding a plant. If `OPENAI_API_KEY` is
 not set, species suggestions will be unavailable.
 
 Create a storage bucket named `plant-photos` in your Supabase project to store uploaded plant images.
+
+### Testing
+
+Run the unit test suite:
+
+```bash
+pnpm test
+```
 
 ### Sample data
 
