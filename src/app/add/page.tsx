@@ -107,13 +107,16 @@ export default function AddPlantForm() {
   const selectedPotMaterial = watch("potMaterial");
   const selectedSoilType = watch("soilType");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [persistedPhoto, setPersistedPhoto] = useState<File | null>(null);
   useEffect(() => {
     if (photoFile && photoFile.length > 0) {
       const file = photoFile[0];
+      setPersistedPhoto(file);
       const url = URL.createObjectURL(file);
       setPhotoPreview(url);
       return () => URL.revokeObjectURL(url);
     }
+    setPersistedPhoto(null);
     setPhotoPreview(null);
   }, [photoFile]);
 
@@ -246,8 +249,8 @@ export default function AddPlantForm() {
         console.error("Failed to generate care plan:", err);
       }
     }
-    if (data.photo && data.photo.length > 0) {
-      formData.append("photo", data.photo[0]);
+    if (persistedPhoto) {
+      formData.append("photo", persistedPhoto);
     }
 
     const res = await fetch("/api/plants", {
