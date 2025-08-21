@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui";
 
 type CareEvent = {
   id: string;
@@ -9,10 +10,10 @@ type CareEvent = {
 };
 
 const typeColors: Record<string, string> = {
-  water: "bg-blue-500",
-  fertilize: "bg-yellow-500",
-  note: "bg-gray-500",
-  photo: "bg-green-500",
+  water: "bg-primary",
+  fertilize: "bg-accent",
+  note: "bg-muted-foreground",
+  photo: "bg-primary",
 };
 
 export default function CareTimeline({ events }: { events: CareEvent[] }) {
@@ -24,24 +25,24 @@ export default function CareTimeline({ events }: { events: CareEvent[] }) {
   return (
     <div>
       <div className="mb-2 flex space-x-2">
-        <button
+        <Button
+          size="sm"
+          variant={filter === "all" ? "default" : "secondary"}
           onClick={() => setFilter("all")}
-          className={`rounded-full px-3 py-1 text-sm capitalize ${
-            filter === "all" ? "bg-green-600 text-white" : "bg-gray-200"
-          }`}
+          className="rounded-full capitalize"
         >
           all
-        </button>
+        </Button>
         {types.map((t) => (
-          <button
+          <Button
             key={t}
+            size="sm"
+            variant={filter === t ? "default" : "secondary"}
             onClick={() => setFilter(t)}
-            className={`rounded-full px-3 py-1 text-sm capitalize ${
-              filter === t ? "bg-green-600 text-white" : "bg-gray-200"
-            }`}
+            className="rounded-full capitalize"
           >
             {t}
-          </button>
+          </Button>
         ))}
       </div>
       <div className="flex space-x-4 overflow-x-auto py-2">
@@ -50,7 +51,7 @@ export default function CareTimeline({ events }: { events: CareEvent[] }) {
             key={e.id}
             title={`${e.type} • ${new Date(e.created_at).toLocaleDateString()}`}
             className={`h-4 w-4 rounded-full ${
-              typeColors[e.type] || "bg-gray-400"
+              typeColors[e.type] || "bg-muted"
             }`}
           />
         ))}

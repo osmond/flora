@@ -79,7 +79,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                           className="h-32 w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-32 items-center justify-center bg-gray-100 text-gray-500">
+                        <div className="flex h-32 items-center justify-center bg-muted text-muted-foreground">
                           {plant.name}
                         </div>
                       )}
