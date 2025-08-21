@@ -10,12 +10,14 @@ create table if not exists public.tasks (
   user_id text not null,
   type text not null,
   due_date date not null,
-  completed_at timestamptz
+  completed_at timestamptz,
+  snooze_reason text
 );
 
 -- Row Level Security
 alter table public.tasks enable row level security;
 alter table if exists public.tasks add column if not exists user_id text not null default 'flora-single-user';
+alter table if exists public.tasks add column if not exists snooze_reason text;
 
 -- Policies: user-specific access to tasks
 drop policy if exists "public read tasks" on public.tasks;

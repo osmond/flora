@@ -27,10 +27,11 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
   };
 
   const handleSnooze = async () => {
+    const reason = prompt("Why snooze? (optional)")?.trim();
     await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "snooze" }),
+      body: JSON.stringify({ action: "snooze", reason: reason || undefined }),
     });
     router.refresh();
   };
