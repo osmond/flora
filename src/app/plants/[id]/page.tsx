@@ -97,7 +97,18 @@ export default async function PlantDetailPage({
   const otherEvents =
     timeline?.filter((e) => e.type !== "note" && e.type !== "photo") || [];
 
-  const headerImageUrl = plant.image_url ?? photoEvents[0]?.image_url ?? null;
+  let headerImageUrl = plant.image_url ?? photoEvents[0]?.image_url ?? null;
+
+  if (headerImageUrl) {
+    try {
+      const res = await fetch(headerImageUrl, { method: "HEAD" });
+      if (!res.ok) {
+        headerImageUrl = null;
+      }
+    } catch {
+      headerImageUrl = null;
+    }
+  }
 
   const lastWaterEvent = otherEvents.find((e) => e.type === "water") || null;
   const lastWatered = lastWaterEvent
