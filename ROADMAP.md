@@ -77,7 +77,7 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 ---
 
 - [x] Add Row-Level Security (RLS) to `plants` and `tasks`
-- [ ] Protect routes (e.g. `/app`)
+- [x] Protect routes (e.g. `/app`)
 
 ---
 

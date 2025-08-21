@@ -18,6 +18,7 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 - Generate an AI-powered care plan when creating a plant.
 - Polished UI with Inter typography and improved form interactions.
 - Saving a plant now shows a success toast and redirects to its detail page.
+- Optional HTTP Basic Auth to gate access when deploying.
 
 ## Development
 
@@ -33,6 +34,8 @@ Set the following environment variables in `.env.local` to connect to Supabase:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `BASIC_AUTH_USER` (optional)
+- `BASIC_AUTH_PASSWORD` (optional)
 
 Create a storage bucket named `plant-photos` in your Supabase project to store uploaded plant images.
 
@@ -43,7 +46,8 @@ Flora currently runs in a single-user mode and skips Supabase Auth. Set
 queries. Database rows in `plants` and `tasks` are now protected with
 row-level security scoped to this ID, so be sure to run the SQL setup files in
 `supabase/` on your project. See [docs/auth.md](docs/auth.md) for more details
-on the decision and future plans.
+on the decision and future plans. When `BASIC_AUTH_USER` and `BASIC_AUTH_PASSWORD`
+are set, all routes are protected with simple HTTP Basic Auth.
 
 ## Roadmap
 
