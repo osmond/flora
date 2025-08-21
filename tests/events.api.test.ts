@@ -7,20 +7,36 @@ vi.mock("@/lib/auth", () => ({
   getCurrentUserId: () => "user-123",
 }));
 
+let destroyedId: string | null = null;
 vi.mock("@/lib/cloudinary", () => ({
   default: {
     uploader: {
       upload_stream: (
         _opts: unknown,
-        cb: (err: unknown, res?: { secure_url: string }) => void,
+        cb: (err: unknown, res?: { secure_url: string; public_id: string }) => void,
       ) => ({
-        end: () => cb(null, { secure_url: "https://example.com/uploaded.jpg" }),
+        end: () =>
+          cb(null, {
+            secure_url: "https://example.com/uploaded.jpg",
+            public_id: "cloud123",
+          }),
       }),
+      destroy: (id: string) => {
+        destroyedId = id;
+        return Promise.resolve({ result: "ok" });
+      },
     },
   },
 }));
 
 let updatedImageUrl: string | null = null;
+let eventDeleted = false;
+const eventRecord = {
+  id: "1",
+  plant_id: "4aa97bee-71f1-428e-843b-4c3c77493994",
+  image_url: "https://example.com/uploaded.jpg",
+  public_id: "cloud123",
+};
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
     from: (table: string) => {
@@ -54,9 +70,20 @@ vi.mock("@supabase/supabase-js", () => ({
           insert: () => ({
             select: () =>
               Promise.resolve({
-                data: [{ id: "1", image_url: "https://example.com/uploaded.jpg" }],
+                data: [eventRecord],
                 error: null,
               }),
+          }),
+          select: () => ({
+            eq: () => ({
+              single: () => Promise.resolve({ data: eventRecord, error: null }),
+            }),
+          }),
+          delete: () => ({
+            eq: (_col: string, id: string) => {
+              eventDeleted = id === "1";
+              return Promise.resolve({ error: null });
+            },
           }),
         };
       }
@@ -117,5 +144,17 @@ describe("POST /api/events", () => {
     const res = await POST(req);
     expect(res.status).toBe(200);
     expect(updatedImageUrl).toBe("https://example.com/uploaded.jpg");
+  });
+});
+
+describe("DELETE /api/events/[id]", () => {
+  it("deletes the event and associated image", async () => {
+    const { DELETE } = await import("../src/app/api/events/[id]/route");
+    const res = await DELETE(new Request("http://localhost", { method: "DELETE" }), {
+      params: { id: "1" },
+    });
+    expect(res.status).toBe(200);
+    expect(eventDeleted).toBe(true);
+    expect(destroyedId).toBe("cloud123");
   });
 });

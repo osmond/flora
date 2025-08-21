@@ -3,7 +3,7 @@ import AddNoteForm from "@/components/AddNoteForm";
 import AddPhotoForm from "@/components/AddPhotoForm";
 import CareTimeline from "@/components/CareTimeline";
 import Link from "next/link";
-import { DropletIcon } from "lucide-react";
+import DeletePhotoButton from "@/components/DeletePhotoButton";
 import {
   Tabs,
   TabsList,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui";
 import { getCurrentUserId } from "@/lib/auth";
+import type { Event as PlantEvent } from "@/types/event";
 
 export const revalidate = 0;
 
@@ -54,13 +55,6 @@ type Plant = {
   care_plan: CarePlan | null;
 };
 
-type PlantEvent = {
-  id: string;
-  type: string;
-  note: string | null;
-  image_url: string | null;
-  created_at: string;
-};
 
 export default async function PlantDetailPage({
   params,
@@ -90,7 +84,7 @@ export default async function PlantDetailPage({
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, type, note, image_url, created_at")
+    .select("id, type, note, image_url, public_id, created_at")
     .eq("plant_id", id)
     .order("created_at", { ascending: false });
 
@@ -246,7 +240,7 @@ export default async function PlantDetailPage({
             {photoEvents.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
                 {photoEvents.map((evt) => (
-                  <div key={evt.id}>
+                  <div key={evt.id} className="relative">
                     {evt.image_url && (
                       <img
                         src={evt.image_url}
@@ -254,6 +248,7 @@ export default async function PlantDetailPage({
                         className="h-32 w-full rounded object-cover"
                       />
                     )}
+                    <DeletePhotoButton eventId={evt.id} />
                     {evt.note && (
                       <div className="text-xs text-muted-foreground">{evt.note}</div>
                     )}
