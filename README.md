@@ -17,6 +17,7 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 - Review overdue, today, and upcoming care tasks on `/today`.
 - Swipe a task right to mark it done or left to snooze it on the Today page.
 - Enjoy a subtle fade-out animation when completing tasks.
+- Celebrate completed tasks with a cheerful leaf emoji.
 - Cached data fetching with friendly loading states on list pages.
 - Generate an AI-powered care plan when creating a plant.
 - Care plan suggestions now factor in real-time local weather data.

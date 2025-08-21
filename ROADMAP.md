@@ -6,12 +6,12 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 ## ✅ Phase 0 – Setup & Foundations
 
-- [ x] Create new Next.js app (`app/flora`)
-- [x ] Connect Supabase for database
-  - [ ] `plants` table
-- [ x] Add environment keys (`.env`)
-- [ ] Basic app layout with routing (`/app`, `/app/plants/[id]`, etc.)
-- [x ] Set up local dev 
+- [x] Create new Next.js app (`app/flora`)
+- [x] Connect Supabase for database
+  - [x] `plants` table
+- [x] Add environment keys (`.env`)
+- [x] Basic app layout with routing (`/app`, `/app/plants/[id]`, etc.)
+- [x] Set up local dev
 
 ---
 
@@ -19,15 +19,15 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
 
 > Goal: “From curious plant person to confident caretaker — in under a minute.”
 
-- [ ] **Identify**
+- [x] **Identify**
   - [x] Plant nickname
   - [x] Species autosuggest (Perenual API)
   - [x] Optional photo upload
 
-- [ ] **Place**
+- [x] **Place**
   - [x] Room selector or creator
 
-- [ ] **Describe**
+- [x] **Describe**
   - [x] Pot size + material
   - [x] Light level
   - [x] Drainage quality
@@ -97,7 +97,8 @@ Flora is a personalized plant care companion for one user — you. It aims to ma
  - [x] Dark mode toggle
  - [x] Animations (task done, photo upload, etc.)
  - [x] Cache API calls + loading states
-- [ ] Micro-interactions (emoji feedback, care badges)
+ - [x] Micro-interactions (emoji feedback when completing tasks)
+ - [ ] Care badges
 
 ---
 

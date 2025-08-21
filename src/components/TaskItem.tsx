@@ -14,8 +14,10 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
   const router = useRouter();
   const touchStartX = useRef<number | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
 
   const handleComplete = async () => {
+    setShowEmoji(true);
     setIsCompleting(true);
     await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
@@ -55,10 +57,15 @@ export default function TaskItem({ task, today }: { task: Task; today: string })
 
   return (
     <li
-      className={`rounded border p-4 transition-all duration-300 ${isCompleting ? "opacity-0 translate-x-full" : ""}`}
+      className={`relative rounded border p-4 transition-all duration-300 ${isCompleting ? "opacity-0 translate-x-full" : ""}`}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      {showEmoji && (
+        <span className="pointer-events-none absolute right-2 top-2 text-xl animate-bounce">
+          🌿
+        </span>
+      )}
       <div className="font-semibold">{task.type}</div>
       {plant && <div className="text-sm text-gray-600">{plant.name}</div>}
       {task.due_date !== today && (
