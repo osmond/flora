@@ -38,3 +38,23 @@ export async function PATCH(
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  try {
+    const { error } = await supabase
+      .from("plants")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", getCurrentUserId());
+    if (error) throw error;
+    return NextResponse.json({ ok: true });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("DELETE /plants/[id] error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}

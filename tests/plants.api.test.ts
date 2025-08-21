@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
 
-vi.mock("../src/lib/auth", () => ({
+vi.mock("@/lib/auth", () => ({
   getCurrentUserId: () => "user-123",
 }));
 
@@ -12,6 +12,11 @@ vi.mock("@supabase/supabase-js", () => ({
     from: () => ({
       insert: () => ({
         select: () => Promise.resolve({ data: [{ id: "1" }], error: null }),
+      }),
+      delete: () => ({
+        eq: () => ({
+          eq: () => Promise.resolve({ error: null }),
+        }),
       }),
     }),
   }),
@@ -46,5 +51,14 @@ describe("POST /api/plants", () => {
     const req = new Request("http://localhost", { method: "POST", body: form });
     const res = await POST(req);
     expect(res.status).toBe(400);
+  });
+});
+
+describe("DELETE /api/plants/[id]", () => {
+  it("returns 200 when deleting a plant", async () => {
+    const { DELETE } = await import("../src/app/api/plants/[id]/route");
+    const req = new Request("http://localhost", { method: "DELETE" });
+    const res = await DELETE(req, { params: Promise.resolve({ id: "1" }) });
+    expect(res.status).toBe(200);
   });
 });
