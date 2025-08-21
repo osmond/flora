@@ -4,7 +4,7 @@ Flora is a personalized plant care companion built with Next.js and Supabase.
 
 ## Features
 
-- Add plants with species autosuggest and room suggestions.
+- Add plants with species autosuggest, room suggestions, and optional photo uploads.
 - Assign plants to rooms and view them grouped by room.
 - Open a plant to see its detail page with a timeline of care events.
 - Jot down freeform notes on each plant's detail page.
@@ -25,6 +25,8 @@ Set the following environment variables in `.env.local` to connect to Supabase:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+
+Create a storage bucket named `plant-photos` in your Supabase project to store uploaded plant images.
 
 ### Authentication
 

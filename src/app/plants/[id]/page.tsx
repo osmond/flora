@@ -8,6 +8,7 @@ type Plant = {
   name: string;
   species: string | null;
   common_name: string | null;
+  image_url: string | null;
 };
 
 type PlantEvent = {
@@ -25,7 +26,7 @@ export default async function PlantDetailPage({ params }: { params: { id: string
 
   const { data: plant, error: plantError } = await supabase
     .from("plants")
-    .select("id, name, species, common_name")
+    .select("id, name, species, common_name, image_url")
     .eq("id", params.id)
     .single<Plant>();
 
@@ -47,6 +48,13 @@ export default async function PlantDetailPage({ params }: { params: { id: string
   return (
     <div className="space-y-6 p-4">
       <div>
+        {plant.image_url && (
+          <img
+            src={plant.image_url}
+            alt={plant.name}
+            className="mb-4 w-full max-w-xs rounded"
+          />
+        )}
         <h1 className="text-2xl font-bold">{plant.name}</h1>
         {plant.common_name && (
           <p className="text-gray-600">{plant.common_name}</p>
