@@ -93,6 +93,11 @@ export default async function PlantDetailPage({
     }
   }
 
+  let careSuggestion: string | null = null;
+  if (nextWaterDue && nextWaterDue < new Date()) {
+    careSuggestion = `This plant was due for watering on ${nextWaterDue.toLocaleDateString()}. Consider giving it a drink.`;
+  }
+
   return (
     <div className="space-y-6 p-4">
       <div>
@@ -168,6 +173,13 @@ export default async function PlantDetailPage({
           <p className="text-sm text-gray-600">No care plan.</p>
         )}
       </section>
+
+      {careSuggestion && (
+        <section className="rounded border-l-4 border-green-600 bg-green-50 p-4 text-sm text-green-700">
+          <h2 className="mb-1 font-semibold">Care Coach</h2>
+          <p>{careSuggestion}</p>
+        </section>
+      )}
 
       <section className="space-y-4">
         <h2 className="mb-2 font-semibold">Photo Gallery</h2>
