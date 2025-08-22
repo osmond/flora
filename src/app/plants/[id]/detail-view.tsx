@@ -120,7 +120,7 @@ export default function DetailView({ plant }: { plant: Plant }) {
 
       {/* Care Coach (overdue only) */}
       {overdue && (
-        <Card className="bg-accent/40 border border-accent rounded-2xl shadow-sm">
+        <Card className="bg-primary/10 border border-primary/40 rounded-2xl shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-primary" /> Care Coach
@@ -221,7 +221,7 @@ export default function DetailView({ plant }: { plant: Plant }) {
 /* ---------------- UI Pieces ---------------- */
 function Stat({ label, value, icon }: { label: string; value: React.ReactNode; icon: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border bg-accent/40 px-3 py-1 text-xs">
+    <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs">
       {icon} <span className="font-medium">{label}:</span> {value}
     </span>
   );
