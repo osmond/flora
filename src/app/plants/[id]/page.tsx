@@ -3,6 +3,8 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
+import { getCurrentUserId } from "@/lib/auth";
 
 // shadcn/ui (individual imports to avoid barrel mismatches)
 import { Button } from "@/components/ui/button";
@@ -34,25 +36,51 @@ type Plant = {
   humidity?: number | null;  // %
 };
 
-/** Demo stub — replace with Supabase fetch */
-const DEMO: Plant = {
-  id: "demo",
-  name: "Kay",
-  species: "Monstera deliciosa",
-  room: "Kitchen",
-  photoUrl: "/placeholder.svg",
-  nextWaterAt: null, // null to show Care Coach
-  lastWaterAt: "2025-08-14",
-  waterEveryDays: 5,
-  waterAmountMl: 120,
-  light: "medium",
-  pot: { size: "6", unit: "in", material: "terracotta", drainage: "great" },
-  humidity: 58,
-};
+export default async function PlantDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
-export default function PlantDetailPage() {
-  // TODO: read params.id and fetch from DB
-  return <DetailView plant={DEMO} />;
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+  );
+
+  const { data: plantData } = await supabase
+    .from("plants")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", getCurrentUserId())
+    .single();
+
+  let photoUrl = plantData?.image_url as string | undefined;
+  if (!photoUrl) {
+    const { data: eventsData } = await supabase
+      .from("events")
+      .select("image_url")
+      .eq("plant_id", id)
+      .order("created_at", { ascending: false });
+    photoUrl = eventsData?.[0]?.image_url ?? undefined;
+  }
+
+  const plant: Plant = {
+    id: plantData?.id ?? id,
+    name: plantData?.name ?? "",
+    species: plantData?.species ?? "",
+    room: plantData?.room ?? undefined,
+    photoUrl,
+    nextWaterAt: null,
+    lastWaterAt: null,
+    waterEveryDays: null,
+    waterAmountMl: null,
+    light: (plantData?.light_level ?? undefined) as Plant["light"],
+    pot: null,
+    humidity: (plantData?.humidity as number | null) ?? null,
+  };
+
+  return <DetailView plant={plant} />;
 }
 
 /* --------------------- Client UI --------------------- */
