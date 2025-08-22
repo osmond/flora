@@ -37,12 +37,12 @@ export default function AnalyticsPanel() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+      <Card className="rounded-2xl border bg-white shadow-card">
         <CardContent>
           <LineChart data={stats.daily} />
         </CardContent>
       </Card>
-      <Card>
+      <Card className="rounded-2xl border bg-white shadow-card">
         <CardContent>
           <BarChart data={stats.weekly} />
         </CardContent>
