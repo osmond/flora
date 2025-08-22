@@ -56,9 +56,11 @@ export default function PlantsPage() {
   function statusClass(nextIn?: string) {
     const n = parseInt(nextIn || "0");
     if (isNaN(n)) return "bg-muted text-muted-foreground";
-    if (n <= 0) return "bg-red-100 text-red-700";
-    if (n <= 2) return "bg-yellow-100 text-yellow-700";
-    return "bg-green-100 text-green-700";
+    if (n <= 0)
+      return "bg-[hsl(var(--destructive)/0.15)] text-[hsl(var(--destructive-foreground))]";
+    if (n <= 2)
+      return "bg-[hsl(var(--warning)/0.15)] text-[hsl(var(--warning-foreground))]";
+    return "bg-[hsl(var(--success)/0.15)] text-[hsl(var(--success-foreground))]";
   }
 
   return (
