@@ -4,8 +4,6 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { toast } from "@/components/ui/sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,35 +58,8 @@ export default function AddPlantPage() {
     },
     mode: "onBlur",
   });
-  const router = useRouter();
-  const onSubmit = async (values: FormValues) => {
-    const formData = new FormData();
-    formData.append("name", values.nickname);
-    formData.append("species", values.species);
-    formData.append("room", values.room);
-    formData.append("pot_size", `${values.potSize} ${values.potUnit}`);
-    if (values.potMaterial) formData.append("pot_material", values.potMaterial);
-    formData.append("drainage", values.drainage);
-    if (values.soil) formData.append("soil_type", values.soil);
-    formData.append("light_level", values.light);
-    formData.append("indoor", values.location);
-
-    try {
-      const res = await fetch("/api/plants", { method: "POST", body: formData });
-      if (res.ok) {
-        const json = await res.json();
-        const id = json.data?.[0]?.id;
-        toast("Plant saved!");
-        if (id) {
-          router.push(`/plants/${id}`);
-          router.refresh();
-        }
-      } else {
-        toast("Failed to save plant");
-      }
-    } catch {
-      toast("Failed to save plant");
-    }
+  const onSubmit = (values: FormValues) => {
+    console.log("Submit Add Plant:", values);
   };
 
   return (
