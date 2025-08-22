@@ -83,7 +83,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
               {plants.map((plant) => (
                 <li key={plant.id}>
                   <Link href={`/plants/${plant.id}`} className="block">
-                    <Card>
+                    <Card className="bg-white rounded-2xl shadow-card">
                       <CardHeader>
                         <CardTitle>{plant.name}</CardTitle>
                         {plant.common_name && (
@@ -105,7 +105,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
               {plants.map((plant) => (
                 <li key={plant.id}>
                   <Link href={`/plants/${plant.id}`} className="block">
-                    <Card className="overflow-hidden">
+                    <Card className="overflow-hidden bg-white rounded-2xl shadow-card">
                       {plant.image_url ? (
                         <img
                           src={plant.image_url}
