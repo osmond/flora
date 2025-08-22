@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,6 +47,20 @@ export default function PlantsPage() {
       (`${p.name} ${p.species}`.toLowerCase().includes(q.toLowerCase()))
   );
 
+  const grouped = filtered.reduce<Record<string, Plant[]>>((acc, p) => {
+    const key = p.room || "Unassigned";
+    (acc[key] ||= []).push(p);
+    return acc;
+  }, {});
+
+  function statusClass(nextIn?: string) {
+    const n = parseInt(nextIn || "0");
+    if (isNaN(n)) return "bg-muted text-muted-foreground";
+    if (n <= 0) return "bg-red-100 text-red-700";
+    if (n <= 2) return "bg-yellow-100 text-yellow-700";
+    return "bg-green-100 text-green-700";
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-5 sm:px-8 py-8 space-y-6">
       <header className="flex items-center gap-3">
@@ -71,7 +86,7 @@ export default function PlantsPage() {
           <ToggleGroup
             type="single"
             value={view}
-            onValueChange={(v: any) => v && setView(v)}
+            onValueChange={(v: string) => v && setView(v as "grid" | "list")}
           >
             <ToggleGroupItem value="grid" aria-label="Grid view">
               <Grid2X2 className="h-4 w-4" />
@@ -92,7 +107,9 @@ export default function PlantsPage() {
       {/* Empty state */}
       {filtered.length === 0 ? (
         <div className="rounded-2xl border p-8 text-center bg-muted/30">
-          <div className="text-3xl mb-2">🌿</div>
+          <div className="mb-4 flex justify-center">
+            <Image src="/window.svg" alt="No plants" width={80} height={80} />
+          </div>
           <h3 className="font-semibold mb-1">No plants yet</h3>
           <p className="text-muted-foreground mb-4">
             Add your first plant to get personalized care.
@@ -101,50 +118,55 @@ export default function PlantsPage() {
             <Link href="/add">Add a Plant</Link>
           </Button>
         </div>
-      ) : view === "grid" ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((p) => (
-            <Link key={p.id} href={`/plants/${p.id}`} className="block">
-              <Card className="rounded-2xl hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="aspect-video rounded-lg border bg-muted/50 mb-3 flex items-center justify-center">
-                    <Leaf className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <div className="font-medium">{p.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {p.species} · {p.room}
-                  </div>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    Water in {p.nextIn}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map((p) => (
-            <Link key={p.id} href={`/plants/${p.id}`} className="block">
-              <Card className="rounded-2xl hover:shadow-md transition-shadow">
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className="h-12 w-16 rounded-md border bg-muted/50 flex items-center justify-center">
-                    <Leaf className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium">{p.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {p.species} · {p.room}
-                    </div>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Water in {p.nextIn}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        Object.entries(grouped).map(([roomName, items]) => (
+          <section key={roomName} className="space-y-2">
+            <h2 className="text-lg font-medium">{roomName}</h2>
+            {view === "grid" ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map((p) => (
+                  <Link key={p.id} href={`/plants/${p.id}`} className="block">
+                    <Card className="bg-white rounded-2xl shadow-card transition transform hover:scale-[1.02]">
+                      <CardContent className="p-4">
+                        <div className="aspect-video rounded-lg border bg-muted/50 mb-3 flex items-center justify-center">
+                          <Leaf className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <div className="font-medium">{p.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {p.species}
+                        </div>
+                        <span className={`mt-2 inline-block rounded-full px-2 py-0.5 text-xs ${statusClass(p.nextIn)}`}>
+                          {p.nextIn ? `Water in ${p.nextIn}` : "No schedule"}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {items.map((p) => (
+                  <Link key={p.id} href={`/plants/${p.id}`} className="block">
+                    <Card className="bg-white rounded-2xl shadow-card transition transform hover:scale-[1.02]">
+                      <CardContent className="p-4 flex items-center gap-4">
+                        <div className="h-12 w-16 rounded-md border bg-muted/50 flex items-center justify-center">
+                          <Leaf className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium">{p.name}</div>
+                          <div className="text-sm text-muted-foreground">{p.species}</div>
+                        </div>
+                        <span className={`rounded-full px-2 py-0.5 text-xs ${statusClass(p.nextIn)}`}>
+                          {p.nextIn ? `Water in ${p.nextIn}` : "No schedule"}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
+        ))
       )}
     </div>
   );
