@@ -13,9 +13,11 @@ type Species = {
 type Props = {
   value: string; // current text (from parent form)
   onSelect: (scientific: string, common?: string) => void; // callback
+  onBlur?: () => void; // notify parent of blur for validation
+  showLabel?: boolean; // allow hiding default label when wrapped externally
 };
 
-export default function SpeciesAutosuggest({ value, onSelect }: Props) {
+export default function SpeciesAutosuggest({ value, onSelect, onBlur, showLabel = true }: Props) {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<Species[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,15 +65,20 @@ export default function SpeciesAutosuggest({ value, onSelect }: Props) {
 
   return (
     <div className="relative w-full">
-      <Label htmlFor="species" className="mb-1 block text-sm font-medium">
-        Species
-      </Label>
+      {showLabel && (
+        <Label htmlFor="species" className="mb-1 block text-sm font-medium">
+          Species
+        </Label>
+      )}
       <Input
         id="species"
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onBlur={() => onSelect(query)}
+        onBlur={() => {
+          onSelect(query);
+          onBlur?.();
+        }}
         placeholder="Search for a plant..."
       />
 
