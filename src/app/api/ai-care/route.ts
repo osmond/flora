@@ -113,13 +113,41 @@ Current temperature: ${weather.temperature ?? "unknown"}°C`;
               model: "gpt-4o-mini",
               messages: [{ role: "user", content: prompt }],
               temperature: 0.7,
+              response_format: {
+                type: "json_schema",
+                json_schema: {
+                  name: "ai_care",
+                  schema: {
+                    type: "object",
+                    properties: {
+                      waterEvery: { type: "string" },
+                      waterAmountMl: { type: "number" },
+                      fertEvery: { type: "string" },
+                      fertFormula: { type: "string" },
+                      rationale: { type: "string" },
+                    },
+                    required: [
+                      "waterEvery",
+                      "waterAmountMl",
+                      "fertEvery",
+                      "fertFormula",
+                      "rationale",
+                    ],
+                    additionalProperties: false,
+                  },
+                },
+              },
             }),
           }
         );
         const aiJson = await aiRes.json();
         const text = aiJson.choices?.[0]?.message?.content;
         if (text) {
-          aiData = JSON.parse(text);
+          try {
+            aiData = JSON.parse(text);
+          } catch (parseErr) {
+            console.error("Failed to parse AI JSON:", parseErr);
+          }
         }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") throw err;
