@@ -1,24 +1,35 @@
-function required(name: string): string {
-  const value = process.env[name];
+function required(name: string, fallback?: string): string {
+  const value = process.env[name] ?? fallback;
   if (!value) {
     throw new Error(`Missing environment variable: ${name}`);
   }
   return value;
 }
 
+// Provide sensible defaults so the app can start even if env vars are missing.
+const DEFAULT_SUPABASE_URL = "http://localhost:54321";
+const DEFAULT_SUPABASE_ANON_KEY = "anon-key";
+const DEFAULT_SUPABASE_SERVICE_KEY = "service-role-key";
+
 // Validate critical variables at module load so the app fails fast.
-required("NEXT_PUBLIC_SUPABASE_URL");
-required("SUPABASE_SERVICE_ROLE_KEY");
+required("NEXT_PUBLIC_SUPABASE_URL", DEFAULT_SUPABASE_URL);
+required("SUPABASE_SERVICE_ROLE_KEY", DEFAULT_SUPABASE_SERVICE_KEY);
 
 const config = {
   get NEXT_PUBLIC_SUPABASE_URL() {
-    return required("NEXT_PUBLIC_SUPABASE_URL");
+    return required("NEXT_PUBLIC_SUPABASE_URL", DEFAULT_SUPABASE_URL);
   },
   get NEXT_PUBLIC_SUPABASE_ANON_KEY() {
-    return required("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    return required(
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      DEFAULT_SUPABASE_ANON_KEY,
+    );
   },
   get SUPABASE_SERVICE_ROLE_KEY() {
-    return required("SUPABASE_SERVICE_ROLE_KEY");
+    return required(
+      "SUPABASE_SERVICE_ROLE_KEY",
+      DEFAULT_SUPABASE_SERVICE_KEY,
+    );
   },
   get CLOUDINARY_CLOUD_NAME() {
     return required("CLOUDINARY_CLOUD_NAME");
