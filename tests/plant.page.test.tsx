@@ -34,7 +34,20 @@ vi.mock("@/components/ui/dialog", () => ({
   DialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
-vi.mock("@/components/ui", () => ({ Button: ({ children }: { children: React.ReactNode }) => <button>{children}</button> }));
+vi.mock("@/components/ui", () => ({
+  Button: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+  Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Badge: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TabsList: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TabsTrigger: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TabsContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Textarea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} />,
+  Label: ({ children }: { children: React.ReactNode }) => <label>{children}</label>,
+}));
 
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
