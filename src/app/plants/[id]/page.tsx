@@ -22,14 +22,18 @@ export default async function PlantDetailPage({
     .eq("user_id", getCurrentUserId())
     .single();
 
+  const { data: eventsData } = await supabase
+    .from("events")
+    .select("image_url")
+    .eq("plant_id", id)
+    .eq("type", "photo")
+    .order("created_at", { ascending: false });
+
+  const photoUrls = eventsData?.map((e) => e.image_url).filter((u): u is string => !!u) ?? [];
+
   let photoUrl = plantData?.image_url as string | undefined;
   if (!photoUrl) {
-    const { data: eventsData } = await supabase
-      .from("events")
-      .select("image_url")
-      .eq("plant_id", id)
-      .order("created_at", { ascending: false });
-    photoUrl = eventsData?.[0]?.image_url ?? undefined;
+    photoUrl = photoUrls[0];
   }
 
   const plant: Plant = {
@@ -45,6 +49,7 @@ export default async function PlantDetailPage({
     light: (plantData?.light_level ?? undefined) as Plant["light"],
     pot: null,
     humidity: (plantData?.humidity as number | null) ?? null,
+    photos: photoUrls,
   };
 
   return <DetailView plant={plant} />;
