@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionTitle } from "@/components/section-title";
 
 export default function StatsPage() {
   return (
     <div className="mx-auto max-w-5xl px-5 sm:px-8 py-8 space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Stats</h1>
+      <SectionTitle>Stats</SectionTitle>
       <div className="grid md:grid-cols-3 gap-4">
         <Card className="rounded-2xl"><CardHeader className="pb-2"><CardTitle>Plants</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">12</CardContent></Card>
         <Card className="rounded-2xl"><CardHeader className="pb-2"><CardTitle>Tasks done</CardTitle></CardHeader><CardContent className="text-3xl font-semibold">87</CardContent></Card>
