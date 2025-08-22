@@ -64,7 +64,7 @@ export default function TodayPage() {
             ))}
 
             {DEMO.filter((t) => t.due === key).length === 0 && (
-              <div className="rounded-2xl border p-8 text-center bg-muted/30 text-sm text-muted-foreground">
+              <div className="rounded-2xl border p-8 text-center bg-white shadow-card text-sm text-muted-foreground">
                 All caught up
               </div>
             )}
