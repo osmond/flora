@@ -52,6 +52,7 @@ const FormSchema = z.object({
   humidityOptIn: z.boolean().default(true),
   notes: z.string().optional(),
   carePlan: z.string(),
+  photo: z.any().optional(),
 });
 
 type FormValues = z.infer<typeof FormSchema>;
@@ -75,6 +76,7 @@ export default function AddPlantPage() {
       humidityOptIn: true,
       notes: "",
       carePlan: "",
+      photo: undefined,
     },
     mode: "onBlur",
   });
@@ -94,6 +96,7 @@ export default function AddPlantPage() {
       formData.set("drainage", values.drainage);
       if (values.soil) formData.set("soil_type", values.soil);
       formData.set("care_plan", values.carePlan);
+      if (values.photo instanceof File) formData.set("photo", values.photo);
 
       const res = await fetch("/api/plants", {
         method: "POST",
@@ -246,7 +249,13 @@ function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 
         <Field label="Photo" id="photo">
           <div className="relative flex items-center justify-center h-32 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/30 transition hover:bg-muted/50">
-            <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
+            <input
+              type="file"
+              accept="image/*"
+              {...form.register("photo")}
+              onChange={(e) => form.setValue("photo", e.target.files?.[0])}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
             <ImageIcon className="h-6 w-6 text-muted-foreground" />
           </div>
         </Field>

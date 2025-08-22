@@ -28,6 +28,8 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import AddPhotoForm from "@/components/AddPhotoForm";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export type Plant = {
   id: string;
@@ -35,6 +37,7 @@ export type Plant = {
   species: string;
   room?: string;
   photoUrl?: string;
+  photos: string[];
   nextWaterAt?: string | null;
   lastWaterAt?: string | null;
   waterEveryDays?: number | null;
@@ -51,7 +54,6 @@ export default function DetailView({ plant }: { plant: Plant }) {
     "Moved to brighter spot",
     "Repotted on **Aug 20**",
   ]);
-  const [photos] = React.useState<string[]>(["/placeholder.svg", "/placeholder.svg"]);
 
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter space-y-6">
@@ -91,9 +93,19 @@ export default function DetailView({ plant }: { plant: Plant }) {
             <Button className="rounded-xl" size="sm">
               <Plus className="h-4 w-4 mr-1" />Add Note
             </Button>
-            <Button className="rounded-xl" size="sm" variant="secondary">
-              <Camera className="h-4 w-4 mr-1" />Add Photo
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="rounded-xl" size="sm" variant="secondary">
+                  <Camera className="h-4 w-4 mr-1" />Add Photo
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Photo</DialogTitle>
+                </DialogHeader>
+                <AddPhotoForm plantId={plant.id} />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </header>
@@ -201,14 +213,24 @@ export default function DetailView({ plant }: { plant: Plant }) {
             {/* Gallery */}
             <TabsContent value="photos" className="space-y-3 pt-3">
               <div className="grid grid-cols-3 gap-2">
-                {photos.map((src, i) => (
+                {plant.photos.map((src, i) => (
                   <div key={i} className="relative aspect-square overflow-hidden rounded-xl border">
                     <Image src={src} alt="Photo" fill className="object-cover" />
                   </div>
                 ))}
-                <div className="aspect-square rounded-xl border-2 border-dashed flex items-center justify-center cursor-pointer hover:bg-muted/50 transition">
-                  <Plus className="h-6 w-6 text-muted-foreground" />
-                </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className="aspect-square rounded-xl border-2 border-dashed flex items-center justify-center cursor-pointer hover:bg-muted/50 transition">
+                        <Plus className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Photo</DialogTitle>
+                      </DialogHeader>
+                      <AddPhotoForm plantId={plant.id} />
+                    </DialogContent>
+                  </Dialog>
               </div>
             </TabsContent>
           </Tabs>

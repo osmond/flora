@@ -93,19 +93,21 @@ vi.mock("@supabase/supabase-js", () => ({
         return {
           select: () => ({
             eq: () => ({
-              order: () =>
-                Promise.resolve({
-                  data: [
-                    {
-                      id: "evt1",
-                      type: "photo",
-                      note: null,
-                      image_url: "https://example.com/latest.jpg",
-                      created_at: "2023-01-01T00:00:00Z",
-                    },
-                  ],
-                  error: null,
-                }),
+              eq: () => ({
+                order: () =>
+                  Promise.resolve({
+                    data: [
+                      {
+                        id: "evt1",
+                        type: "photo",
+                        note: null,
+                        image_url: "https://example.com/latest.jpg",
+                        created_at: "2023-01-01T00:00:00Z",
+                      },
+                    ],
+                    error: null,
+                  }),
+              }),
             }),
           }),
         };
