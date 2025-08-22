@@ -22,6 +22,7 @@ export default function SpeciesAutosuggest({ value, onSelect, onBlur, showLabel 
   const [results, setResults] = useState<Species[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [noResults, setNoResults] = useState(false);
 
   useEffect(() => {
     // Only query the API when the user has entered enough characters
@@ -29,6 +30,7 @@ export default function SpeciesAutosuggest({ value, onSelect, onBlur, showLabel 
       setResults([]);
       setLoading(false);
       setError(null);
+      setNoResults(false);
       return;
     }
 
@@ -36,15 +38,27 @@ export default function SpeciesAutosuggest({ value, onSelect, onBlur, showLabel 
     const handler = setTimeout(() => {
       setLoading(true);
       setError(null);
+      setNoResults(false);
       fetch(`/api/species?q=${encodeURIComponent(query)}`, {
         signal: controller.signal,
       })
-        .then((res) => res.json())
-        .then((data) => setResults(data.data || []))
+        .then(async (res) => {
+          const data = await res.json();
+          if (!res.ok || data.error) {
+            throw new Error(data.error || "Failed to load species suggestions.");
+          }
+          const species = data.data || [];
+          setResults(species);
+          setNoResults(species.length === 0);
+        })
         .catch((err) => {
           if (err.name !== "AbortError") {
             console.error(err);
-            setError("Failed to load species suggestions.");
+            if (typeof err.message === "string" && err.message.includes("OPENAI_API_KEY")) {
+              setError("Suggestions unavailable: missing OpenAI API key.");
+            } else {
+              setError("Failed to load species suggestions.");
+            }
             setResults([]);
           }
         })
@@ -88,6 +102,12 @@ export default function SpeciesAutosuggest({ value, onSelect, onBlur, showLabel 
       {error && (
         <p className="mt-2 text-sm text-red-600">
           {error} You can enter a species name manually.
+        </p>
+      )}
+
+      {noResults && !loading && !error && (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Suggestions unavailable
         </p>
       )}
 
