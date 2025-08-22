@@ -40,11 +40,11 @@ export async function POST(req: Request) {
     if (typeof latitude === "number" && typeof longitude === "number") {
       try {
         const weatherRes = await fetchWithTimeout(
-          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relativehumidity_2m`
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m`
         );
         const weatherData = await weatherRes.json();
         weather.temperature = weatherData.current?.temperature_2m;
-        weather.humidity = weatherData.current?.relativehumidity_2m;
+        weather.humidity = weatherData.current?.relative_humidity_2m;
 
         const climateRes = await fetchWithTimeout(
           `https://climate-api.open-meteo.com/v1/climate?latitude=${latitude}&longitude=${longitude}&start_date=2020-01-01&end_date=2020-12-31&daily=usda_hardiness_zone`
