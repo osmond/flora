@@ -108,7 +108,7 @@ export default function PlantsPage() {
 
       {/* Empty state */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border p-8 text-center bg-muted/30">
+        <div className="rounded-2xl border p-8 text-center bg-white shadow-card">
           <div className="mb-4 flex justify-center">
             <Image src="/window.svg" alt="No plants" width={80} height={80} />
           </div>
