@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
 // lucide-react icons
 import {
@@ -199,7 +200,7 @@ function Field({
 }
 
 function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
-  const { register, formState: { errors } } = form;
+  const { register, control, formState: { errors } } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
@@ -213,8 +214,18 @@ function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
         </Field>
 
         <Field label="Species" id="species" required hint="Start typing to search." error={errors.species?.message}>
-          {/* Swap with your real <SpeciesAutosuggest /> when ready */}
-          <Input id="species" {...register("species")} placeholder="Monstera deliciosa" aria-invalid={!!errors.species} className="h-11 rounded-xl" />
+          <Controller
+            control={control}
+            name="species"
+            render={({ field }) => (
+              <SpeciesAutosuggest
+                value={field.value}
+                onSelect={field.onChange}
+                onBlur={field.onBlur}
+                showLabel={false}
+              />
+            )}
+          />
         </Field>
 
         <div className="sm:col-span-2">
