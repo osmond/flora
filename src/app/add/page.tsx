@@ -8,17 +8,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import { SectionTitle } from "@/components/section-title";
 
 import {
   Flower2, MapPin, Box, ThermometerSun, Sparkles, Leaf,
   Droplet, Droplets, Sun, Home, Trees, Ruler,
   ChevronLeft, ChevronRight, CheckCircle2,
 } from "lucide-react";
+import { StepChip } from "@/components/step-chip";
 
 const FormSchema = z.object({
   nickname: z.string().min(1, "Nickname is required"),
@@ -63,7 +65,7 @@ export default function AddPlantPage() {
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter">
       <header className="mb-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Add a Plant</h1>
+        <SectionTitle>Add a Plant</SectionTitle>
         <Stepper step={step} labels={["Identify","Place","Pot","Environment","Smart Plan","Confirm"]} />
       </header>
 
@@ -72,7 +74,7 @@ export default function AddPlantPage() {
         {step === 2 && <Place form={form} />}
         {step === 3 && <PotSetup form={form} />}
         {step === 4 && <Environment form={form} />}
-        {step === 5 && <SmartPlan form={form} />}
+        {step === 5 && <SmartPlan />}
         {step === 6 && <Confirm form={form} />}
 
         <footer className="sticky bottom-0 mt-8 bg-muted/30 backdrop-blur supports-[backdrop-filter]:bg-muted/20 border-t border-muted rounded-t-xl">
@@ -97,35 +99,33 @@ export default function AddPlantPage() {
 }
 
 function Stepper({ step, labels }: { step: number; labels: string[] }) {
-  const icons = [Flower2, MapPin, Box, ThermometerSun, Sparkles, Leaf] as const;
   return (
     <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
-      {labels.map((l, i) => {
-        const Icon = icons[i]!;
-        const active = i + 1 <= step;
-        return (
-          <React.Fragment key={l}>
-            <div className={["h-8 px-3 rounded-full border flex items-center gap-2 shadow-sm",
-              active ? "bg-accent/60 border-accent text-foreground" : "bg-muted/50 border-muted"].join(" ")}>
-              <Icon className="h-4 w-4 text-primary" /> {i + 1}. {l}
-            </div>
-            {i < labels.length - 1 && <div className="flex-1 h-px bg-border hidden md:block" />}
-          </React.Fragment>
-        );
-      })}
+      {labels.map((l, i) => (
+        <React.Fragment key={l}>
+          <StepChip step={i + 1} label={l} active={i + 1 === step} done={i + 1 < step} />
+          {i < labels.length - 1 && <div className="flex-1 h-px bg-border hidden md:block" />}
+        </React.Fragment>
+      ))}
     </div>
   );
 }
-function Field({ label, id, required, hint, error, children }:{ label: string; id?: string; required?: boolean; hint?: string; error?: string; children: React.ReactNode }) {
+function Field({ label, id, required, hint, error, children }:{ label: string; id: string; required?: boolean; hint?: string; error?: string; children: React.ReactElement }) {
+  const described = error ? `${id}-error` : undefined;
+  const child = React.cloneElement(children, {
+    id,
+    className: cn("mt-2", children.props.className),
+    "aria-invalid": !!error,
+    ...(error ? { "aria-describedby": described } : {}),
+  });
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <Label htmlFor={id} className="font-medium text-sm">{label}</Label>
-        {required && <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Required</span>}
-      </div>
-      {children}
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+    <div>
+      <label htmlFor={id} className="text-sm font-medium">
+        {label} {required && <span className="text-xs text-muted-foreground">required</span>}
+      </label>
+      {child}
+      {hint && !error && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+      {error && <p id={described} className="mt-1 text-xs text-destructive">{error}</p>}
     </div>
   );
 }
@@ -136,14 +136,14 @@ function Identify({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
       <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><Flower2 className="h-5 w-5 text-primary" /> Identify</CardTitle></CardHeader>
       <CardContent className="grid gap-6 sm:grid-cols-2">
         <Field label="Nickname" id="nickname" required hint="What you call this plant at home." error={errors.nickname?.message}>
-          <Input id="nickname" {...register("nickname")} placeholder="e.g., Kay" aria-invalid={!!errors.nickname} className="h-11 rounded-xl" />
+          <Input {...register("nickname")} placeholder="e.g., Kay" className="h-11 rounded-lg" />
         </Field>
         <Field label="Species" id="species" required hint="Start typing to search." error={errors.species?.message}>
-          <Input id="species" {...register("species")} placeholder="Monstera deliciosa" aria-invalid={!!errors.species} className="h-11 rounded-xl" />
+          <Input {...register("species")} placeholder="Monstera deliciosa" className="h-11 rounded-lg" />
         </Field>
         <div className="sm:col-span-2">
           <Field label="Notes" id="notes">
-            <Textarea id="notes" {...register("notes")} rows={3} placeholder="Optional notes" className="rounded-xl" />
+            <Textarea {...register("notes")} rows={3} placeholder="Optional notes" className="rounded-lg" />
           </Field>
         </div>
       </CardContent>
@@ -158,7 +158,7 @@ function Place({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
       <CardContent className="grid gap-6 sm:grid-cols-2">
         <Field label="Room" id="room" required>
           <Select value={watch("room")} onValueChange={(v) => setValue("room", v, { shouldValidate: true })}>
-            <SelectTrigger id="room" className="h-11 rounded-xl"><SelectValue placeholder="Select a room" /></SelectTrigger>
+            <SelectTrigger id="room" className="h-11 rounded-lg"><SelectValue placeholder="Select a room" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="living">Living Room</SelectItem>
               <SelectItem value="kitchen">Kitchen</SelectItem>
@@ -175,9 +175,9 @@ function Place({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
         </Field>
         <div className="sm:col-span-2">
           <Field label="Light Level" id="light" required>
-            <Select value={watch("light")} onValueChange={(v) => setValue("light", v as FormValues["light"], { shouldValidate: true })}>
-              <SelectTrigger id="light" className="h-11 rounded-xl"><SelectValue placeholder="Choose" /></SelectTrigger>
-              <SelectContent>
+          <Select value={watch("light")} onValueChange={(v) => setValue("light", v as FormValues["light"], { shouldValidate: true })}>
+            <SelectTrigger id="light" className="h-11 rounded-lg"><SelectValue placeholder="Choose" /></SelectTrigger>
+            <SelectContent>
                 <SelectItem value="low">☁️ Low</SelectItem>
                 <SelectItem value="medium">⛅ Medium</SelectItem>
                 <SelectItem value="bright">☀️ Bright</SelectItem>
@@ -197,16 +197,16 @@ function PotSetup({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
       <CardContent className="grid gap-6 sm:grid-cols-2">
         <Field label="Pot Size" id="potSize" required>
           <div className="grid grid-cols-[1fr_auto] gap-2">
-            <div className="relative"><Ruler className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input id="potSize" className="pl-8 h-11 rounded-xl" {...register("potSize")} /></div>
+            <div className="relative"><Ruler className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input className="pl-8 h-11 rounded-lg" {...register("potSize")} /></div>
             <Select value={watch("potUnit")} onValueChange={(v) => setValue("potUnit", v as FormValues["potUnit"], { shouldValidate: true })}>
-              <SelectTrigger className="w-28 h-11 rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-28 h-11 rounded-lg"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="in">in</SelectItem><SelectItem value="cm">cm</SelectItem></SelectContent>
             </Select>
           </div>
         </Field>
         <Field label="Pot Material" id="potMaterial">
           <Select value={watch("potMaterial")} onValueChange={(v) => setValue("potMaterial", v as NonNullable<FormValues["potMaterial"]>, { shouldValidate: true })}>
-            <SelectTrigger id="potMaterial" className="h-11 rounded-xl"><SelectValue placeholder="Select material" /></SelectTrigger>
+            <SelectTrigger id="potMaterial" className="h-11 rounded-lg"><SelectValue placeholder="Select material" /></SelectTrigger>
             <SelectContent><SelectItem value="terracotta">Terracotta</SelectItem><SelectItem value="ceramic">Ceramic</SelectItem><SelectItem value="plastic">Plastic</SelectItem></SelectContent>
           </Select>
         </Field>
@@ -251,7 +251,7 @@ function Environment({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) 
     </Card>
   );
 }
-function SmartPlan({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
+function SmartPlan() {
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
       <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> Smart Plan</CardTitle></CardHeader>
