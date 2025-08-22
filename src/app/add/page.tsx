@@ -484,9 +484,6 @@ function Confirm({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
             <Summary label="Pot" value={`${values.potSize}${values.potUnit} ${values.potMaterial}`} />
           </div>
         </div>
-        <Button type="submit" className="rounded-xl bg-primary text-primary-foreground">
-          <CheckCircle2 className="h-4 w-4 mr-1" /> Save Plant
-        </Button>
       </CardContent>
     </Card>
   );
