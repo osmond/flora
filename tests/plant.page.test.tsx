@@ -23,7 +23,8 @@ vi.mock("next/link", () => ({
 }));
 vi.mock("next/image", () => ({
   __esModule: true,
-  default: (props: any) => <img {...props} />,
+  // eslint-disable-next-line @next/next/no-img-element
+  default: (props: React.ComponentProps<"img">) => <img {...props} alt={props.alt ?? ""} />,
 }));
 vi.mock("@/components/ui/tabs", () => ({
   Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
