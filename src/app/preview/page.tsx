@@ -13,7 +13,7 @@ export default function PreviewPage() {
       <header>
         <h1 className="text-3xl font-headline font-semibold tracking-tight">Flora Style Guide Preview</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          All components styled according to the app's visual system.
+          All components styled according to the app&apos;s visual system.
         </p>
       </header>
 

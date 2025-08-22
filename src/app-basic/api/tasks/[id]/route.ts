@@ -1,0 +1,97 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { supabaseAdmin as supabase } from "../../../../lib/supabaseAdmin";
+import { getCurrentUserId } from "@/lib/auth";
+import { logEvent } from "@/lib/analytics";
+
+
+const schema = z
+  .object({
+    action: z.enum(["complete", "snooze"]),
+    days: z.number().int().positive().optional(),
+    reason: z.enum(["Too busy", "Soil still wet"]).optional(),
+  })
+  .strict();
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const json = await req.json();
+  const parsed = schema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
+  const { action, days, reason } = parsed.data;
+
+  try {
+    if (action === "complete") {
+      const { error } = await supabase
+        .from("tasks")
+        .update({ completed_at: new Date().toISOString() })
+        .eq("id", id)
+        .eq("user_id", getCurrentUserId());
+      if (error) throw error;
+      await logEvent("task_completed", { task_id: id });
+    } else if (action === "snooze") {
+      let addDays = typeof days === "number" ? days : 1;
+      if (reason === "Too busy") addDays = Math.max(addDays, 2);
+      const { data, error: fetchError } = await supabase
+        .from("tasks")
+        .select("due_date, plant_id")
+        .eq("id", id)
+        .eq("user_id", getCurrentUserId())
+        .single();
+      if (fetchError) throw fetchError;
+      const due = new Date(data.due_date);
+      due.setDate(due.getDate() + addDays);
+      const updates: Record<string, unknown> = {
+        due_date: due.toISOString().slice(0, 10),
+        snooze_reason: reason ?? null,
+      };
+      const { error } = await supabase
+        .from("tasks")
+        .update(updates)
+        .eq("id", id)
+        .eq("user_id", getCurrentUserId());
+      if (error) throw error;
+
+      if (reason === "Soil still wet") {
+        const { data: plantData, error: plantError } = await supabase
+          .from("plants")
+          .select("care_plan")
+          .eq("id", data.plant_id)
+          .eq("user_id", getCurrentUserId())
+          .single();
+        if (!plantError && plantData?.care_plan?.waterEvery) {
+          const match = plantData.care_plan.waterEvery.match(/(\d+)/);
+          if (match) {
+            const newInterval = parseInt(match[1], 10) + 1;
+            const newPlan = {
+              ...plantData.care_plan,
+              waterEvery: `${newInterval} days`,
+            };
+            await supabase
+              .from("plants")
+              .update({ care_plan: newPlan })
+              .eq("id", data.plant_id)
+              .eq("user_id", getCurrentUserId());
+          }
+        }
+      }
+    } else {
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("PATCH /api/tasks/:id error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
