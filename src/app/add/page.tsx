@@ -172,7 +172,7 @@ function Stepper({ step, labels }: { step: number; labels: string[] }) {
             <div
               className={[
                 "h-8 px-3 rounded-full border flex items-center gap-2 shadow-sm",
-                active ? "bg-accent/60 border-accent text-foreground" : "bg-muted/50 border-muted",
+                active ? "bg-primary/10 border-primary/40 text-foreground" : "bg-muted/50 border-muted",
               ].join(" ")}
             >
               <Icon className="h-4 w-4 text-primary" /> {i + 1}. {l}
