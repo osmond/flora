@@ -1,369 +1,669 @@
 "use client";
 
-import React from "react";
-import {
-  Flower2,
-  MapPin,
-  Box,
-  ThermometerSun,
-  Sparkles,
-  Leaf,
-  ChevronLeft,
-  ChevronRight,
-  CheckCircle2,
-  Ruler,
-  Home,
-  Trees,
-  Droplet,
-  Droplets,
-  Sun,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/sonner";
+import { Button } from "@/components/ui";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
-export default function AddPage() {
+function formatWaterAmount(ml: number) {
+  const oz = ml / 29.5735;
+  return `${oz.toFixed(1)} oz (${ml} mL)`;
+}
+
+const formSchema = z
+  .object({
+    name: z.string().min(1, "Plant name is required"),
+    species: z.string().min(1, "Species is required"),
+    commonName: z.string().optional(),
+    room: z.string().optional(),
+    potSize: z
+      .number()
+      .min(1, "Pot size must be at least 1")
+      .max(100, "Pot size cannot exceed 100")
+      .optional(),
+    potUnit: z.enum(["cm", "in"]).optional(),
+    potMaterial: z.string().optional(),
+    potMaterialOther: z.string().optional(),
+    drainage: z.string().optional(),
+    soilType: z.string().min(1, "Soil type is required"),
+    soilTypeOther: z.string().optional(),
+    lightLevel: z.string().optional(),
+    indoor: z.string().optional(),
+    photo: z.any().optional(),
+    latitude: z.string().optional(),
+    longitude: z.string().optional(),
+    humidity: z.string().optional(),
+  })
+  .refine((data) => data.soilType !== "Other" || !!data.soilTypeOther, {
+    message: "Please specify soil type",
+    path: ["soilTypeOther"],
+  });
+
+type FormValues = z.infer<typeof formSchema>;
+
+export default function AddPlantForm() {
+  const [rooms, setRooms] = useState<string[]>([]);
+  interface CarePlan {
+    waterEvery: string;
+    waterAmountMl: number;
+    fertEvery: string;
+    fertFormula: string;
+    rationale: string;
+    weather?: {
+      temperature?: number;
+      humidity?: number;
+    };
+    climateZone?: string;
+    confidence?: "low" | "medium" | "high";
+  }
+  const [carePlan, setCarePlan] = useState<CarePlan | null>(null);
+  const [loadingCare, setLoadingCare] = useState(false);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    mode: "onChange",
+    shouldUnregister: false,
+    defaultValues: {
+      name: "",
+      species: "",
+      commonName: "",
+      room: "",
+      potSize: undefined,
+      potUnit: "cm",
+      potMaterial: "",
+      potMaterialOther: "",
+      drainage: "",
+      soilType: "",
+      soilTypeOther: "",
+      lightLevel: "",
+      indoor: "",
+      latitude: "",
+      longitude: "",
+      humidity: "",
+    },
+  });
+
+  const [step, setStep] = useState(1);
+  const totalSteps = 6;
+
+  const nextStep = () => setStep((s) => Math.min(s + 1, totalSteps));
+  const prevStep = () => setStep((s) => Math.max(s - 1, 1));
+
+
+  const photoFile = watch("photo");
+  const selectedPotMaterial = watch("potMaterial");
+  const selectedSoilType = watch("soilType");
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [persistedPhoto, setPersistedPhoto] = useState<File | null>(null);
+  useEffect(() => {
+    if (photoFile && photoFile.length > 0) {
+      const file = photoFile[0];
+      setPersistedPhoto(file);
+      const url = URL.createObjectURL(file);
+      setPhotoPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setPersistedPhoto(null);
+    setPhotoPreview(null);
+  }, [photoFile]);
+
+  useEffect(() => {
+    fetch("/api/rooms")
+      .then((res) => res.json())
+      .then((data) => setRooms(data.data || []))
+      .catch((err) => console.error("Failed to load rooms:", err));
+  }, []);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setValue("latitude", latitude.toString());
+        setValue("longitude", longitude.toString());
+        try {
+          const res = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relativehumidity_2m`
+          );
+          const data = await res.json();
+          const h = data.current?.relativehumidity_2m;
+          if (typeof h === "number") {
+            setValue("humidity", h.toString());
+          }
+        } catch (err) {
+          console.error("Failed to fetch humidity:", err);
+        }
+      },
+      (err) => console.error("Geolocation error:", err)
+    );
+  }, [setValue]);
+
+  const generateCarePlan = async () => {
+    try {
+      setLoadingCare(true);
+      const {
+        latitude,
+        longitude,
+        species,
+        potSize,
+        potUnit,
+        lightLevel,
+        humidity,
+      } = getValues();
+      const potSizeCm =
+        typeof potSize === "number"
+          ? potUnit === "in"
+            ? potSize * 2.54
+            : potSize
+          : undefined;
+      const res = await fetch("/api/ai-care", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          latitude: latitude ? parseFloat(latitude) : undefined,
+          longitude: longitude ? parseFloat(longitude) : undefined,
+          species: species || undefined,
+          potSize: potSizeCm,
+          potUnit: potUnit || undefined,
+          lightLevel: lightLevel || undefined,
+          humidity: humidity ? parseFloat(humidity) : undefined,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCarePlan(data);
+      }
+    } catch (err) {
+      console.error("Failed to generate care plan:", err);
+    } finally {
+      setLoadingCare(false);
+    }
+  };
+
+  const onSubmit = async (data: FormValues) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("species", data.species);
+    formData.append("common_name", data.commonName || "");
+    formData.append("room", data.room || "");
+    formData.append(
+      "pot_size",
+      data.potSize !== undefined
+        ? `${data.potSize}${data.potUnit ? ` ${data.potUnit}` : ""}`
+        : ""
+    );
+    const potMaterial =
+      data.potMaterial === "Other" ? data.potMaterialOther : data.potMaterial;
+    formData.append("pot_material", potMaterial || "");
+    formData.append("drainage", data.drainage || "");
+    const soilType =
+      data.soilType === "Other" ? data.soilTypeOther : data.soilType;
+    formData.append("soil_type", soilType || "");
+    formData.append("light_level", data.lightLevel || "");
+    formData.append("indoor", data.indoor || "");
+    formData.append("latitude", data.latitude || "");
+    formData.append("longitude", data.longitude || "");
+    formData.append("humidity", data.humidity || "");
+    if (carePlan) {
+      formData.append("care_plan", JSON.stringify(carePlan));
+    } else {
+      try {
+        const res = await fetch("/api/ai-care", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            latitude: data.latitude ? parseFloat(data.latitude) : undefined,
+            longitude: data.longitude ? parseFloat(data.longitude) : undefined,
+            species: data.species || undefined,
+            potSize:
+              typeof data.potSize === "number"
+                ? data.potUnit === "in"
+                  ? data.potSize * 2.54
+                  : data.potSize
+                : undefined,
+            potUnit: data.potUnit || undefined,
+            lightLevel: data.lightLevel || undefined,
+            humidity: data.humidity
+              ? parseFloat(data.humidity)
+              : undefined,
+          }),
+        });
+        if (res.ok) {
+          const cp = await res.json();
+          formData.append("care_plan", JSON.stringify(cp));
+        }
+      } catch (err) {
+        console.error("Failed to generate care plan:", err);
+      }
+    }
+    if (persistedPhoto) {
+      formData.append("photo", persistedPhoto);
+    }
+
+    const res = await fetch("/api/plants", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const { data: responseData } = await res.json();
+      reset();
+      setCarePlan(null);
+      toast("Plant saved!");
+      const id = responseData?.[0]?.id;
+      if (id) {
+        router.push(`/plants/${id}`);
+      }
+    } else {
+      toast("Failed to save plant");
+    }
+  };
+
+  const latitude = watch("latitude");
+  const longitude = watch("longitude");
+  const humidity = watch("humidity");
+  const nameValue = watch("name");
+  const speciesValue = watch("species");
+
+  const canProceed = () => {
+    if (step === 1) return !!nameValue && !!speciesValue;
+    if (step === 5) return !!carePlan;
+    return true;
+  };
+
   return (
-    <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter space-y-8">
-      <header className="mb-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Add a Plant</h1>
-        <Stepper
-          step={2}
-          labels={["Identify", "Place", "Pot", "Environment", "Smart Plan", "Confirm"]}
-        />
-      </header>
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-xl space-y-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          {Array.from({ length: totalSteps }).map((_, i) => (
+            <div
+              key={i}
+              className={`h-2 flex-1 rounded ${i < step ? "bg-primary" : "bg-muted"}`}
+            />
+          ))}
+        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          Step {step} of {totalSteps}
+        </p>
+      </div>
 
-      <Section icon={<Flower2 className="h-5 w-5 text-primary" />} title="Identify">
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="Nickname" hint="What you call this plant at home." required>
-            <Input className="h-11 rounded-xl" placeholder="e.g., Kay" />
-          </Field>
-          <Field label="Species" hint="Start typing to search." required>
-            <Input className="h-11 rounded-xl" placeholder="Monstera deliciosa" />
-          </Field>
-          <div className="sm:col-span-2">
-            <Field label="Notes">
-              <Textarea
-                className="rounded-xl"
-                rows={3}
-                placeholder="Optional notes"
+      {step === 1 && (
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Identify</h2>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Nickname</label>
+            <input
+              type="text"
+              {...register("name")}
+              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            {errors.name && (
+              <p className="text-sm text-red-600">{errors.name.message}</p>
+            )}
+          </div>
+          <div>
+            <SpeciesAutosuggest
+              value={speciesValue}
+              onSelect={(scientific: string, common?: string) => {
+                setValue("species", scientific, { shouldValidate: true });
+                setValue("commonName", common || "", { shouldValidate: true });
+              }}
+            />
+            {errors.species && (
+              <p className="text-sm text-red-600">{errors.species.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Photo</label>
+            <input
+              type="file"
+              accept="image/*"
+              {...register("photo")}
+              className="w-full"
+            />
+            {photoPreview && (
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="mt-2 h-32 w-32 rounded object-cover"
               />
-            </Field>
+            )}
           </div>
         </div>
-      </Section>
+      )}
 
-      <Section icon={<MapPin className="h-5 w-5 text-primary" />} title="Place">
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="Room" required>
-            <Select>
-              <SelectTrigger className="h-11 rounded-xl">
-                <SelectValue placeholder="Select a room" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="living">Living room</SelectItem>
-                <SelectItem value="kitchen">Kitchen</SelectItem>
-                <SelectItem value="bedroom">Bedroom</SelectItem>
-                <SelectItem value="office">Office</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field label="Location" required>
-            <RadioGroup className="grid grid-cols-2 gap-2">
-              <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                <RadioGroupItem value="indoor" id="indoor" />
-                <Home className="h-4 w-4 text-primary" /> Indoor
-              </label>
-              <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                <RadioGroupItem value="outdoor" id="outdoor" />
-                <Trees className="h-4 w-4 text-primary" /> Outdoor
-              </label>
-            </RadioGroup>
-          </Field>
-          <div className="sm:col-span-2">
-            <Field label="Light level" required>
-              <Select>
-                <SelectTrigger className="h-11 rounded-xl">
-                  <SelectValue placeholder="Choose" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">☁️ Low</SelectItem>
-                  <SelectItem value="medium">⛅ Medium</SelectItem>
-                  <SelectItem value="bright">☀️ Bright</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
+      {step === 2 && (
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Place</h2>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Room</label>
+            <input
+              type="text"
+              list="room-options"
+              {...register("room")}
+              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <datalist id="room-options">
+              {rooms.map((r) => (
+                <option key={r} value={r} />
+              ))}
+            </datalist>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Location</label>
+            <select
+              {...register("indoor")}
+              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Select</option>
+              <option value="Indoor">🏠 Indoor</option>
+              <option value="Outdoor">🌳 Outdoor</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Light Level</label>
+            <select
+              {...register("lightLevel")}
+              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Select</option>
+              <option value="Low">☁️ Low</option>
+              <option value="Medium">⛅ Medium</option>
+              <option value="Bright">☀️ Bright</option>
+            </select>
           </div>
         </div>
-      </Section>
+      )}
 
-      <Section icon={<Box className="h-5 w-5 text-primary" />} title="Pot Setup">
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="Pot size" required>
-            <div className="grid grid-cols-[1fr_auto] gap-2">
-              <div className="relative">
-                <Ruler className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input className="pl-8 h-11 rounded-xl" placeholder="6" />
-              </div>
-              <Select>
-                <SelectTrigger className="w-28 h-11 rounded-xl">
-                  <SelectValue placeholder="in" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="in">in</SelectItem>
-                  <SelectItem value="cm">cm</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </Field>
-          <Field label="Pot material">
-            <Select>
-              <SelectTrigger className="h-11 rounded-xl">
-                <SelectValue placeholder="Select material" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="terracotta">Terracotta</SelectItem>
-                <SelectItem value="ceramic">Ceramic</SelectItem>
-                <SelectItem value="plastic">Plastic</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
-          <div className="sm:col-span-2">
-            <Field label="Drainage" required>
-              <RadioGroup className="grid gap-2 sm:grid-cols-3">
-                <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                  <RadioGroupItem value="poor" id="dr-poor" />
-                  <div>
-                    <div className="font-medium flex items-center gap-1 text-destructive">
-                      <Droplet className="h-4 w-4" /> Poor
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Slow drainage; higher risk of root rot.
-                    </p>
-                  </div>
-                </label>
-                <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                  <RadioGroupItem value="avg" id="dr-avg" />
-                  <div>
-                    <div className="font-medium flex items-center gap-1">
-                      <Droplets className="h-4 w-4 text-primary" /> Average
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Standard drainage; moderate watering.
-                    </p>
-                  </div>
-                </label>
-                <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                  <RadioGroupItem value="great" id="dr-great" />
-                  <div>
-                    <div className="font-medium flex items-center gap-1 text-primary">
-                      <Droplets className="h-4 w-4" /> Great
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Excellent drainage; water flows quickly.
-                    </p>
-                  </div>
-                </label>
-              </RadioGroup>
-            </Field>
-          </div>
-        </div>
-      </Section>
-
-      <Section
-        icon={<ThermometerSun className="h-5 w-5 text-primary" />}
-        title="Environment"
-      >
-        <div className="space-y-6">
-          <div className="flex flex-wrap gap-2 text-sm">
-            <Chip>
-              <MapPin className="h-3 w-3" /> Minneapolis, MN
-            </Chip>
-            <Chip>
-              <ThermometerSun className="h-3 w-3" /> 58% humidity
-            </Chip>
-            <Chip>
-              <Sun className="h-3 w-3" /> Bright indirect
-            </Chip>
-          </div>
-          <div className="flex items-center justify-between rounded-lg border p-3">
+      {step === 3 && (
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Pot Setup</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <div className="font-medium">Use local humidity</div>
+              <label className="mb-1 block text-sm font-medium">Pot Size</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  step={1}
+                  {...register("potSize", { valueAsNumber: true })}
+                  className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <select
+                  {...register("potUnit")}
+                  className="rounded border px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="cm">cm</option>
+                  <option value="in">in</option>
+                </select>
+              </div>
+              {errors.potSize && (
+                <p className="text-sm text-red-600">{errors.potSize.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">Pot Material</label>
+              <select
+                {...register("potMaterial")}
+                className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Select material</option>
+                <option value="Terracotta">Terracotta</option>
+                <option value="Plastic">Plastic</option>
+                <option value="Ceramic">Ceramic</option>
+                <option value="Metal">Metal</option>
+                <option value="Glass">Glass</option>
+                <option value="Other">Other</option>
+              </select>
+              {selectedPotMaterial === "Other" && (
+                <input
+                  type="text"
+                  {...register("potMaterialOther")}
+                  className="mt-2 w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Specify material"
+                />
+              )}
+            </div>
+          </div>
+          <div>
+            <fieldset>
+              <legend className="mb-1 block text-sm font-medium">Drainage</legend>
+              <div className="space-y-2">
+                <div>
+                  <label
+                    htmlFor="drainage-poor"
+                    className="flex items-center gap-2"
+                    title="Water drains slowly; high risk of root rot"
+                  >
+                    <input
+                      type="radio"
+                      id="drainage-poor"
+                      value="Poor"
+                      {...register("drainage")}
+                      aria-label="Poor drainage"
+                      aria-describedby="drainage-poor-desc"
+                    />
+                    <span>💧 Poor</span>
+                  </label>
+                  <p
+                    id="drainage-poor-desc"
+                    className="ml-6 text-xs text-muted-foreground"
+                  >
+                    Water drains slowly; high risk of root rot
+                  </p>
+                </div>
+                <div>
+                  <label
+                    htmlFor="drainage-average"
+                    className="flex items-center gap-2"
+                    title="Standard drainage with moderate watering"
+                  >
+                    <input
+                      type="radio"
+                      id="drainage-average"
+                      value="Average"
+                      {...register("drainage")}
+                      aria-label="Average drainage"
+                      aria-describedby="drainage-average-desc"
+                    />
+                    <span>🪴 Average</span>
+                  </label>
+                  <p
+                    id="drainage-average-desc"
+                    className="ml-6 text-xs text-muted-foreground"
+                  >
+                    Standard drainage with moderate watering
+                  </p>
+                </div>
+                <div>
+                  <label
+                    htmlFor="drainage-good"
+                    className="flex items-center gap-2"
+                    title="Excellent drainage; water flows quickly"
+                  >
+                    <input
+                      type="radio"
+                      id="drainage-good"
+                      value="Good"
+                      {...register("drainage")}
+                      aria-label="Good drainage"
+                      aria-describedby="drainage-good-desc"
+                    />
+                    <span>🌿 Good</span>
+                  </label>
+                  <p
+                    id="drainage-good-desc"
+                    className="ml-6 text-xs text-muted-foreground"
+                  >
+                    Excellent drainage; water flows quickly
+                  </p>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Soil Type</label>
+            <select
+              {...register("soilType")}
+              className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Select soil</option>
+              <option value="Loamy">Loamy</option>
+              <option value="Sandy">Sandy</option>
+              <option value="Clay">Clay</option>
+              <option value="Silty">Silty</option>
+              <option value="Peaty">Peaty</option>
+              <option value="Chalky">Chalky</option>
+              <option value="Other">Other</option>
+            </select>
+            {selectedSoilType === "Other" && (
+              <input
+                type="text"
+                {...register("soilTypeOther")}
+                className="mt-2 w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Specify soil type"
+              />
+            )}
+            {errors.soilType && (
+              <p className="text-sm text-red-600">{errors.soilType.message}</p>
+            )}
+            {errors.soilTypeOther && (
+              <p className="text-sm text-red-600">{errors.soilTypeOther.message}</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Environment</h2>
+          <input type="hidden" {...register("latitude")} />
+          <input type="hidden" {...register("longitude")} />
+          <input type="hidden" {...register("humidity")} />
+          {(latitude || longitude || humidity) ? (
+            <p className="text-sm text-muted-foreground">
+              {latitude && longitude && (
+                <>
+                  Location: {latitude}, {longitude}.{' '}
+                </>
+              )}
+              {humidity && <>Humidity: {humidity}%</>}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Fetching your location…</p>
+          )}
+        </div>
+      )}
+
+      {step === 5 && (
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Smart Plan</h2>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={generateCarePlan}
+            disabled={loadingCare}
+            className="flex items-center gap-2"
+          >
+            {loadingCare && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            )}
+            {loadingCare ? "Generating..." : "Generate Care Plan"}
+          </Button>
+          {carePlan && (
+            <div className="mt-2 space-y-1 rounded border bg-card p-3 text-sm text-foreground">
+              <p>Water every: {carePlan.waterEvery}</p>
+              <p>
+                Water amount: {formatWaterAmount(carePlan.waterAmountMl)}
+              </p>
+              <p>Fertilize: {carePlan.fertEvery} ({carePlan.fertFormula})</p>
+              {carePlan.weather && (
+                <p>
+                  Current weather: {carePlan.weather.temperature ?? "?"}°C, {carePlan.weather.humidity ?? "?"}% humidity
+                </p>
+              )}
+              <p className="text-muted-foreground">{carePlan.rationale}</p>
+              {carePlan.confidence && (
+                <p>Confidence: {carePlan.confidence}</p>
+              )}
               <p className="text-xs text-muted-foreground">
-                Personalize watering by current humidity.
+                AI-generated guidance. Verify with local experts for critical issues.
               </p>
             </div>
-            <Switch defaultChecked />
+          )}
+        </div>
+      )}
+
+      {step === 6 && (
+        <div className="space-y-4 rounded-xl border bg-card p-6 text-foreground shadow-sm">
+          <h2 className="text-lg font-medium">Ready to add &lsquo;{nameValue}&rsquo;?</h2>
+          <div className="space-y-2 text-sm">
+            <p>
+              <strong>Species:</strong> {speciesValue}
+            </p>
+            {watch("room") && (
+              <p>
+                <strong>Room:</strong> {watch("room")}
+              </p>
+            )}
+            {carePlan && (
+              <p>
+                <strong>Care Plan:</strong> water {carePlan.waterEvery} ({formatWaterAmount(carePlan.waterAmountMl)}), fertilize {carePlan.fertEvery}
+                {carePlan.confidence && (
+                  <>
+                    {" "}(confidence: {carePlan.confidence})
+                  </>
+                )}
+              </p>
+            )}
+            {photoPreview && (
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="mt-2 h-32 w-32 rounded object-cover"
+              />
+            )}
           </div>
         </div>
-      </Section>
+      )}
 
-      <Section icon={<Sparkles className="h-5 w-5 text-primary" />} title="Smart Plan">
-        <div className="space-y-3">
+      <div className="flex justify-between pt-2">
+        {step > 1 && (
+          <Button type="button" variant="secondary" onClick={prevStep}>
+            Back
+          </Button>
+        )}
+        {step < totalSteps && (
           <Button
-            variant="secondary"
-            className="rounded-xl inline-flex items-center"
+            type="button"
+            onClick={nextStep}
+            disabled={!canProceed()}
+            className="ml-auto"
           >
-            <Sparkles className="h-4 w-4 mr-2" /> Generate Care Plan
+            Next
           </Button>
-          <div className="rounded-xl border p-4 bg-accent/40 text-sm">
-            <ul className="list-disc pl-5">
-              <li>Water every 5 days — ~120 ml</li>
-              <li>Fertilize monthly — 10-10-10 at 1/2 strength</li>
-              <li>Why: 6 in terracotta, great drainage, medium light</li>
-            </ul>
-          </div>
-        </div>
-      </Section>
-
-      <Section icon={<Leaf className="h-5 w-5 text-primary" />} title="Confirm">
-        <div className="space-y-4 text-sm">
-          <div className="rounded-xl border p-4">
-            <div className="grid sm:grid-cols-2 gap-2">
-              <Summary label="Species" value="Kay · Monstera deliciosa" />
-              <Summary label="Room" value="Kitchen" />
-              <Summary label="Light" value="Medium" />
-              <Summary label="Pot" value="6in Terracotta" />
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <Button className="rounded-xl bg-primary text-primary-foreground">
-              <CheckCircle2 className="h-4 w-4 mr-1" /> Save Plant
-            </Button>
-          </div>
-        </div>
-      </Section>
-
-      <footer className="sticky bottom-0 mt-8 bg-muted/30 backdrop-blur supports-[backdrop-filter]:bg-muted/20 border-t border-muted rounded-t-xl">
-        <div className="max-w-3xl mx-auto flex items-center justify-between p-3">
-          <Button variant="secondary" className="rounded-xl">
-            <ChevronLeft className="h-4 w-4 mr-1" /> Back
+        )}
+        {step === totalSteps && (
+          <Button type="submit" className="ml-auto">
+            Save Plant
           </Button>
-          <Button className="rounded-xl bg-primary text-primary-foreground">
-            Next <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-function Section({
-  title,
-  icon,
-  children,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          {icon} {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
-  );
-}
-
-function Field({
-  label,
-  hint,
-  required,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <Label className="font-medium text-sm">{label}</Label>
-        {required && (
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            Required
-          </span>
         )}
       </div>
-      {children}
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-    </div>
-  );
-}
-
-function Stepper({
-  step,
-  labels,
-}: {
-  step: number;
-  labels: string[];
-}) {
-  const icons = [Flower2, MapPin, Box, ThermometerSun, Sparkles, Leaf] as const;
-  return (
-    <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
-      {labels.map((l, i) => {
-        const Icon = icons[i]!;
-        const active = i + 1 <= step;
-        return (
-          <React.Fragment key={l}>
-            <div
-              className={[
-                "h-8 px-3 rounded-full border flex items-center gap-2 shadow-sm",
-                active
-                  ? "bg-accent/60 border-accent text-foreground"
-                  : "bg-muted/50 border-muted",
-              ].join(" ")}
-            >
-              <Icon className="h-4 w-4 text-primary" /> {i + 1}. {l}
-            </div>
-            {i < labels.length - 1 && (
-              <div className="flex-1 h-px bg-border hidden md:block" />
-            )}
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
-}
-
-function Summary({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div>
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">
-        {label}
-      </div>
-      <div className="font-medium">{value}</div>
-    </div>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full border bg-accent/40 px-2.5 py-1 text-xs">
-      {children}
-    </span>
+    </form>
   );
 }
 
