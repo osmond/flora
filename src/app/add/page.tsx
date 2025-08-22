@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -228,7 +228,7 @@ function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 }
 
 function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
-  const { setValue, watch } = form;
+  const { control } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
@@ -238,42 +238,60 @@ function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
       </CardHeader>
       <CardContent className="grid gap-6 sm:grid-cols-2">
         <Field label="Room" id="room" required>
-          <Select value={watch("room")} onValueChange={(v) => setValue("room", v, { shouldValidate: true })}>
-            <SelectTrigger id="room" className="h-11 rounded-xl"><SelectValue placeholder="Select a room" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="living">Living Room</SelectItem>
-              <SelectItem value="kitchen">Kitchen</SelectItem>
-              <SelectItem value="bedroom">Bedroom</SelectItem>
-              <SelectItem value="office">Office</SelectItem>
-            </SelectContent>
-          </Select>
+          <Controller
+            control={control}
+            name="room"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger id="room" className="h-11 rounded-xl">
+                  <SelectValue placeholder="Select a room" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="living">Living Room</SelectItem>
+                  <SelectItem value="kitchen">Kitchen</SelectItem>
+                  <SelectItem value="bedroom">Bedroom</SelectItem>
+                  <SelectItem value="office">Office</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </Field>
 
         <Field label="Location" id="location" required>
-          <RadioGroup
-            value={watch("location")}
-            onValueChange={(v) => setValue("location", v as FormValues["location"], { shouldValidate: true })}
-            className="grid grid-cols-2 gap-2"
-          >
-            <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-              <RadioGroupItem value="indoor" id="indoor" /> <Home className="h-4 w-4 text-primary" /> Indoor
-            </label>
-            <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-              <RadioGroupItem value="outdoor" id="outdoor" /> <Trees className="h-4 w-4 text-primary" /> Outdoor
-            </label>
-          </RadioGroup>
+          <Controller
+            control={control}
+            name="location"
+            render={({ field }) => (
+              <RadioGroup value={field.value} onValueChange={field.onChange} className="grid grid-cols-2 gap-2">
+                <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
+                  <RadioGroupItem value="indoor" id="indoor" /> <Home className="h-4 w-4 text-primary" /> Indoor
+                </label>
+                <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
+                  <RadioGroupItem value="outdoor" id="outdoor" /> <Trees className="h-4 w-4 text-primary" /> Outdoor
+                </label>
+              </RadioGroup>
+            )}
+          />
         </Field>
 
         <div className="sm:col-span-2">
           <Field label="Light Level" id="light" required>
-            <Select value={watch("light")} onValueChange={(v) => setValue("light", v as FormValues["light"], { shouldValidate: true })}>
-              <SelectTrigger id="light" className="h-11 rounded-xl"><SelectValue placeholder="Choose" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">☁️ Low</SelectItem>
-                <SelectItem value="medium">⛅ Medium</SelectItem>
-                <SelectItem value="bright">☀️ Bright</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="light"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger id="light" className="h-11 rounded-xl">
+                    <SelectValue placeholder="Choose" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">☁️ Low</SelectItem>
+                    <SelectItem value="medium">⛅ Medium</SelectItem>
+                    <SelectItem value="bright">☀️ Bright</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </Field>
         </div>
       </CardContent>
@@ -282,7 +300,7 @@ function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 }
 
 function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
-  const { setValue, watch, register } = form;
+  const { control, register } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
@@ -297,56 +315,93 @@ function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
               <Ruler className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input id="potSize" className="pl-8 h-11 rounded-xl" {...register("potSize")} />
             </div>
-            <Select value={watch("potUnit")} onValueChange={(v) => setValue("potUnit", v as FormValues["potUnit"], { shouldValidate: true })}>
-              <SelectTrigger className="w-28 h-11 rounded-xl"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="in">in</SelectItem>
-                <SelectItem value="cm">cm</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="potUnit"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-28 h-11 rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in">in</SelectItem>
+                    <SelectItem value="cm">cm</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
         </Field>
 
         <Field label="Pot Material" id="potMaterial">
-          <Select value={watch("potMaterial")} onValueChange={(v) => setValue("potMaterial", v as NonNullable<FormValues["potMaterial"]>, { shouldValidate: true })}>
-            <SelectTrigger id="potMaterial" className="h-11 rounded-xl"><SelectValue placeholder="Select material" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="terracotta">Terracotta</SelectItem>
-              <SelectItem value="ceramic">Ceramic</SelectItem>
-              <SelectItem value="plastic">Plastic</SelectItem>
-            </SelectContent>
-          </Select>
+          <Controller
+            control={control}
+            name="potMaterial"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger id="potMaterial" className="h-11 rounded-xl">
+                  <SelectValue placeholder="Select material" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="terracotta">Terracotta</SelectItem>
+                  <SelectItem value="ceramic">Ceramic</SelectItem>
+                  <SelectItem value="plastic">Plastic</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </Field>
+
+        <Field label="Soil" id="soil">
+          <Controller
+            control={control}
+            name="soil"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger id="soil" className="h-11 rounded-xl">
+                  <SelectValue placeholder="Select soil" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="loam">Loam</SelectItem>
+                  <SelectItem value="cactus">Cactus</SelectItem>
+                  <SelectItem value="orchid">Orchid</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </Field>
 
         <div className="sm:col-span-2">
           <Field label="Drainage" id="drainage" required>
-            <RadioGroup
-              value={watch("drainage")}
-              onValueChange={(v) => setValue("drainage", v as FormValues["drainage"], { shouldValidate: true })}
-              className="grid gap-2 sm:grid-cols-3"
-            >
-              <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                <RadioGroupItem value="poor" id="dr-poor" />
-                <div>
-                  <div className="font-medium flex items-center gap-1 text-destructive"><Droplet className="h-4 w-4" />Poor</div>
-                  <p className="text-xs text-muted-foreground">Slow drainage; higher risk of root rot.</p>
-                </div>
-              </label>
-              <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                <RadioGroupItem value="avg" id="dr-avg" />
-                <div>
-                  <div className="font-medium flex items-center gap-1"><Droplets className="h-4 w-4 text-primary" />Average</div>
-                  <p className="text-xs text-muted-foreground">Standard drainage; moderate watering.</p>
-                </div>
-              </label>
-              <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
-                <RadioGroupItem value="great" id="dr-great" />
-                <div>
-                  <div className="font-medium flex items-center gap-1 text-primary"><Droplets className="h-4 w-4" />Great</div>
-                  <p className="text-xs text-muted-foreground">Excellent drainage; water flows quickly.</p>
-                </div>
-              </label>
-            </RadioGroup>
+            <Controller
+              control={control}
+              name="drainage"
+              render={({ field }) => (
+                <RadioGroup value={field.value} onValueChange={field.onChange} className="grid gap-2 sm:grid-cols-3">
+                  <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
+                    <RadioGroupItem value="poor" id="dr-poor" />
+                    <div>
+                      <div className="font-medium flex items-center gap-1 text-destructive"><Droplet className="h-4 w-4" />Poor</div>
+                      <p className="text-xs text-muted-foreground">Slow drainage; higher risk of root rot.</p>
+                    </div>
+                  </label>
+                  <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
+                    <RadioGroupItem value="avg" id="dr-avg" />
+                    <div>
+                      <div className="font-medium flex items-center gap-1"><Droplets className="h-4 w-4 text-primary" />Average</div>
+                      <p className="text-xs text-muted-foreground">Standard drainage; moderate watering.</p>
+                    </div>
+                  </label>
+                  <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
+                    <RadioGroupItem value="great" id="dr-great" />
+                    <div>
+                      <div className="font-medium flex items-center gap-1 text-primary"><Droplets className="h-4 w-4" />Great</div>
+                      <p className="text-xs text-muted-foreground">Excellent drainage; water flows quickly.</p>
+                    </div>
+                  </label>
+                </RadioGroup>
+              )}
+            />
           </Field>
         </div>
       </CardContent>
@@ -355,7 +410,7 @@ function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 }
 
 function Environment({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
-  const { setValue, watch } = form;
+  const { control } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
@@ -374,9 +429,12 @@ function Environment({ form }: { form: ReturnType<typeof useForm<FormValues>> })
             <div className="font-medium">Use local humidity</div>
             <p className="text-xs text-muted-foreground">Personalize watering by current humidity.</p>
           </div>
-          <Switch
-            checked={watch("humidityOptIn")}
-            onCheckedChange={(b) => setValue("humidityOptIn", !!b)}
+          <Controller
+            control={control}
+            name="humidityOptIn"
+            render={({ field }) => (
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
+            )}
           />
         </div>
       </CardContent>
