@@ -20,19 +20,27 @@ type Plant = {
   nextIn?: string;
 };
 
-// demo placeholder data
-const DEMO: Plant[] = [
-  { id: "1", name: "Kay", species: "Monstera deliciosa", room: "Kitchen", nextIn: "2d" },
-  { id: "2", name: "Moss", species: "Pothos", room: "Office", nextIn: "5d" },
-  { id: "3", name: "Rue", species: "ZZ Plant", room: "Hall", nextIn: "1d" },
-];
-
 export default function PlantsPage() {
   const [view, setView] = React.useState<"grid" | "list">("grid");
   const [room, setRoom] = React.useState<string>("all");
   const [q, setQ] = React.useState("");
 
-  const plants = DEMO.filter(
+  const [plants, setPlants] = React.useState<Plant[]>([]);
+
+  React.useEffect(() => {
+    async function loadPlants() {
+      try {
+        const res = await fetch("/api/plants");
+        const json = await res.json();
+        setPlants(json.data ?? []);
+      } catch (err) {
+        console.error("Failed to fetch plants", err);
+      }
+    }
+    loadPlants();
+  }, []);
+
+  const filtered = plants.filter(
     (p) =>
       (room === "all" || p.room === room) &&
       (`${p.name} ${p.species}`.toLowerCase().includes(q.toLowerCase()))
@@ -82,7 +90,7 @@ export default function PlantsPage() {
       </header>
 
       {/* Empty state */}
-      {plants.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="rounded-2xl border p-8 text-center bg-muted/30">
           <div className="text-3xl mb-2">🌿</div>
           <h3 className="font-semibold mb-1">No plants yet</h3>
@@ -95,7 +103,7 @@ export default function PlantsPage() {
         </div>
       ) : view === "grid" ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {plants.map((p) => (
+          {filtered.map((p) => (
             <Link key={p.id} href={`/plants/${p.id}`} className="block">
               <Card className="rounded-2xl hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
@@ -116,7 +124,7 @@ export default function PlantsPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {plants.map((p) => (
+          {filtered.map((p) => (
             <Link key={p.id} href={`/plants/${p.id}`} className="block">
               <Card className="rounded-2xl hover:shadow-md transition-shadow">
                 <CardContent className="p-4 flex items-center gap-4">
