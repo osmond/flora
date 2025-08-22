@@ -1,66 +1,45 @@
-import TaskItem, { Task } from "@/components/TaskItem";
-import OnboardingProgress from "@/components/OnboardingProgress";
-import EmptyStateCTA from "@/components/EmptyStateCTA";
-import { getTasks, getPlants } from "@/lib/data";
+"use client";
 
-export const revalidate = 0;
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Check, AlarmClock, CalendarClock, ChevronRight } from "lucide-react";
 
-export default async function TodayPage() {
-  const today = new Date().toISOString().slice(0, 10);
-  let data;
-  let plants;
-  try {
-    data = await getTasks();
-    plants = await getPlants();
-  } catch (error) {
-    console.error("Error fetching tasks:", error);
-    return <div>Failed to load tasks.</div>;
-  }
+type Task = { id: string; title: string; due: "overdue"|"today"|"upcoming"; meta?: string };
 
-  const tasks = (data ?? []) as Task[];
-  const hasPlants = (plants ?? []).length > 0;
-  const hasTasks = tasks.length > 0;
-  const overdue = tasks.filter((t) => t.due_date < today);
-  const dueToday = tasks.filter((t) => t.due_date === today);
-  const upcoming = tasks.filter((t) => t.due_date > today);
+const DEMO: Task[] = [
+  { id: "1", title: "Water Kay (Monstera)", due: "overdue", meta: "3d overdue" },
+  { id: "2", title: "Mist Fern", due: "today", meta: "due today" },
+  { id: "3", title: "Fertilize ZZ", due: "upcoming", meta: "in 2d" },
+];
 
-  const renderTasks = (list: Task[]) => (
-    <ul className="space-y-4">
-      {list.map((task) => (
-        <TaskItem key={task.id} task={task} today={today} />
-      ))}
-    </ul>
-  );
-
+export default function TodayPage() {
+  const [tab, setTab] = React.useState<"overdue"|"today"|"upcoming">("today");
   return (
-    <div>
-      <OnboardingProgress hasPlants={hasPlants} hasTasks={hasTasks} />
-      <h1 className="mb-4 text-2xl font-bold">Today&apos;s Tasks</h1>
-
-      {overdue.length > 0 && (
-        <section className="mb-6">
-          <h2 className="mb-2 text-xl font-semibold">Overdue</h2>
-          {renderTasks(overdue)}
-        </section>
-      )}
-
-      {dueToday.length > 0 && (
-        <section className="mb-6">
-          <h2 className="mb-2 text-xl font-semibold">Due Today</h2>
-          {renderTasks(dueToday)}
-        </section>
-      )}
-
-      {upcoming.length > 0 && (
-          <section>
-            <h2 className="mb-2 text-xl font-semibold">Upcoming</h2>
-            {renderTasks(upcoming)}
-          </section>
-      )}
-
-      {overdue.length === 0 &&
-        dueToday.length === 0 &&
-        upcoming.length === 0 && <EmptyStateCTA />}
+    <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 space-y-6">
+      <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
+      <Tabs value={tab} onValueChange={(v:any)=>setTab(v)}>
+        <TabsList><TabsTrigger value="overdue">Overdue</TabsTrigger><TabsTrigger value="today">Today</TabsTrigger><TabsTrigger value="upcoming">Upcoming</TabsTrigger></TabsList>
+        {(["overdue","today","upcoming"] as const).map(key => (
+          <TabsContent value={key} key={key} className="space-y-2 pt-3">
+            {DEMO.filter(t=>t.due===key).map(t => (
+              <Card key={t.id} className="rounded-2xl">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <Badge variant="secondary">{t.meta}</Badge>
+                  <div className="flex-1">{t.title}</div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" className="rounded-xl"><Check className="h-4 w-4 mr-1" />Done</Button>
+                    <Button size="sm" variant="secondary" className="rounded-xl"><AlarmClock className="h-4 w-4 mr-1" />AlarmClock</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {DEMO.filter(t=>t.due===key).length===0 && <div className="text-sm text-muted-foreground">Nothing here yet.</div>}
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 }
