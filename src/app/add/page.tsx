@@ -4,6 +4,8 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/sonner";
 
 // shadcn/ui - import from individual component paths
 import { Button } from "@/components/ui/button";
@@ -61,9 +63,37 @@ export default function AddPlantPage() {
     mode: "onBlur",
   });
 
-  const onSubmit = (values: FormValues) => {
-    console.log("Submit Add Plant:", values);
-    // TODO: integrate Supabase insert + storage + plan generator
+  const router = useRouter();
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      const formData = new FormData();
+      formData.set("name", values.nickname);
+      formData.set("species", values.species);
+      formData.set("room", values.room);
+      formData.set("indoor", values.location);
+      formData.set("light_level", values.light);
+      formData.set("pot_size", `${values.potSize}${values.potUnit ? ` ${values.potUnit}` : ""}`);
+      if (values.potMaterial) formData.set("pot_material", values.potMaterial);
+      formData.set("drainage", values.drainage);
+      if (values.soil) formData.set("soil_type", values.soil);
+
+      const res = await fetch("/api/plants", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save plant");
+      }
+
+      toast("Plant added!");
+      router.push("/plants");
+      router.refresh();
+    } catch (err) {
+      console.error("Submit Add Plant error:", err);
+      toast("Failed to add plant");
+    }
   };
 
   return (
