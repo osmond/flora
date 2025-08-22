@@ -218,7 +218,7 @@ function Field({
 function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { register, control, formState: { errors } } = form;
   return (
-    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
+    <Card className="border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Flower2 className="h-5 w-5 text-primary" /> Identify
@@ -264,7 +264,7 @@ function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { control } = form;
   return (
-    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
+    <Card className="border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" /> Place
@@ -336,7 +336,7 @@ function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { control, register } = form;
   return (
-    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
+    <Card className="border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Box className="h-5 w-5 text-primary" /> Pot Setup
@@ -446,7 +446,7 @@ function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 function Environment({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { control } = form;
   return (
-    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
+    <Card className="border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <ThermometerSun className="h-5 w-5 text-primary" /> Environment
@@ -518,7 +518,7 @@ function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   };
 
   return (
-    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
+    <Card className="border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" /> Smart Plan
@@ -575,7 +575,7 @@ function Confirm({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   } catch {}
 
   return (
-    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
+    <Card className="border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Leaf className="h-5 w-5 text-primary" /> Confirm
