@@ -38,6 +38,7 @@ const FormSchema = z.object({
   soil: z.enum(["loam", "cactus", "orchid"]).optional(),
   humidityOptIn: z.boolean().default(true),
   notes: z.string().optional(),
+  carePlan: z.string(),
 });
 
 type FormValues = z.infer<typeof FormSchema>;
@@ -60,6 +61,7 @@ export default function AddPlantPage() {
       soil: "loam",
       humidityOptIn: true,
       notes: "",
+      carePlan: "",
     },
     mode: "onBlur",
   });
@@ -78,6 +80,7 @@ export default function AddPlantPage() {
       if (values.potMaterial) formData.set("pot_material", values.potMaterial);
       formData.set("drainage", values.drainage);
       if (values.soil) formData.set("soil_type", values.soil);
+      formData.set("care_plan", values.carePlan);
 
       const res = await fetch("/api/plants", {
         method: "POST",
@@ -485,6 +488,7 @@ function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
       if (!res.ok) throw new Error("Failed to generate care plan");
       const data = await res.json();
       setPlan(data);
+      form.setValue("carePlan", JSON.stringify(data));
     } catch (err) {
       console.error("Generate care plan error:", err);
       setError("Failed to generate care plan");
@@ -539,6 +543,17 @@ function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 
 function Confirm({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const values = form.getValues();
+  let plan: {
+    waterEvery: string;
+    waterAmountMl: number;
+    fertEvery: string;
+    fertFormula: string;
+    rationale: string;
+  } | null = null;
+  try {
+    plan = JSON.parse(values.carePlan);
+  } catch {}
+
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
@@ -555,6 +570,19 @@ function Confirm({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
             <Summary label="Pot" value={`${values.potSize}${values.potUnit} ${values.potMaterial}`} />
           </div>
         </div>
+        {plan && (
+          <div className="rounded-xl border p-4">
+            <ul className="list-disc pl-5">
+              <li>
+                Water every {plan.waterEvery} — ~{plan.waterAmountMl} ml
+              </li>
+              <li>
+                Fertilize {plan.fertEvery} — {plan.fertFormula}
+              </li>
+              <li>Why: {plan.rationale}</li>
+            </ul>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
