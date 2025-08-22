@@ -9,17 +9,17 @@ import { getCurrentUserId } from "@/lib/auth";
 // shadcn/ui (individual imports to avoid barrel mismatches)
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 // lucide-react
 import {
-  ArrowLeft, Pencil, Plus, Camera, Trash2, UploadCloud, NotebookText,
+  ArrowLeft, Pencil, Plus, Camera, NotebookText,
   Droplets, Sparkles, ThermometerSun, Sun, ImageIcon,
   CheckCircle2, Clock, AlertTriangle
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 type Plant = {
   id: string;
@@ -87,6 +87,11 @@ export default async function PlantDetailPage({
 function DetailView({ plant }: { plant: Plant }) {
   const [tab, setTab] = React.useState<"all" | "water" | "fertilize" | "notes" | "photos">("all");
   const overdue = !plant.nextWaterAt; // demo heuristic for Care Coach
+  const [notes, setNotes] = React.useState<string[]>([
+    "Moved to brighter spot",
+    "Repotted on **Aug 20**",
+  ]);
+  const [photos] = React.useState<string[]>(["/placeholder.svg", "/placeholder.svg"]);
 
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter space-y-6">
@@ -131,7 +136,7 @@ function DetailView({ plant }: { plant: Plant }) {
       </header>
 
       {/* Quick stats */}
-      <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+      <Card className="bg-white border rounded-2xl shadow-card">
         <CardContent className="py-4">
           <div className="flex flex-wrap gap-2">
             <Stat label="Water" value={waterText(plant)} icon={<Droplets className="h-3.5 w-3.5" />} />
@@ -173,7 +178,7 @@ function DetailView({ plant }: { plant: Plant }) {
       )}
 
       {/* Activity */}
-      <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+      <Card className="bg-white border rounded-2xl shadow-card">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <NotebookText className="h-5 w-5 text-primary" /> Activity
@@ -206,6 +211,13 @@ function DetailView({ plant }: { plant: Plant }) {
 
             {/* Notes composer */}
             <TabsContent value="notes" className="space-y-3 pt-3">
+              {notes.map((n, i) => (
+                <Card key={i} className="bg-white rounded-2xl shadow-card">
+                  <CardContent className="p-4 text-sm">
+                    <ReactMarkdown>{n}</ReactMarkdown>
+                  </CardContent>
+                </Card>
+              ))}
               <Label htmlFor="note" className="text-sm font-medium">Add a note</Label>
               <Textarea id="note" rows={3} className="rounded-xl" placeholder="What did you observe?" />
               <div className="flex justify-end">
@@ -218,17 +230,14 @@ function DetailView({ plant }: { plant: Plant }) {
             {/* Gallery */}
             <TabsContent value="photos" className="space-y-3 pt-3">
               <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="relative aspect-square overflow-hidden rounded-xl border bg-muted" />
+                {photos.map((src, i) => (
+                  <div key={i} className="relative aspect-square overflow-hidden rounded-xl border">
+                    <Image src={src} alt="Photo" fill className="object-cover" />
+                  </div>
                 ))}
-              </div>
-              <div className="flex items-center justify-between">
-                <Button size="sm" variant="secondary" className="rounded-xl">
-                  <UploadCloud className="h-4 w-4 mr-1" />Upload
-                </Button>
-                <Button size="sm" className="rounded-xl">
-                  <Trash2 className="h-4 w-4 mr-1" />Remove Selected
-                </Button>
+                <div className="aspect-square rounded-xl border-2 border-dashed flex items-center justify-center cursor-pointer hover:bg-muted/50 transition">
+                  <Plus className="h-6 w-6 text-muted-foreground" />
+                </div>
               </div>
             </TabsContent>
           </Tabs>
@@ -258,17 +267,26 @@ function TimelineItem({
   meta: string;
   note?: string;
 }) {
+  const [open, setOpen] = React.useState(false);
   return (
-    <div className="flex gap-3">
-      <div className="mt-1">{icon}</div>
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="font-medium">{title}</div>
-          <div className="text-xs text-muted-foreground">{meta}</div>
+    <div className="relative pl-6">
+      <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full gap-3 text-left"
+      >
+        <div className="mt-1">{icon}</div>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="font-medium">{title}</div>
+            <div className="text-xs text-muted-foreground">{meta}</div>
+          </div>
+          {open && note && (
+            <p className="text-sm text-muted-foreground mt-0.5">{note}</p>
+          )}
         </div>
-        {note && <p className="text-sm text-muted-foreground mt-0.5">{note}</p>}
-        <Separator className="my-3" />
-      </div>
+      </button>
     </div>
   );
 }

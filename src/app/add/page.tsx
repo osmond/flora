@@ -20,9 +20,22 @@ import SpeciesAutosuggest from "@/components/SpeciesAutosuggest";
 
 // lucide-react icons
 import {
-  Flower2, MapPin, Box, ThermometerSun, Sparkles, Leaf,
-  Droplet, Droplets, Sun, Home, Trees, Ruler,
-  ChevronLeft, ChevronRight, CheckCircle2,
+  Flower2,
+  MapPin,
+  Box,
+  ThermometerSun,
+  Sparkles,
+  Leaf,
+  Droplet,
+  Droplets,
+  Sun,
+  Home,
+  Trees,
+  Ruler,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  ImageIcon,
 } from "lucide-react";
 
 const FormSchema = z.object({
@@ -98,13 +111,13 @@ export default function AddPlantPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter">
+    <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter space-y-6">
       <header className="mb-2">
         <h1 className="text-2xl font-semibold tracking-tight">Add a Plant</h1>
         <Stepper step={step} labels={["Identify","Place","Pot","Environment","Smart Plan","Confirm"]} />
       </header>
 
-      <form className="space-y-0" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         {step === 1 && <Identify form={form} />}
         {step === 2 && <Place form={form} />}
         {step === 3 && <PotSetup form={form} />}
@@ -147,7 +160,7 @@ export default function AddPlantPage() {
 function Stepper({ step, labels }: { step: number; labels: string[] }) {
   const icons = [Flower2, MapPin, Box, ThermometerSun, Sparkles, Leaf] as const;
   return (
-    <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
+    <div className="mt-4 flex items-center justify-center gap-3 text-xs text-muted-foreground">
       {labels.map((l, i) => {
         const Icon = icons[i]!;
         const active = i + 1 <= step;
@@ -202,7 +215,7 @@ function Field({
 function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { register, control, formState: { errors } } = form;
   return (
-    <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Flower2 className="h-5 w-5 text-primary" /> Identify
@@ -228,6 +241,13 @@ function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
           />
         </Field>
 
+        <Field label="Photo" id="photo">
+          <div className="relative flex items-center justify-center h-32 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/30 transition hover:bg-muted/50">
+            <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
+            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+          </div>
+        </Field>
+
         <div className="sm:col-span-2">
           <Field label="Notes" id="notes">
             <Textarea id="notes" {...register("notes")} rows={3} placeholder="Optional notes" className="rounded-xl" />
@@ -241,7 +261,7 @@ function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { control } = form;
   return (
-    <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" /> Place
@@ -313,7 +333,7 @@ function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { control, register } = form;
   return (
-    <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Box className="h-5 w-5 text-primary" /> Pot Setup
@@ -423,7 +443,7 @@ function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 function Environment({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { control } = form;
   return (
-    <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <ThermometerSun className="h-5 w-5 text-primary" /> Environment
@@ -494,7 +514,7 @@ function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   };
 
   return (
-    <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" /> Smart Plan
@@ -540,7 +560,7 @@ function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 function Confirm({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const values = form.getValues();
   return (
-    <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
+    <Card className="bg-white border rounded-2xl shadow-card animate-in fade-in-50 slide-in-from-bottom-4">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Leaf className="h-5 w-5 text-primary" /> Confirm
