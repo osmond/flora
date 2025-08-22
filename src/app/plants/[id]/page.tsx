@@ -1,256 +1,52 @@
-"use client";
+import { createClient } from "@supabase/supabase-js";
+import config from "@/lib/config";
 
-import * as React from "react";
-import Image from "next/image";
-import Link from "next/link";
+export default async function PlantDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = createClient(
+    config.NEXT_PUBLIC_SUPABASE_URL,
+    config.SUPABASE_SERVICE_ROLE_KEY,
+  );
+  const { data: plant } = await supabase
+    .from("plants")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", "user-123")
+    .single();
 
-// shadcn/ui (individual imports to avoid barrel mismatches)
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-
-// lucide-react
-import {
-  ArrowLeft, Pencil, Plus, Camera, Trash2, UploadCloud, NotebookText,
-  Droplets, Sparkles, ThermometerSun, Sun, ImageIcon,
-  CheckCircle2, Clock, AlertTriangle
-} from "lucide-react";
-
-type Plant = {
-  id: string;
-  name: string;              // nickname
-  species: string;
-  room?: string;
-  photoUrl?: string;
-  nextWaterAt?: string | null;
-  lastWaterAt?: string | null;
-  waterEveryDays?: number | null;
-  waterAmountMl?: number | null;
-  light?: "low" | "medium" | "bright";
-  pot?: { size: string; unit: "in" | "cm"; material?: string; drainage?: "poor" | "avg" | "great" } | null;
-  humidity?: number | null;  // %
-};
-
-/** Demo stub — replace with Supabase fetch */
-const DEMO: Plant = {
-  id: "demo",
-  name: "Kay",
-  species: "Monstera deliciosa",
-  room: "Kitchen",
-  photoUrl: "/placeholder.svg",
-  nextWaterAt: null, // null to show Care Coach
-  lastWaterAt: "2025-08-14",
-  waterEveryDays: 5,
-  waterAmountMl: 120,
-  light: "medium",
-  pot: { size: "6", unit: "in", material: "terracotta", drainage: "great" },
-  humidity: 58,
-};
-
-export default function PlantDetailPage() {
-  // TODO: read params.id and fetch from DB
-  return <DetailView plant={DEMO} />;
-}
-
-/* --------------------- Client UI --------------------- */
-function DetailView({ plant }: { plant: Plant }) {
-  const [tab, setTab] = React.useState<"all" | "water" | "fertilize" | "notes" | "photos">("all");
-  const overdue = !plant.nextWaterAt; // demo heuristic for Care Coach
+  let imageUrl = plant?.image_url || null;
+  if (!imageUrl) {
+    const { data: events } = await supabase
+      .from("events")
+      .select("image_url, created_at")
+      .eq("plant_id", id)
+      .order("created_at", { ascending: false });
+    imageUrl = events && events[0] ? events[0].image_url : null;
+  }
 
   return (
-    <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter space-y-6">
-      {/* Back link */}
-      <div className="flex items-center gap-2">
-        <Button variant="secondary" className="rounded-xl" asChild>
-          <Link href="/plants"><ArrowLeft className="h-4 w-4 mr-1" />Back</Link>
-        </Button>
+    <div className="space-y-8">
+      <img
+        className="w-full h-64 object-cover rounded-lg"
+        src={imageUrl ?? "/placeholder.svg"}
+        alt={plant?.name ?? "Plant"}
+      />
+
+      <div className="grid grid-cols-2 gap-4 text-sm text-muted">
+        <div>☀️ Bright indirect light</div>
+        <div>💧 Water every 7 days</div>
+        <div>🧪 Fertilize monthly</div>
       </div>
 
-      {/* Photo hero + title */}
-      <header className="space-y-4">
-        <div className="relative w-full overflow-hidden rounded-2xl border bg-muted aspect-[3/1.2]">
-          <Image
-            src={plant.photoUrl || "/placeholder.svg"}
-            alt={plant.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 768px"
-            priority
-          />
-        </div>
-        <div className="flex items-start justify-between gap-3">
+      <div className="border-l-2 border-muted space-y-4 pl-4">
+        <div className="relative">
+          <div className="absolute -left-2 w-4 h-4 bg-primary rounded-full top-1" />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">{plant.name}</h1>
-            <p className="text-muted-foreground">
-              {plant.species}{plant.room ? ` · ${plant.room}` : ""}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="secondary" className="rounded-xl" size="sm">
-              <Pencil className="h-4 w-4 mr-1" />Edit
-            </Button>
-            <Button className="rounded-xl" size="sm">
-              <Plus className="h-4 w-4 mr-1" />Add Note
-            </Button>
-            <Button className="rounded-xl" size="sm" variant="secondary">
-              <Camera className="h-4 w-4 mr-1" />Add Photo
-            </Button>
+            <div className="font-medium text-foreground">Watered</div>
+            <div className="text-sm text-muted">Aug 18, 2025</div>
           </div>
         </div>
-      </header>
-
-      {/* Quick stats */}
-      <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-        <CardContent className="py-4">
-          <div className="flex flex-wrap gap-2">
-            <Stat label="Water" value={waterText(plant)} icon={<Droplets className="h-3.5 w-3.5" />} />
-            {plant.light && <Stat label="Light" value={titleCase(plant.light)} icon={<Sun className="h-3.5 w-3.5" />} />}
-            {plant.humidity != null && <Stat label="Humidity" value={`${plant.humidity}%`} icon={<ThermometerSun className="h-3.5 w-3.5" />} />}
-            {plant.pot && (
-              <Stat
-                label="Pot"
-                value={`${plant.pot.size}${plant.pot.unit} ${plant.pot.material ?? ""}`.trim()}
-                icon={<ImageIcon className="h-3.5 w-3.5" />}
-              />
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Care Coach (overdue only) */}
-      {overdue && (
-        <Card className="bg-accent/40 border border-accent rounded-2xl shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-primary" /> Care Coach
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm">
-              Looks like watering is overdue. Check the top 1–2 cm of soil; if it’s dry, water ~{plant.waterAmountMl ?? 120} ml.
-            </p>
-            <div className="flex items-center gap-2">
-              <Button size="sm" className="rounded-xl">
-                <CheckCircle2 className="h-4 w-4 mr-1" />Mark Watered
-              </Button>
-              <Button size="sm" variant="secondary" className="rounded-xl">
-                <Clock className="h-4 w-4 mr-1" />Snooze
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Activity */}
-      <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <NotebookText className="h-5 w-5 text-primary" /> Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="water">Water</TabsTrigger>
-              <TabsTrigger value="fertilize">Fertilize</TabsTrigger>
-              <TabsTrigger value="notes">Notes</TabsTrigger>
-              <TabsTrigger value="photos">Photos</TabsTrigger>
-            </TabsList>
-
-            {/* Timeline demo */}
-            <TabsContent value="all" className="space-y-4 pt-3">
-              <TimelineItem icon={<Droplets className="h-4 w-4 text-primary" />} title="Watered" meta="Aug 14" note="~120 ml" />
-              <TimelineItem icon={<Sparkles className="h-4 w-4 text-primary" />} title="Fertilized" meta="Aug 01" note="10-10-10 at ½ strength" />
-              <TimelineItem icon={<NotebookText className="h-4 w-4 text-primary" />} title="Note" meta="Jul 28" note="Moved to brighter spot" />
-            </TabsContent>
-
-            <TabsContent value="water" className="space-y-4 pt-3">
-              <TimelineItem icon={<Droplets className="h-4 w-4 text-primary" />} title="Watered" meta="Aug 14" note="~120 ml" />
-            </TabsContent>
-
-            <TabsContent value="fertilize" className="space-y-4 pt-3">
-              <TimelineItem icon={<Sparkles className="h-4 w-4 text-primary" />} title="Fertilized" meta="Aug 01" note="10-10-10 ½ strength" />
-            </TabsContent>
-
-            {/* Notes composer */}
-            <TabsContent value="notes" className="space-y-3 pt-3">
-              <Label htmlFor="note" className="text-sm font-medium">Add a note</Label>
-              <Textarea id="note" rows={3} className="rounded-xl" placeholder="What did you observe?" />
-              <div className="flex justify-end">
-                <Button size="sm" className="rounded-xl">
-                  <Plus className="h-4 w-4 mr-1" />Save Note
-                </Button>
-              </div>
-            </TabsContent>
-
-            {/* Gallery */}
-            <TabsContent value="photos" className="space-y-3 pt-3">
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="relative aspect-square overflow-hidden rounded-xl border bg-muted" />
-                ))}
-              </div>
-              <div className="flex items-center justify-between">
-                <Button size="sm" variant="secondary" className="rounded-xl">
-                  <UploadCloud className="h-4 w-4 mr-1" />Upload
-                </Button>
-                <Button size="sm" className="rounded-xl">
-                  <Trash2 className="h-4 w-4 mr-1" />Remove Selected
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-/* ---------------- UI Pieces ---------------- */
-function Stat({ label, value, icon }: { label: string; value: React.ReactNode; icon: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full border bg-accent/40 px-3 py-1 text-xs">
-      {icon} <span className="font-medium">{label}:</span> {value}
-    </span>
-  );
-}
-
-function TimelineItem({
-  icon,
-  title,
-  meta,
-  note,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  meta: string;
-  note?: string;
-}) {
-  return (
-    <div className="flex gap-3">
-      <div className="mt-1">{icon}</div>
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="font-medium">{title}</div>
-          <div className="text-xs text-muted-foreground">{meta}</div>
-        </div>
-        {note && <p className="text-sm text-muted-foreground mt-0.5">{note}</p>}
-        <Separator className="my-3" />
       </div>
     </div>
   );
-}
-
-/* ---------------- Helpers ---------------- */
-function waterText(p: Plant): string {
-  if (p.waterEveryDays && p.waterAmountMl) return `every ${p.waterEveryDays}d · ~${p.waterAmountMl} ml`;
-  if (p.waterEveryDays) return `every ${p.waterEveryDays}d`;
-  return "custom";
-}
-function titleCase(s: string) {
-  return s.slice(0, 1).toUpperCase() + s.slice(1);
 }
