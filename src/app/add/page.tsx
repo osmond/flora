@@ -5,22 +5,22 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+// shadcn/ui - import from individual component paths
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
-import { SectionTitle } from "@/components/section-title";
 
+// lucide-react icons
 import {
   Flower2, MapPin, Box, ThermometerSun, Sparkles, Leaf,
   Droplet, Droplets, Sun, Home, Trees, Ruler,
   ChevronLeft, ChevronRight, CheckCircle2,
 } from "lucide-react";
-import { StepChip } from "@/components/step-chip";
 
 const FormSchema = z.object({
   nickname: z.string().min(1, "Nickname is required"),
@@ -36,10 +36,12 @@ const FormSchema = z.object({
   humidityOptIn: z.boolean().default(true),
   notes: z.string().optional(),
 });
+
 type FormValues = z.infer<typeof FormSchema>;
 
 export default function AddPlantPage() {
   const [step, setStep] = React.useState(1);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -58,14 +60,16 @@ export default function AddPlantPage() {
     },
     mode: "onBlur",
   });
+
   const onSubmit = (values: FormValues) => {
     console.log("Submit Add Plant:", values);
+    // TODO: integrate Supabase insert + storage + plan generator
   };
 
   return (
     <div className="mx-auto max-w-3xl px-5 sm:px-8 py-8 bg-background min-h-screen font-inter">
       <header className="mb-2">
-        <SectionTitle>Add a Plant</SectionTitle>
+        <h1 className="text-2xl font-semibold tracking-tight">Add a Plant</h1>
         <Stepper step={step} labels={["Identify","Place","Pot","Environment","Smart Plan","Confirm"]} />
       </header>
 
@@ -74,16 +78,27 @@ export default function AddPlantPage() {
         {step === 2 && <Place form={form} />}
         {step === 3 && <PotSetup form={form} />}
         {step === 4 && <Environment form={form} />}
-        {step === 5 && <SmartPlan />}
+        {step === 5 && <SmartPlan form={form} />}
         {step === 6 && <Confirm form={form} />}
 
+        {/* Sticky footer nav */}
         <footer className="sticky bottom-0 mt-8 bg-muted/30 backdrop-blur supports-[backdrop-filter]:bg-muted/20 border-t border-muted rounded-t-xl">
           <div className="max-w-3xl mx-auto flex items-center justify-between p-3">
-            <Button type="button" variant="secondary" className="rounded-xl" onClick={() => setStep((s) => Math.max(1, s - 1))} disabled={step === 1}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="rounded-xl"
+              onClick={() => setStep((s) => Math.max(1, s - 1))}
+              disabled={step === 1}
+            >
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
             </Button>
             {step < 6 ? (
-              <Button type="button" onClick={() => setStep((s) => Math.min(6, s + 1))} className="rounded-xl bg-primary text-primary-foreground hover:opacity-95">
+              <Button
+                type="button"
+                onClick={() => setStep((s) => Math.min(6, s + 1))}
+                className="rounded-xl bg-primary text-primary-foreground hover:opacity-95"
+              >
                 Next <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             ) : (
@@ -99,66 +114,102 @@ export default function AddPlantPage() {
 }
 
 function Stepper({ step, labels }: { step: number; labels: string[] }) {
+  const icons = [Flower2, MapPin, Box, ThermometerSun, Sparkles, Leaf] as const;
   return (
     <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
-      {labels.map((l, i) => (
-        <React.Fragment key={l}>
-          <StepChip step={i + 1} label={l} active={i + 1 === step} done={i + 1 < step} />
-          {i < labels.length - 1 && <div className="flex-1 h-px bg-border hidden md:block" />}
-        </React.Fragment>
-      ))}
+      {labels.map((l, i) => {
+        const Icon = icons[i]!;
+        const active = i + 1 <= step;
+        return (
+          <React.Fragment key={l}>
+            <div
+              className={[
+                "h-8 px-3 rounded-full border flex items-center gap-2 shadow-sm",
+                active ? "bg-accent/60 border-accent text-foreground" : "bg-muted/50 border-muted",
+              ].join(" ")}
+            >
+              <Icon className="h-4 w-4 text-primary" /> {i + 1}. {l}
+            </div>
+            {i < labels.length - 1 && <div className="flex-1 h-px bg-border hidden md:block" />}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }
-function Field({ label, id, required, hint, error, children }:{ label: string; id: string; required?: boolean; hint?: string; error?: string; children: React.ReactElement }) {
-  const described = error ? `${id}-error` : undefined;
-  const child = React.cloneElement(children, {
-    id,
-    className: cn("mt-2", children.props.className),
-    "aria-invalid": !!error,
-    ...(error ? { "aria-describedby": described } : {}),
-  });
+
+function Field({
+  label,
+  id,
+  required,
+  hint,
+  error,
+  children,
+}: {
+  label: string;
+  id?: string;
+  required?: boolean;
+  hint?: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div>
-      <label htmlFor={id} className="text-sm font-medium">
-        {label} {required && <span className="text-xs text-muted-foreground">required</span>}
-      </label>
-      {child}
-      {hint && !error && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
-      {error && <p id={described} className="mt-1 text-xs text-destructive">{error}</p>}
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <Label htmlFor={id} className="font-medium text-sm">{label}</Label>
+        {required && (
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Required</span>
+        )}
+      </div>
+      {children}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
-function Identify({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
+
+function Identify({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { register, formState: { errors } } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-      <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><Flower2 className="h-5 w-5 text-primary" /> Identify</CardTitle></CardHeader>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <Flower2 className="h-5 w-5 text-primary" /> Identify
+        </CardTitle>
+      </CardHeader>
       <CardContent className="grid gap-6 sm:grid-cols-2">
         <Field label="Nickname" id="nickname" required hint="What you call this plant at home." error={errors.nickname?.message}>
-          <Input {...register("nickname")} placeholder="e.g., Kay" className="h-11 rounded-lg" />
+          <Input id="nickname" {...register("nickname")} placeholder="e.g., Kay" aria-invalid={!!errors.nickname} className="h-11 rounded-xl" />
         </Field>
+
         <Field label="Species" id="species" required hint="Start typing to search." error={errors.species?.message}>
-          <Input {...register("species")} placeholder="Monstera deliciosa" className="h-11 rounded-lg" />
+          {/* Swap with your real <SpeciesAutosuggest /> when ready */}
+          <Input id="species" {...register("species")} placeholder="Monstera deliciosa" aria-invalid={!!errors.species} className="h-11 rounded-xl" />
         </Field>
+
         <div className="sm:col-span-2">
           <Field label="Notes" id="notes">
-            <Textarea {...register("notes")} rows={3} placeholder="Optional notes" className="rounded-lg" />
+            <Textarea id="notes" {...register("notes")} rows={3} placeholder="Optional notes" className="rounded-xl" />
           </Field>
         </div>
       </CardContent>
     </Card>
   );
 }
-function Place({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
+
+function Place({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { setValue, watch } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-      <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><MapPin className="h-5 w-5 text-primary" /> Place</CardTitle></CardHeader>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <MapPin className="h-5 w-5 text-primary" /> Place
+        </CardTitle>
+      </CardHeader>
       <CardContent className="grid gap-6 sm:grid-cols-2">
         <Field label="Room" id="room" required>
           <Select value={watch("room")} onValueChange={(v) => setValue("room", v, { shouldValidate: true })}>
-            <SelectTrigger id="room" className="h-11 rounded-lg"><SelectValue placeholder="Select a room" /></SelectTrigger>
+            <SelectTrigger id="room" className="h-11 rounded-xl"><SelectValue placeholder="Select a room" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="living">Living Room</SelectItem>
               <SelectItem value="kitchen">Kitchen</SelectItem>
@@ -167,17 +218,27 @@ function Place({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
             </SelectContent>
           </Select>
         </Field>
+
         <Field label="Location" id="location" required>
-          <RadioGroup value={watch("location")} onValueChange={(v) => setValue("location", v as FormValues["location"], { shouldValidate: true })} className="grid grid-cols-2 gap-2">
-            <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors"><RadioGroupItem value="indoor" id="indoor" /> <Home className="h-4 w-4 text-primary" /> Indoor</label>
-            <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors"><RadioGroupItem value="outdoor" id="outdoor" /> <Trees className="h-4 w-4 text-primary" /> Outdoor</label>
+          <RadioGroup
+            value={watch("location")}
+            onValueChange={(v) => setValue("location", v as FormValues["location"], { shouldValidate: true })}
+            className="grid grid-cols-2 gap-2"
+          >
+            <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
+              <RadioGroupItem value="indoor" id="indoor" /> <Home className="h-4 w-4 text-primary" /> Indoor
+            </label>
+            <label className="flex items-center gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
+              <RadioGroupItem value="outdoor" id="outdoor" /> <Trees className="h-4 w-4 text-primary" /> Outdoor
+            </label>
           </RadioGroup>
         </Field>
+
         <div className="sm:col-span-2">
           <Field label="Light Level" id="light" required>
-          <Select value={watch("light")} onValueChange={(v) => setValue("light", v as FormValues["light"], { shouldValidate: true })}>
-            <SelectTrigger id="light" className="h-11 rounded-lg"><SelectValue placeholder="Choose" /></SelectTrigger>
-            <SelectContent>
+            <Select value={watch("light")} onValueChange={(v) => setValue("light", v as FormValues["light"], { shouldValidate: true })}>
+              <SelectTrigger id="light" className="h-11 rounded-xl"><SelectValue placeholder="Choose" /></SelectTrigger>
+              <SelectContent>
                 <SelectItem value="low">☁️ Low</SelectItem>
                 <SelectItem value="medium">⛅ Medium</SelectItem>
                 <SelectItem value="bright">☀️ Bright</SelectItem>
@@ -189,41 +250,71 @@ function Place({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
     </Card>
   );
 }
-function PotSetup({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
+
+function PotSetup({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { setValue, watch, register } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-      <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><Box className="h-5 w-5 text-primary" /> Pot Setup</CardTitle></CardHeader>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <Box className="h-5 w-5 text-primary" /> Pot Setup
+        </CardTitle>
+      </CardHeader>
       <CardContent className="grid gap-6 sm:grid-cols-2">
         <Field label="Pot Size" id="potSize" required>
           <div className="grid grid-cols-[1fr_auto] gap-2">
-            <div className="relative"><Ruler className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input className="pl-8 h-11 rounded-lg" {...register("potSize")} /></div>
+            <div className="relative">
+              <Ruler className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input id="potSize" className="pl-8 h-11 rounded-xl" {...register("potSize")} />
+            </div>
             <Select value={watch("potUnit")} onValueChange={(v) => setValue("potUnit", v as FormValues["potUnit"], { shouldValidate: true })}>
-              <SelectTrigger className="w-28 h-11 rounded-lg"><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="in">in</SelectItem><SelectItem value="cm">cm</SelectItem></SelectContent>
+              <SelectTrigger className="w-28 h-11 rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="in">in</SelectItem>
+                <SelectItem value="cm">cm</SelectItem>
+              </SelectContent>
             </Select>
           </div>
         </Field>
+
         <Field label="Pot Material" id="potMaterial">
           <Select value={watch("potMaterial")} onValueChange={(v) => setValue("potMaterial", v as NonNullable<FormValues["potMaterial"]>, { shouldValidate: true })}>
-            <SelectTrigger id="potMaterial" className="h-11 rounded-lg"><SelectValue placeholder="Select material" /></SelectTrigger>
-            <SelectContent><SelectItem value="terracotta">Terracotta</SelectItem><SelectItem value="ceramic">Ceramic</SelectItem><SelectItem value="plastic">Plastic</SelectItem></SelectContent>
+            <SelectTrigger id="potMaterial" className="h-11 rounded-xl"><SelectValue placeholder="Select material" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="terracotta">Terracotta</SelectItem>
+              <SelectItem value="ceramic">Ceramic</SelectItem>
+              <SelectItem value="plastic">Plastic</SelectItem>
+            </SelectContent>
           </Select>
         </Field>
+
         <div className="sm:col-span-2">
           <Field label="Drainage" id="drainage" required>
-            <RadioGroup value={watch("drainage")} onValueChange={(v) => setValue("drainage", v as FormValues["drainage"], { shouldValidate: true })} className="grid gap-2 sm:grid-cols-3">
+            <RadioGroup
+              value={watch("drainage")}
+              onValueChange={(v) => setValue("drainage", v as FormValues["drainage"], { shouldValidate: true })}
+              className="grid gap-2 sm:grid-cols-3"
+            >
               <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
                 <RadioGroupItem value="poor" id="dr-poor" />
-                <div><div className="font-medium flex items-center gap-1 text-destructive"><Droplet className="h-4 w-4" />Poor</div><p className="text-xs text-muted-foreground">Slow drainage; higher risk of root rot.</p></div>
+                <div>
+                  <div className="font-medium flex items-center gap-1 text-destructive"><Droplet className="h-4 w-4" />Poor</div>
+                  <p className="text-xs text-muted-foreground">Slow drainage; higher risk of root rot.</p>
+                </div>
               </label>
               <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
                 <RadioGroupItem value="avg" id="dr-avg" />
-                <div><div className="font-medium flex items-center gap-1"><Droplets className="h-4 w-4 text-primary" />Average</div><p className="text-xs text-muted-foreground">Standard drainage; moderate watering.</p></div>
+                <div>
+                  <div className="font-medium flex items-center gap-1"><Droplets className="h-4 w-4 text-primary" />Average</div>
+                  <p className="text-xs text-muted-foreground">Standard drainage; moderate watering.</p>
+                </div>
               </label>
               <label className="flex items-start gap-2 rounded-xl border p-3 cursor-pointer hover:bg-muted/40 transition-colors">
                 <RadioGroupItem value="great" id="dr-great" />
-                <div><div className="font-medium flex items-center gap-1 text-primary"><Droplets className="h-4 w-4" />Great</div><p className="text-xs text-muted-foreground">Excellent drainage; water flows quickly.</p></div>
+                <div>
+                  <div className="font-medium flex items-center gap-1 text-primary"><Droplets className="h-4 w-4" />Great</div>
+                  <p className="text-xs text-muted-foreground">Excellent drainage; water flows quickly.</p>
+                </div>
               </label>
             </RadioGroup>
           </Field>
@@ -232,11 +323,16 @@ function PotSetup({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
     </Card>
   );
 }
-function Environment({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
+
+function Environment({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const { setValue, watch } = form;
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-      <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><ThermometerSun className="h-5 w-5 text-primary" /> Environment</CardTitle></CardHeader>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <ThermometerSun className="h-5 w-5 text-primary" /> Environment
+        </CardTitle>
+      </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-wrap gap-2 text-sm">
           <Chip><MapPin className="h-3 w-3" /> Minneapolis, MN</Chip>
@@ -244,19 +340,32 @@ function Environment({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) 
           <Chip><Sun className="h-3 w-3" /> Bright indirect</Chip>
         </div>
         <div className="flex items-center justify-between rounded-lg border p-3">
-          <div><div className="font-medium">Use local humidity</div><p className="text-xs text-muted-foreground">Personalize watering by current humidity.</p></div>
-          <Switch checked={watch("humidityOptIn")} onCheckedChange={(b) => setValue("humidityOptIn", !!b)} />
+          <div>
+            <div className="font-medium">Use local humidity</div>
+            <p className="text-xs text-muted-foreground">Personalize watering by current humidity.</p>
+          </div>
+          <Switch
+            checked={watch("humidityOptIn")}
+            onCheckedChange={(b) => setValue("humidityOptIn", !!b)}
+          />
         </div>
       </CardContent>
     </Card>
   );
 }
-function SmartPlan() {
+
+function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-      <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> Smart Plan</CardTitle></CardHeader>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" /> Smart Plan
+        </CardTitle>
+      </CardHeader>
       <CardContent className="space-y-3">
-        <Button type="button" variant="secondary" className="inline-flex items-center rounded-xl"><Sparkles className="h-4 w-4 mr-2" />Generate Care Plan</Button>
+        <Button type="button" variant="secondary" className="inline-flex items-center rounded-xl">
+          <Sparkles className="h-4 w-4 mr-2" />Generate Care Plan
+        </Button>
         <div className="rounded-xl border p-4 bg-accent/40">
           <ul className="list-disc pl-5 text-sm">
             <li>Water every 5 days — ~120 ml</li>
@@ -268,11 +377,16 @@ function SmartPlan() {
     </Card>
   );
 }
-function Confirm({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
+
+function Confirm({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const values = form.getValues();
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
-      <CardHeader className="pb-2"><CardTitle className="text-lg font-semibold flex items-center gap-2"><Leaf className="h-5 w-5 text-primary" /> Confirm</CardTitle></CardHeader>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+          <Leaf className="h-5 w-5 text-primary" /> Confirm
+        </CardTitle>
+      </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <div className="rounded-xl border p-4">
           <div className="grid sm:grid-cols-2 gap-2">
@@ -282,14 +396,27 @@ function Confirm({ form }:{ form: ReturnType<typeof useForm<FormValues>> }) {
             <Summary label="Pot" value={`${values.potSize}${values.potUnit} ${values.potMaterial}`} />
           </div>
         </div>
-        <Button type="submit" className="rounded-xl bg-primary text-primary-foreground"><CheckCircle2 className="h-4 w-4 mr-1" /> Save Plant</Button>
+        <Button type="submit" className="rounded-xl bg-primary text-primary-foreground">
+          <CheckCircle2 className="h-4 w-4 mr-1" /> Save Plant
+        </Button>
       </CardContent>
     </Card>
   );
 }
-function Summary({ label, value }:{ label: string; value: React.ReactNode }) {
-  return (<div><div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div><div className="font-medium">{value}</div></div>);
+
+function Summary({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div>
+      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="font-medium">{value}</div>
+    </div>
+  );
 }
-function Chip({ children }:{ children: React.ReactNode }) {
-  return (<span className="inline-flex items-center gap-1 rounded-full border bg-accent/40 px-2.5 py-1 text-xs">{children}</span>);
+
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border bg-accent/40 px-2.5 py-1 text-xs">
+      {children}
+    </span>
+  );
 }
