@@ -1,11 +1,14 @@
 function required(name: string): string {
   const value = process.env[name];
   if (!value) {
-    console.warn(`Missing environment variable: ${name}`);
-    return name.includes("URL") ? "https://example.com" : "placeholder";
+    throw new Error(`Missing environment variable: ${name}`);
   }
   return value;
 }
+
+// Validate critical variables at module load so the app fails fast.
+required("NEXT_PUBLIC_SUPABASE_URL");
+required("SUPABASE_SERVICE_ROLE_KEY");
 
 const config = {
   get NEXT_PUBLIC_SUPABASE_URL() {
