@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
+process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
 process.env.OPENAI_API_KEY = "test-key";
 
 describe("GET /api/species", () => {

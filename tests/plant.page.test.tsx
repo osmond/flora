@@ -21,6 +21,10 @@ vi.mock("next/link", () => ({
     <a href={href}>{children}</a>
   ),
 }));
+vi.mock("next/image", () => ({
+  __esModule: true,
+  default: (props: any) => <img {...props} />,
+}));
 vi.mock("@/components/ui/tabs", () => ({
   Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   TabsList: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -33,6 +37,24 @@ vi.mock("@/components/ui/dialog", () => ({
   DialogContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+vi.mock("@/components/ui/button", () => ({
+  Button: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+}));
+vi.mock("@/components/ui/card", () => ({
+  Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+vi.mock("@/components/ui/separator", () => ({
+  Separator: () => <div />,
+}));
+vi.mock("@/components/ui/textarea", () => ({
+  Textarea: ({ children }: { children?: React.ReactNode }) => <textarea>{children}</textarea>,
+}));
+vi.mock("@/components/ui/label", () => ({
+  Label: ({ children }: { children: React.ReactNode }) => <label>{children}</label>,
 }));
 vi.mock("@/components/ui", () => ({ Button: ({ children }: { children: React.ReactNode }) => <button>{children}</button> }));
 
