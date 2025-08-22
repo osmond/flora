@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
 
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
+process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
+
 describe("POST /api/ai-care", () => {
   it("uses inches in rationale when potUnit is 'in'", async () => {
     const { POST } = await import("../src/app/api/ai-care/route");
