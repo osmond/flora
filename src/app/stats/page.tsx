@@ -114,7 +114,7 @@ function StatCard({
   return (
     <Card className="rounded-2xl border bg-white shadow-card">
       <CardContent className="p-6 flex items-center gap-4">
-        <div className="h-10 w-10 flex items-center justify-center rounded-full border bg-accent/40">
+        <div className="h-10 w-10 flex items-center justify-center rounded-full border border-primary/40 bg-primary/10">
           {icon}
         </div>
         <div>
