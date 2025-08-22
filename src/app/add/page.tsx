@@ -443,6 +443,45 @@ function Environment({ form }: { form: ReturnType<typeof useForm<FormValues>> })
 }
 
 function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
+  const [plan, setPlan] = React.useState<
+    | {
+        waterEvery: string;
+        waterAmountMl: number;
+        fertEvery: string;
+        fertFormula: string;
+        rationale: string;
+      }
+    | null
+  >(null);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    const values = form.getValues();
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/ai-care", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          species: values.species,
+          potSize: parseFloat(values.potSize),
+          potUnit: values.potUnit,
+          lightLevel: values.light,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to generate care plan");
+      const data = await res.json();
+      setPlan(data);
+    } catch (err) {
+      console.error("Generate care plan error:", err);
+      setError("Failed to generate care plan");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card className="bg-card/95 border border-muted rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
@@ -451,15 +490,36 @@ function SmartPlan({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <Button type="button" variant="secondary" className="inline-flex items-center rounded-xl">
-          <Sparkles className="h-4 w-4 mr-2" />Generate Care Plan
+        <Button
+          type="button"
+          variant="secondary"
+          className="inline-flex items-center rounded-xl"
+          onClick={handleGenerate}
+          disabled={loading}
+        >
+          <Sparkles className="h-4 w-4 mr-2" />
+          {loading ? "Generating..." : "Generate Care Plan"}
         </Button>
         <div className="rounded-xl border p-4 bg-accent/40">
-          <ul className="list-disc pl-5 text-sm">
-            <li>Water every 5 days — ~120 ml</li>
-            <li>Fertilize monthly — 10-10-10 at 1/2 strength</li>
-            <li>Why: 6 in terracotta, great drainage, medium light</li>
-          </ul>
+          {loading ? (
+            <p className="text-sm">Loading...</p>
+          ) : error ? (
+            <p className="text-sm text-destructive">{error}</p>
+          ) : plan ? (
+            <ul className="list-disc pl-5 text-sm">
+              <li>
+                Water every {plan.waterEvery} — ~{plan.waterAmountMl} ml
+              </li>
+              <li>
+                Fertilize {plan.fertEvery} — {plan.fertFormula}
+              </li>
+              <li>Why: {plan.rationale}</li>
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No plan generated yet.
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>
