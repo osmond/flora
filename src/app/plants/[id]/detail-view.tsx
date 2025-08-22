@@ -99,7 +99,7 @@ export default function DetailView({ plant }: { plant: Plant }) {
       </header>
 
       {/* Quick stats */}
-      <Card className="bg-white border rounded-2xl shadow-card">
+      <Card className="border rounded-2xl shadow-card">
         <CardContent className="py-4">
           <div className="flex flex-wrap gap-2">
             <Stat label="Water" value={waterText(plant)} icon={<Droplets className="h-3.5 w-3.5" />} />
@@ -143,7 +143,7 @@ export default function DetailView({ plant }: { plant: Plant }) {
       )}
 
       {/* Activity */}
-      <Card className="bg-white border rounded-2xl shadow-card">
+      <Card className="border rounded-2xl shadow-card">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <NotebookText className="h-5 w-5 text-primary" /> Activity
@@ -181,7 +181,7 @@ export default function DetailView({ plant }: { plant: Plant }) {
             {/* Notes composer */}
             <TabsContent value="notes" className="space-y-3 pt-3">
               {notes.map((n, i) => (
-                <Card key={i} className="bg-white rounded-2xl shadow-card">
+                <Card key={i} className="rounded-2xl shadow-card">
                   <CardContent className="p-4 text-sm">
                     <ReactMarkdown>{n}</ReactMarkdown>
                   </CardContent>
