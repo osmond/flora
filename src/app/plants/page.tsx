@@ -128,7 +128,7 @@ export default function PlantsPage() {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map((p) => (
                   <Link key={p.id} href={`/plants/${p.id}`} className="block">
-                    <Card className="bg-white rounded-2xl shadow-card transition transform hover:scale-[1.02]">
+                    <Card className="rounded-2xl shadow-card transition transform hover:scale-[1.02]">
                       <CardContent className="p-4">
                         <div className="aspect-video rounded-lg border bg-muted/50 mb-3 flex items-center justify-center">
                           <Leaf className="h-6 w-6 text-muted-foreground" />
@@ -149,7 +149,7 @@ export default function PlantsPage() {
               <div className="space-y-2">
                 {items.map((p) => (
                   <Link key={p.id} href={`/plants/${p.id}`} className="block">
-                    <Card className="bg-white rounded-2xl shadow-card transition transform hover:scale-[1.02]">
+                    <Card className="rounded-2xl shadow-card transition transform hover:scale-[1.02]">
                       <CardContent className="p-4 flex items-center gap-4">
                         <div className="h-12 w-16 rounded-md border bg-muted/50 flex items-center justify-center">
                           <Leaf className="h-5 w-5 text-muted-foreground" />
