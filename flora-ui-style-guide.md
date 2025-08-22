@@ -34,6 +34,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 ## 1.3 Color Palette (light/dark + semantic)
 Using shadcn’s CSS variable contract + `next-themes`.
 
+- Avoid hard-coded color utilities like `bg-white`; favor semantic tokens or default component styles such as `Card`'s built-in `bg-card` background.
+
 | Token | Light | Dark | Notes |
 |---|---|---|---|
 | `--background` | `#FFFFFF` | `#0B1220` | Base canvas |
@@ -69,6 +71,8 @@ Building blocks, based on shadcn/ui + lucide-react.
   <CardContent>…fields…</CardContent>
 </Card>
 ```
+
+`Card` already applies the themed `bg-card` background; skip adding `bg-card` or hard-coded colors like `bg-white`.
 
 ## 2.2 Inputs & Selects
 ```tsx

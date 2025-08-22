@@ -31,6 +31,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 ### 2.2 Color & Theming (with `next-themes` + shadcn tokens)
 Use shadcn’s CSS variable contract. Set hue/sat/light once; consume via Tailwind.
 
+- Avoid hard-coded color utilities like `bg-white`; use semantic tokens or rely on component defaults (e.g., `Card` ships with `bg-card`).
+
 **Starter Palette**
 
 | Token | Light (HEX) | Dark (HEX) | Notes |
@@ -135,8 +137,10 @@ export default {
 ### 3.1 Cards
 Group steps: Identify, Placement, Pot Setup, Smart Plan. Include clear title/help.
 
+> `Card` already uses the theme's `bg-card` background color—avoid overriding with `bg-card` or hard-coded colors like `bg-white`.
+
 ```tsx
-<Card className="bg-card border rounded-xl">
+<Card>
   <CardHeader className="pb-3">
     <CardTitle className="text-lg">🌱 Identify</CardTitle>
   </CardHeader>
@@ -272,7 +276,7 @@ export const buttonVariants = cva(
 
 ### 10.2 Card Section
 ```tsx
-<Card className="bg-card/95 border rounded-xl">
+<Card>
   <CardHeader className="pb-3">
     <CardTitle className="text-lg">🪴 Pot Setup</CardTitle>
   </CardHeader>
