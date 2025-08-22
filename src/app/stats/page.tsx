@@ -66,7 +66,7 @@ export default function StatsPage() {
 
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="rounded-2xl border bg-white shadow-card">
+        <Card className="rounded-2xl border shadow-card">
           <CardHeader>
             <CardTitle>Watering Frequency</CardTitle>
           </CardHeader>
@@ -82,7 +82,7 @@ export default function StatsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border bg-white shadow-card">
+        <Card className="rounded-2xl border shadow-card">
           <CardHeader>
             <CardTitle>Weekly Tasks</CardTitle>
           </CardHeader>
@@ -112,7 +112,7 @@ function StatCard({
   value: string;
 }) {
   return (
-    <Card className="rounded-2xl border bg-white shadow-card">
+    <Card className="rounded-2xl border shadow-card">
       <CardContent className="p-6 flex items-center gap-4">
         <div className="h-10 w-10 flex items-center justify-center rounded-full border bg-accent/40">
           {icon}

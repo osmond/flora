@@ -45,7 +45,7 @@ export default function TodayPage() {
         {(["overdue", "today", "upcoming"] as const).map((key) => (
           <TabsContent value={key} key={key} className="space-y-2 pt-3">
             {DEMO.filter((t) => t.due === key).map((t) => (
-              <Card key={t.id} className="rounded-2xl bg-white shadow-card">
+              <Card key={t.id} className="rounded-2xl shadow-card">
                 <CardContent className="p-4 flex items-center gap-3">
                   {t.icon}
                   <div className="flex-1">{t.title}</div>
