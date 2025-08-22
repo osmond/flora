@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Navigation />
             <ThemeToggle />
           </header>
-          <main className="mx-auto max-w-screen-md p-4">{children}</main>
+          <main className="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">{children}</main>
         </Providers>
       </body>
     </html>
