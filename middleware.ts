@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import env from "./src/lib/config";
+import { baseUrl, appName, isDev } from "./src/lib/config";
+
 
 export function middleware(req: NextRequest) {
   const expectedUser = env.BASIC_AUTH_USER;
