@@ -1,0 +1,1 @@
+// PlantHero component placeholder
