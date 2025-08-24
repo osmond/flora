@@ -34,6 +34,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Delete events and associated images
 
 - 📅 **Daily Task List**
+  - Generates tasks from each plant's `waterEvery` and `fertEvery` intervals
   - Shows upcoming care tasks grouped by date
   - Complete or snooze tasks directly from the list
   - Swipe right on a task to mark it as done
