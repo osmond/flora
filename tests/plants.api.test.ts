@@ -7,11 +7,11 @@ vi.mock("@/lib/auth", () => ({
   getCurrentUserId: () => "user-123",
 }));
 
-let inserted: any;
+let inserted: Record<string, unknown> | null;
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
     from: () => ({
-      insert: (payload: any) => {
+      insert: (payload: Record<string, unknown>) => {
         inserted = payload;
         return {
           select: () => Promise.resolve({ data: [payload], error: null }),
