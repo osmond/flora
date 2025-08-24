@@ -36,10 +36,10 @@ This roadmap outlines upcoming development phases across both functionality and 
 **Goal:** Effortless overview of your collection and details at a glance.
 
 ### `/app/plants`
-- [ ] Grid and list toggle
-- [ ] Group plants by Room
-- [ ] Show photo thumbnails and nicknames
-- [ ] Handle "no plants" state with friendly CTA
+- [x] Grid and list toggle
+- [x] Group plants by Room
+- [x] Show photo thumbnails and nicknames
+- [x] Handle "no plants" state with friendly CTA
 
 ### `/app/plants/[id]`
  - [x] Hero Section: cover photo or placeholder
