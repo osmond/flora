@@ -6,6 +6,7 @@ process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
 const logEvent = vi.fn();
 let taskUpdates: Record<string, unknown>[] = [];
 let plantCarePlan: Record<string, unknown> | null = null;
+let eventInserts: Record<string, unknown>[] = [];
 
 vi.mock("@/lib/auth", () => ({
   getCurrentUserId: () => "user-123",
@@ -33,7 +34,11 @@ vi.mock("@supabase/supabase-js", () => ({
               eq: () => ({
                 single: () =>
                   Promise.resolve({
-                    data: { due_date: "2024-01-01", plant_id: "plant-1" },
+                    data: {
+                      due_date: "2024-01-01",
+                      plant_id: "plant-1",
+                      type: "water",
+                    },
                     error: null,
                   }),
               }),
@@ -64,6 +69,14 @@ vi.mock("@supabase/supabase-js", () => ({
           },
         };
       }
+      if (table === "events") {
+        return {
+          insert: (values: Record<string, unknown>) => {
+            eventInserts.push(values);
+            return Promise.resolve({ error: null });
+          },
+        };
+      }
       return {} as unknown as Record<string, never>;
     },
   }),
@@ -73,6 +86,7 @@ describe("PATCH /api/tasks/[id]", () => {
   beforeEach(() => {
     taskUpdates = [];
     plantCarePlan = null;
+    eventInserts = [];
     logEvent.mockReset();
   });
 
@@ -86,6 +100,7 @@ describe("PATCH /api/tasks/[id]", () => {
     const res = await PATCH(req, { params: { id: "1" } });
     expect(res.status).toBe(200);
     expect(taskUpdates[0]).toHaveProperty("completed_at");
+    expect(eventInserts[0]).toEqual({ plant_id: "plant-1", type: "water" });
     expect(logEvent).toHaveBeenCalledWith("task_completed", { task_id: "1" });
   });
 

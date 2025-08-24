@@ -71,7 +71,7 @@ All views should adhere to the [style guide](./style-guide.md).
 
 ### Task Engine Logic
 - [x] Use `waterEvery` and `fertEvery` intervals
-- [ ] Schedule CareEvents per plant
+- [x] Schedule CareEvents per plant
 - [ ] Hydrate timeline from completed + upcoming tasks
 - [x] Timezone-aware comparisons (`dayjs` or `date-fns`)
 
