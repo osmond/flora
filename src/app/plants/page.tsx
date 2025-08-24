@@ -5,13 +5,22 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 export default async function PlantsPage() {
   const { data: plants, error } = await supabaseAdmin
     .from('plants')
-    .select('*');
+    .select('id, name, species, image_url, room:rooms(id, name)');
 
   if (error) {
     return <div className="p-4">Failed to load plants</div>;
   }
 
-  if (!plants || plants.length === 0) {
+  const mappedPlants =
+    plants?.map((p) => ({
+      id: p.id,
+      name: p.name,
+      species: p.species,
+      imageUrl: p.image_url as string | null,
+      room: p.room as { id: string; name: string } | null,
+    })) ?? [];
+
+  if (mappedPlants.length === 0) {
     return (
       <div className="p-4 text-center">
         <p className="mb-4">You haven&apos;t added any plants yet.</p>
@@ -24,7 +33,7 @@ export default async function PlantsPage() {
 
   return (
     <div className="p-4">
-      <PlantList plants={plants} />
+      <PlantList plants={mappedPlants} />
     </div>
   );
 }

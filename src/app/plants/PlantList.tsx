@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { PlantCard } from '@/components';
 
@@ -9,10 +9,20 @@ interface Plant {
   name: string;
   species?: string | null;
   imageUrl?: string | null;
+  room?: { id: string; name: string } | null;
 }
 
 export default function PlantList({ plants }: { plants: Plant[] }) {
   const [view, setView] = useState<'grid' | 'list'>('grid');
+
+  const grouped = useMemo(() => {
+    return plants.reduce<Record<string, Plant[]>>((acc, plant) => {
+      const roomName = plant.room?.name ?? 'Unassigned';
+      if (!acc[roomName]) acc[roomName] = [];
+      acc[roomName].push(plant);
+      return acc;
+    }, {});
+  }, [plants]);
 
   return (
     <div>
@@ -32,42 +42,47 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
           List
         </button>
       </div>
-      {view === 'grid' ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {plants.map((plant) => (
-            <PlantCard key={plant.id} plant={plant} />
-          ))}
-        </div>
-      ) : (
-        <ul className="divide-y rounded border">
-          {plants.map((plant) => (
-            <li key={plant.id}>
-              <Link
-                href={`/plants/${plant.id}`}
-                className="flex items-center gap-4 p-2"
-              >
-                {plant.imageUrl ? (
-                  <img
-                    src={plant.imageUrl}
-                    alt={plant.name}
-                    className="h-12 w-12 rounded object-cover"
-                  />
-                ) : (
-                  <div className="h-12 w-12 rounded bg-muted" />
-                )}
-                <div>
-                  <p className="font-medium">{plant.name}</p>
-                  {plant.species && (
-                    <p className="text-sm text-muted-foreground">
-                      {plant.species}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      {Object.entries(grouped).map(([roomName, roomPlants]) => (
+        <section key={roomName} className="mb-8">
+          <h2 className="mb-4 text-xl font-semibold">{roomName}</h2>
+          {view === 'grid' ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {roomPlants.map((plant) => (
+                <PlantCard key={plant.id} plant={plant} />
+              ))}
+            </div>
+          ) : (
+            <ul className="divide-y rounded border">
+              {roomPlants.map((plant) => (
+                <li key={plant.id}>
+                  <Link
+                    href={`/plants/${plant.id}`}
+                    className="flex items-center gap-4 p-2"
+                  >
+                    {plant.imageUrl ? (
+                      <img
+                        src={plant.imageUrl}
+                        alt={plant.name}
+                        className="h-12 w-12 rounded object-cover"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 rounded bg-muted" />
+                    )}
+                    <div>
+                      <p className="font-medium">{plant.name}</p>
+                      {plant.species && (
+                        <p className="text-sm text-muted-foreground">
+                          {plant.species}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))}
     </div>
   );
 }
