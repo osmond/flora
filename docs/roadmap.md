@@ -64,10 +64,10 @@ All views should adhere to the [style guide](./style-guide.md).
 **Goal:** Know what to do today—and feel great when you do it.
 
 ### `/app/today`
-- [ ] Task List: water/fertilizer/note tasks grouped by date
+- [x] Task List: water/fertilizer/note tasks grouped by date
 - [ ] Swipe right: mark as done
 - [ ] Swipe left: defer/reschedule
-- [ ] Quick-add logs from the task
+- [x] Quick-add logs from the task
 
 ### Task Engine Logic
 - [ ] Use `waterEvery` and `fertEvery` intervals
