@@ -33,7 +33,8 @@ Flora creates personalized care plans and adapts them to your environment.
 
  - 🪴 **Plant Detail Pages**
    - Displays plant nickname, species, hero image, quick stats, and care timeline
-   - Notes and coach suggestions *(coming soon)*
+   - Log personal notes on each plant
+   - Coach suggestions *(coming soon)*
 
 - 📷 **Photo Journal**
   - Upload progress photos for each plant
