@@ -14,6 +14,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Smart species autosuggest (via OpenAI API)
   - Auto-generated AI care plan
   - Room assignment & environment tagging
+  - Persists new plants to Supabase via API
 
 - 📅 **Care Dashboard**
   - Today, Overdue, and Upcoming tasks
