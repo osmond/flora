@@ -47,7 +47,7 @@ This roadmap outlines upcoming development phases across both functionality and 
  - [x] Timeline View: care events sorted by date (styled vertical feed)
  - [x] Notes: freeform journaling
  - [x] Gallery: uploaded photos of the plant
- - [ ] Care Coach: context-aware suggestions (e.g., "Looks overdue for watering")
+  - [x] Care Coach: context-aware suggestions (e.g., "Looks overdue for watering")
 
 ### To Build
 - [x] Supabase queries for plant list and detail views

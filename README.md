@@ -38,13 +38,13 @@ Flora creates personalized care plans and adapts them to your environment.
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline
   - Log personal notes and upload new photos on each plant
-  - Coach suggestions *(coming soon)*
+  - Coach suggestions highlight overdue watering or fertilizing
 
 - 📷 **Photo Journal**
   - Upload progress photos for each plant
 
-- 🧠 **Care Coach** *(Coming Soon)*
-  - AI-based suggestions when care is overdue or inconsistent
+- 🧠 **Care Coach**
+  - Provides suggestions when care is overdue or inconsistent
 
 - 📍 **Environment-aware Schedules**
   - Uses location and weather APIs to adjust care intervals
