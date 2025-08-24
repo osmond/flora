@@ -17,6 +17,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Persists new plants to Supabase via API
   - Species field is optional with a sensible "Unknown" fallback
   - Redirects to the plant detail page after creation
+  - Caches species lookups to reduce repeated OpenAI requests
 
 - 🗂️ **Plant Collection**
   - Browse plants grouped by room with a grid or list toggle
