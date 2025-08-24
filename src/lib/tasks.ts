@@ -12,8 +12,27 @@ interface Plant {
 
 function parseInterval(value?: string | null): number | null {
   if (!value) return null;
-  const match = value.match(/(\d+)/);
-  return match ? parseInt(match[1], 10) : null;
+
+  const match = value
+    .toLowerCase()
+    .match(/(\d+)\s*(day|week|month|year)s?/);
+  if (!match) return null;
+
+  const quantity = parseInt(match[1], 10);
+  const unit = match[2];
+
+  switch (unit) {
+    case 'day':
+      return quantity;
+    case 'week':
+      return quantity * 7;
+    case 'month':
+      return quantity * 30;
+    case 'year':
+      return quantity * 365;
+    default:
+      return null;
+  }
 }
 
 export function generateTasks(plants: Plant[], today: Date = new Date()): Task[] {
