@@ -66,7 +66,7 @@ All views should adhere to the [style guide](./style-guide.md).
 ### `/app/today`
 - [x] Task List: water/fertilizer/note tasks grouped by date
 - [ ] Swipe right: mark as done
-- [ ] Swipe left: defer/reschedule
+- [x] Snooze tasks to defer/reschedule
 - [x] Quick-add logs from the task
 
 ### Task Engine Logic
