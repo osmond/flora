@@ -88,7 +88,7 @@ See `/docs/deployment.md` for full production deployment steps.
 
 ## 🤝 Contributing
 
-See `/docs/contributing.md` to get started with local development and best practices.
+See [docs/contributing.md](./docs/contributing.md) for local development and best practices. For design standards, review the [style guide](./docs/style-guide.md).
 
 ---
 
