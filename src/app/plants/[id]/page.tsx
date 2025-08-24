@@ -9,7 +9,9 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
   const plant = await db.plant.findUnique({ where: { id: params.id } });
   if (!plant) {
-    return <div className="p-4">Plant not found</div>;
+    return (
+      <div className="p-4 md:p-6 max-w-md mx-auto">Plant not found</div>
+    );
   }
 
   let heroUrl = plant.imageUrl;
@@ -36,12 +38,12 @@ export default async function PlantDetailPage({ params }: { params: { id: string
           alt={plant.name}
           width={800}
           height={400}
-          className="h-64 w-full object-cover"
+          className="h-64 w-full object-cover md:h-80"
         />
       ) : (
-        <div className="h-64 w-full bg-muted" />
+        <div className="h-64 w-full bg-muted md:h-80" />
       )}
-      <div className="p-4">
+      <div className="p-4 md:p-6 max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold">{plant.name}</h1>
         {plant.species && (
           <p className="text-muted-foreground">{plant.species}</p>
@@ -49,10 +51,10 @@ export default async function PlantDetailPage({ params }: { params: { id: string
         <QuickStats plant={plant} />
         <CareCoach plant={plant} />
       </div>
-      <div className="p-4">
+      <div className="p-4 md:p-6 max-w-3xl mx-auto">
         <EventsSection plantId={plant.id} initialEvents={events ?? []} />
       </div>
-      <div className="p-4">
+      <div className="p-4 md:p-6 max-w-3xl mx-auto">
         <h2 className="mb-4 text-xl font-semibold">Photos</h2>
         <PhotoGallery plantId={plant.id} />
       </div>
