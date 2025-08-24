@@ -5,6 +5,26 @@ import confetti from 'canvas-confetti';
 import { format, parseISO } from 'date-fns';
 import type { Task } from '@/types/task';
 
+function playChime() {
+  if (typeof window === 'undefined') return;
+  const AudioCtx =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext: typeof AudioContext })
+      .webkitAudioContext;
+  const ctx = new AudioCtx();
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(660, ctx.currentTime);
+  gain.gain.setValueAtTime(0.1, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1);
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 1);
+  oscillator.onended = () => ctx.close();
+}
+
 export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
   const [tasks, setTasks] = useState(initialTasks);
 
@@ -23,6 +43,7 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
       console.error('Failed to complete task', err);
     } finally {
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      playChime();
       setTasks((prev) => prev.filter((t) => t.id !== id));
     }
   };
