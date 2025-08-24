@@ -1,27 +1,15 @@
+"use client";
+
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import type { CareEvent } from '@/types';
 
-interface Event {
-  id: string;
-  type: string;
-  note: string | null;
-  image_url: string | null;
-  created_at: string;
-}
-
-export default async function CareTimeline({ plantId }: { plantId: string }) {
-  const { data: events, error } = await supabaseAdmin
-    .from('events')
-    .select('id, type, note, image_url, created_at')
-    .eq('plant_id', plantId)
-    .order('created_at', { ascending: false });
-
-  if (error || !events || events.length === 0) {
+export default function CareTimeline({ events }: { events: CareEvent[] }) {
+  if (!events || events.length === 0) {
     return <p className="text-sm text-muted-foreground">No care events yet.</p>;
   }
 
-  const grouped = events.reduce<Record<string, Event[]>>((acc, evt) => {
+  const grouped = events.reduce<Record<string, CareEvent[]>>((acc, evt) => {
     const day = format(new Date(evt.created_at), 'PPP');
     if (!acc[day]) acc[day] = [];
     acc[day].push(evt);
@@ -33,8 +21,8 @@ export default async function CareTimeline({ plantId }: { plantId: string }) {
       {Object.entries(grouped).map(([day, dayEvents]) => (
         <li key={day}>
           <div className="mb-2 text-sm font-medium text-muted-foreground">{day}</div>
-          <ul className="space-y-6 border-l pl-6">
-            {dayEvents.map((evt: Event) => (
+            <ul className="space-y-6 border-l pl-6">
+              {dayEvents.map((evt: CareEvent) => (
               <li key={evt.id} className="relative">{
                 /* timeline dot */
               }
