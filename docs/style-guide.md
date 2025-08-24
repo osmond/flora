@@ -12,7 +12,3 @@ This document defines the visual and UX standards for the Flora app.
 | Foreground    | #111827   | Main text                  |
 | Muted         | #9CA3AF   | Descriptive text, labels   |
 
-## 🖋 Typography
-
-- **Display / Titles**: `Cabinet Grotesk`
-- **Body / UI**: `Inter`
