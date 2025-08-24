@@ -46,12 +46,15 @@ Flora creates personalized care plans and adapts them to your environment.
 ---
 
 ## 📦 Setup
+Copy `.env.example` to `.env.local` and fill in your Supabase, OpenAI, Cloudinary, and optional auth credentials.
+
 
 ```bash
 git clone https://github.com/osmond/flora.git
 cd flora
 pnpm install
-cp .env.example .env.local  # Fill in your keys
+cp .env.example .env.local
+# Fill in .env.local with your Supabase, OpenAI, Cloudinary, and optional BASIC_AUTH_* keys
 pnpm dev
 ```
 
