@@ -78,21 +78,9 @@ This roadmap outlines upcoming development phases across both functionality and 
 
 ---
 
-## 🔐 Phase 4 – Auth + RLS
-**Goal:** Lock it down—one user only, securely.
 
-### Supabase Auth
-- [ ] Email magic link login
-- [ ] Signed-in user ID stored in local context
-- [ ] Support anonymous (unauthenticated) mode if needed
 
-### Row-Level Security
-- [ ] RLS policies so each plant/care event is scoped to the user
-- [ ] Use service role key server-side where needed
-
----
-
-## ✨ Phase 5 – Visual Polish & Delight
+## ✨ Phase 4 – Visual Polish & Delight
 **Goal:** Feel good using it.
 
 ### Design Tweaks
