@@ -20,6 +20,10 @@ Flora creates personalized care plans and adapts them to your environment.
   - Caches species lookups to reduce repeated OpenAI requests
   - Preview plant details before creation
 
+- 🧭 **Navigation**
+  - Quick links to home, plant list, and add form
+  - Highlights the current page for accessibility
+
 - 🗂️ **Plant Collection**
   - Browse plants grouped by room with a grid or list toggle
   - Mobile-first responsive layout scales to tablets and desktops
