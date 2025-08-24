@@ -46,7 +46,7 @@ This roadmap outlines upcoming development phases across both functionality and 
  - [x] Quick Stats: next/last watering, schedule, fertilizing
  - [x] Timeline View: care events sorted by date (styled vertical feed)
  - [x] Notes: freeform journaling
- - [ ] Gallery: uploaded photos of the plant
+ - [x] Gallery: uploaded photos of the plant
  - [ ] Care Coach: context-aware suggestions (e.g., "Looks overdue for watering")
 
 ### To Build
@@ -114,7 +114,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [ ] Swipe to mark care task complete
 - [ ] Watering logic engine based on intervals
 - [x] Prisma `seed.ts` file for demo data
-- [ ] File upload to Cloudinary
+ - [x] File upload to Cloudinary
 - [ ] RLS policies for Supabase
 - [ ] Responsive testing (mobile/tablet/desktop)
 - [ ] Timeline component polish (grouped by date)
