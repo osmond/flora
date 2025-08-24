@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import db from '@/lib/db';
 import QuickStats from '@/components/plant/QuickStats';
 import CareTimeline from '@/components/CareTimeline';
 import AddNoteForm from '@/components/AddNoteForm';
@@ -8,27 +8,19 @@ import PhotoGallery from '@/components/PhotoGallery';
 import CareCoach from '@/components/plant/CareCoach';
 
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
-  const { data: plant, error } = await supabaseAdmin
-    .from('plants')
-    .select('*')
-    .eq('id', params.id)
-    .single();
-
-  if (error || !plant) {
+  const plant = await db.plant.findUnique({ where: { id: params.id } });
+  if (!plant) {
     return <div className="p-4">Plant not found</div>;
   }
 
-  let heroUrl = plant.image_url as string | null;
-
+  let heroUrl = plant.imageUrl;
   if (!heroUrl) {
-    const { data: photos } = await supabaseAdmin
-      .from('events')
-      .select('image_url')
-      .eq('plant_id', plant.id)
-      .eq('type', 'photo')
-      .order('created_at', { ascending: false });
-
-    heroUrl = photos?.[0]?.image_url ?? null;
+    const photo = await db.photo.findFirst({
+      where: { plantId: plant.id },
+      orderBy: { createdAt: 'desc' },
+      select: { url: true },
+    });
+    heroUrl = photo?.url ?? null;
   }
 
   return (
