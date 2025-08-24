@@ -1,4 +1,1 @@
-export default function HomePage() {
-  return <div>Hello from Flora 🌿</div>;
-}
-
+// Placeholder for app/page.tsx
