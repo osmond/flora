@@ -4,6 +4,8 @@ Flora is a personalized plant care companion for a single user. It helps track p
 
 This roadmap outlines upcoming development phases across both functionality and UI/UX polish.
 
+All views should adhere to the [style guide](./style-guide.md).
+
 ---
 
 ## ✅ Phase 0 – Foundations (Complete)
