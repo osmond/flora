@@ -5,6 +5,7 @@ import PhotoGallery from '@/components/PhotoGallery';
 import CareCoach from '@/components/plant/CareCoach';
 import EventsSection from '@/components/EventsSection';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { hydrateTimeline } from '@/lib/tasks';
 
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
   const plant = await db.plant.findUnique({ where: { id: params.id } });
@@ -30,6 +31,12 @@ export default async function PlantDetailPage({ params }: { params: { id: string
     .eq('plant_id', plant.id)
     .order('created_at', { ascending: false });
 
+  const timelineEvents = hydrateTimeline(events ?? [], {
+    id: plant.id,
+    waterEvery: plant.waterEvery,
+    fertEvery: plant.fertEvery,
+  });
+
   return (
     <div>
       {heroUrl ? (
@@ -52,7 +59,7 @@ export default async function PlantDetailPage({ params }: { params: { id: string
         <CareCoach plant={plant} />
       </div>
       <div className="p-4 md:p-6 max-w-3xl mx-auto">
-        <EventsSection plantId={plant.id} initialEvents={events ?? []} />
+        <EventsSection plantId={plant.id} initialEvents={timelineEvents} />
       </div>
       <div className="p-4 md:p-6 max-w-3xl mx-auto">
         <h2 className="mb-4 text-xl font-semibold">Photos</h2>
