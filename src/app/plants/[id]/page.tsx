@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import QuickStats from '@/components/plant/QuickStats';
 import CareTimeline from '@/components/CareTimeline';
 import AddNoteForm from '@/components/AddNoteForm';
+import AddPhotoForm from '@/components/AddPhotoForm';
+import PhotoGallery from '@/components/PhotoGallery';
 
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
   const { data: plant, error } = await supabaseAdmin
@@ -51,6 +53,13 @@ export default async function PlantDetailPage({ params }: { params: { id: string
       <div className="p-4">
         <h2 className="mb-4 text-xl font-semibold">Add Note</h2>
         <AddNoteForm plantId={plant.id} />
+      </div>
+      <div className="p-4">
+        <h2 className="mb-4 text-xl font-semibold">Photos</h2>
+        <AddPhotoForm plantId={plant.id} />
+        <div className="mt-4">
+          <PhotoGallery plantId={plant.id} />
+        </div>
       </div>
       <div className="p-4">
         <h2 className="mb-4 text-xl font-semibold">Timeline</h2>
