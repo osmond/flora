@@ -28,6 +28,7 @@ async function main() {
       waterAmount: "250ml",
       fertEvery: "30 days",
       fertFormula: "10-10-10",
+      humidity: "medium",
       careEvents: {
         create: [
           { type: "water", date: new Date() },
@@ -42,6 +43,7 @@ async function main() {
       species: "Carnegiea gigantea",
       roomId: kitchen.id,
       waterEvery: "14 days",
+      humidity: "low",
       careEvents: {
         create: [
           { type: "water", date: new Date() },

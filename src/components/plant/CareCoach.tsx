@@ -7,6 +7,7 @@ interface Plant {
   waterEvery?: string | null;
   fert_every?: string | null;
   fertEvery?: string | null;
+  humidity?: string | null;
 }
 
 interface CareCoachProps {
@@ -52,6 +53,10 @@ export default async function CareCoach({ plant }: CareCoachProps) {
     lastFertDate && fertInterval ? addDays(lastFertDate, fertInterval) : null;
 
   const suggestions: string[] = [];
+
+  if (plant.humidity && plant.humidity.toLowerCase() === 'low') {
+    suggestions.push('You may want to water early due to low humidity.');
+  }
 
   if (nextWaterDate && nextWaterDate < new Date()) {
     suggestions.push('Looks overdue for watering.');
