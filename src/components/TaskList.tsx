@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import confetti from 'canvas-confetti';
 import { format, parseISO } from 'date-fns';
 import type { Task } from '@/types/task';
 
@@ -21,6 +22,7 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
     } catch (err) {
       console.error('Failed to complete task', err);
     } finally {
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       setTasks((prev) => prev.filter((t) => t.id !== id));
     }
   };
