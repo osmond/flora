@@ -45,7 +45,7 @@ Flora creates personalized care plans and adapts them to your environment.
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline
   - Responsive layout works across mobile, tablet, and desktop
-- Care timeline groups events by date for a cleaner history
+- Care timeline groups events by date and shows upcoming watering or fertilizing tasks
 - Log personal notes, watering/fertilizing events, and upload new photos on each plant
   - New notes and photos appear instantly via optimistic updates
 - Coach suggestions highlight overdue watering or fertilizing
