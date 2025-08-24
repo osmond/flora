@@ -18,6 +18,10 @@ Flora creates personalized care plans and adapts them to your environment.
   - Species field is optional with a sensible "Unknown" fallback
   - Redirects to the plant detail page after creation
 
+- 🗂️ **Plant Collection**
+  - Browse all plants with a grid or list toggle
+  - Friendly empty state prompting you to add your first plant
+
 - 🪴 **Plant API**
   - List all plants
   - Fetch individual plant details
