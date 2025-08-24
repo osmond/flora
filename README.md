@@ -58,11 +58,14 @@ All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
 ---
 
 ## 📦 Setup
+Copy `.env.example` to `.env.local` and fill in your Supabase, OpenAI, Cloudinary, and optional auth credentials.
+
 
 ```bash
 git clone https://github.com/osmond/flora.git
 cd flora
 pnpm install
+
 cp .env.example .env.local  # Fill in your keys
 # apply schema (requires Supabase CLI)
 supabase db execute supabase/plants.sql
@@ -72,6 +75,7 @@ supabase db execute supabase/analytics.sql
 
 # optional sample data
 supabase db execute supabase/sample_data.sql
+
 pnpm dev
 ```
 
