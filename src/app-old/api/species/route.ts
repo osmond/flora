@@ -1,6 +1,6 @@
 // src/app/api/species/route.ts
 import { NextResponse } from "next/server";
-import config from "../../../lib/config";
+import { OPENAI_API_KEY } from "../../../lib/config";
 
 async function fetchWithTimeout(
   url: string,
@@ -42,7 +42,7 @@ async function validateImageUrl(url: string): Promise<boolean> {
 }
 
 async function fetchOpenAISpecies(q: string): Promise<Species[]> {
-  const key = config.OPENAI_API_KEY;
+  const key = OPENAI_API_KEY;
   if (!key) throw new Error("Missing OPENAI_API_KEY");
   const res = await fetchWithTimeout(
     "https://api.openai.com/v1/chat/completions",
@@ -131,12 +131,12 @@ export async function GET(req: Request) {
   }
 
   try {
-    if (!config.OPENAI_API_KEY) {
-      console.warn(
-        "Species search requested but no OPENAI_API_KEY configured"
-      );
-      return NextResponse.json({ data: [] });
-    }
+      if (!OPENAI_API_KEY) {
+        console.warn(
+          "Species search requested but no OPENAI_API_KEY configured"
+        );
+        return NextResponse.json({ data: [] });
+      }
 
     const results = await fetchOpenAISpecies(q);
 
