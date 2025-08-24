@@ -16,6 +16,11 @@ Flora creates personalized care plans and adapts them to your environment.
   - Room assignment & environment tagging
   - Persists new plants to Supabase via API
 
+- 🪴 **Plant API**
+  - List all plants
+  - Fetch individual plant details
+  - Delete plants
+
 - 📅 **Care Dashboard**
   - Today, Overdue, and Upcoming tasks
   - Swipe to mark tasks complete
