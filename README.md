@@ -49,13 +49,13 @@ Flora creates personalized care plans and adapts them to your environment.
 - Care timeline groups events by date and shows upcoming watering or fertilizing tasks
 - Log personal notes, watering/fertilizing events, and upload new photos on each plant
   - New notes and photos appear instantly via optimistic updates
-- Coach suggestions highlight overdue watering or fertilizing
+  - Coach suggestions highlight overdue watering, fertilizing, or low humidity
 
 - 📷 **Photo Journal**
   - Upload progress photos for each plant
 
-- 🧠 **Care Coach**
-  - Provides suggestions when care is overdue or inconsistent
+  - 🧠 **Care Coach**
+    - Provides suggestions when care is overdue, inconsistent, or humidity is low
 
 - 📍 **Environment-aware Schedules**
   - Uses location and weather APIs to adjust care intervals

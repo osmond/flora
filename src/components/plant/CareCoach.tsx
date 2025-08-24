@@ -7,6 +7,8 @@ interface Plant {
   waterEvery?: string | null;
   fert_every?: string | null;
   fertEvery?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface CareCoachProps {
@@ -17,6 +19,23 @@ function parseInterval(value?: string | null) {
   if (!value) return null;
   const match = value.match(/(\d+)/);
   return match ? parseInt(match[1], 10) : null;
+}
+
+async function getCurrentHumidity(
+  latitude?: number | null,
+  longitude?: number | null
+): Promise<number | null> {
+  if (!latitude || !longitude) return null;
+  try {
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m`,
+      { next: { revalidate: 3600 } }
+    );
+    const data = await res.json();
+    return data?.current?.relative_humidity_2m ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export default async function CareCoach({ plant }: CareCoachProps) {
@@ -53,12 +72,18 @@ export default async function CareCoach({ plant }: CareCoachProps) {
 
   const suggestions: string[] = [];
 
+  const humidity = await getCurrentHumidity(plant.latitude, plant.longitude);
+
   if (nextWaterDate && nextWaterDate < new Date()) {
     suggestions.push('Looks overdue for watering.');
   }
 
   if (nextFertDate && nextFertDate < new Date()) {
     suggestions.push('Time to fertilize soon.');
+  }
+
+  if (humidity !== null && humidity < 30) {
+    suggestions.push('You may want to water early due to low humidity.');
   }
 
   if (suggestions.length === 0) {
