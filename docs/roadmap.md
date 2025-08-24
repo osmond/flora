@@ -89,7 +89,7 @@ All views should adhere to the [style guide](./style-guide.md).
 ### Design Tweaks
 - [x] Animate “Mark as Done” feedback (confetti, pulse, or sparkles)
  - [x] Variable font-weight pulsing on active tasks
-- [ ] Swipe card transitions
+- [x] Swipe card transitions
 - [ ] Soothing sound on task complete (optional)
 
 
