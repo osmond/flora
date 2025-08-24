@@ -3,12 +3,38 @@ import { NextResponse } from 'next/server';
 const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const OPENAI_MODEL = 'gpt-4o-mini';
 
+// Simple in-memory LRU cache for species queries
+const CACHE_LIMIT = 100;
+const speciesCache = new Map<string, string[]>();
+
+function getCached(query: string) {
+  const cached = speciesCache.get(query);
+  if (!cached) return null;
+  // refresh key to mark as recently used
+  speciesCache.delete(query);
+  speciesCache.set(query, cached);
+  return cached;
+}
+
+function setCached(query: string, names: string[]) {
+  speciesCache.set(query, names);
+  if (speciesCache.size > CACHE_LIMIT) {
+    const oldestKey = speciesCache.keys().next().value;
+    speciesCache.delete(oldestKey);
+  }
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
 
   if (!query) {
     return NextResponse.json([]);
+  }
+
+  const cached = getCached(query);
+  if (cached) {
+    return NextResponse.json(cached);
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -72,6 +98,7 @@ export async function GET(request: Request) {
         .slice(0, 10);
     }
 
+    setCached(query, names);
     return NextResponse.json(names);
   } catch (err) {
     console.error('Species search failed', err);
