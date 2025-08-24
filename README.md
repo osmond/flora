@@ -56,7 +56,7 @@ Flora creates personalized care plans and adapts them to your environment.
 
 - **Framework**: Next.js 15 w/ App Router, Server Components, Turbopack
 - **UI**: Tailwind CSS, shadcn/ui, Cabinet Grotesk + Inter fonts
-- **Database**: Supabase (Postgres + Auth + Storage)
+- **Database**: Supabase (Postgres + Auth + Storage) with Prisma ORM
 - **AI**: OpenAI (for species suggestions & care plan generation)
 - **Weather**: Forecast API (local humidity, ET₀ support)
 - **Hosting**: Vercel
