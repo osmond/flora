@@ -38,9 +38,10 @@ Flora creates personalized care plans and adapts them to your environment.
 
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline
-  - Care timeline groups events by date for a cleaner history
-  - Log personal notes, watering/fertilizing events, and upload new photos on each plant
-  - Coach suggestions highlight overdue watering or fertilizing
+- Care timeline groups events by date for a cleaner history
+- Log personal notes, watering/fertilizing events, and upload new photos on each plant
+  - New notes and photos appear instantly via optimistic updates
+- Coach suggestions highlight overdue watering or fertilizing
 
 - 📷 **Photo Journal**
   - Upload progress photos for each plant

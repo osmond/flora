@@ -1,26 +1,50 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import type { CareEvent } from '@/types';
 
-export default function AddPhotoForm({ plantId }: { plantId: string }) {
+interface Props {
+  plantId: string;
+  onAdd: (evt: CareEvent) => void;
+  onReplace: (tempId: string, evt: CareEvent) => void;
+}
+
+export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
   const [file, setFile] = useState<File | null>(null);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!file) return;
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: CareEvent = {
+      id: tempId,
+      type: 'photo',
+      note: null,
+      image_url: null,
+      created_at: new Date().toISOString(),
+    };
+    onAdd(optimistic);
     const formData = new FormData();
     formData.append('plant_id', plantId);
     formData.append('type', 'photo');
     formData.append('photo', file);
-    await fetch('/api/events', {
-      method: 'POST',
-      body: formData,
-    });
     setFile(null);
     (e.target as HTMLFormElement).reset();
-    router.refresh();
+    try {
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        body: formData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const real = Array.isArray(data) ? data[0] : data;
+        if (real) {
+          onReplace(tempId, real);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to upload photo', err);
+    }
   }
 
   return (
