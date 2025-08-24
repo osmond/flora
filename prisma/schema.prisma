@@ -1,0 +1,60 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Plant {
+  id            String   @id @default(cuid())
+  name          String
+  species       String?
+  roomId        String?
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  waterEvery    String?
+  waterAmount   String?
+  fertEvery     String?
+  fertFormula   String?
+
+  // relationships
+  room          Room?    @relation(fields: [roomId], references: [id])
+  careEvents    CareEvent[]
+  notes         Note[]
+  photos        Photo[]
+}
+
+model Room {
+  id     String  @id @default(cuid())
+  name   String
+  plants Plant[]
+}
+
+model CareEvent {
+  id        String   @id @default(cuid())
+  type      String   // "water", "fertilize", etc.
+  date      DateTime
+  plant     Plant    @relation(fields: [plantId], references: [id])
+  plantId   String
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  plant     Plant    @relation(fields: [plantId], references: [id])
+  plantId   String
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  createdAt DateTime @default(now())
+  plant     Plant    @relation(fields: [plantId], references: [id])
+  plantId   String
+}
