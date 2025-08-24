@@ -78,6 +78,7 @@ type TaskItemProps = {
 function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
   const [startX, setStartX] = useState<number | null>(null);
   const [offsetX, setOffsetX] = useState(0);
+  const [removing, setRemoving] = useState(false);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLLIElement>) => {
     setStartX(e.clientX);
@@ -90,9 +91,16 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
     }
   };
 
+  const triggerComplete = () => {
+    setRemoving(true);
+    setTimeout(() => {
+      void onComplete(task.id);
+    }, 300);
+  };
+
   const handlePointerEnd = () => {
     if (offsetX > 100) {
-      void onComplete(task.id);
+      triggerComplete();
     }
     setStartX(null);
     setOffsetX(0);
@@ -100,8 +108,14 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
 
   return (
     <li
-      className="rounded-md border p-4 transition-transform"
-      style={{ transform: `translateX(${offsetX}px)`, touchAction: 'pan-y' }}
+      className="rounded-md border p-4 transition-all duration-300"
+      style={{
+        transform: removing
+          ? 'translateX(100%)'
+          : `translateX(${offsetX}px)`,
+        opacity: removing ? 0 : 1,
+        touchAction: 'pan-y',
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}
@@ -112,7 +126,7 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
       <div className="mt-2 flex gap-2">
         <button
-          onClick={() => onComplete(task.id)}
+          onClick={triggerComplete}
           className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
         >
           Done
