@@ -27,14 +27,18 @@ Flora creates personalized care plans and adapts them to your environment.
   - Fetch individual plant details
   - Delete plants
 
+- 📝 **Events API**
+  - Log notes and photo events for plants
+  - Delete events and associated images
+
 - 📅 **Care Dashboard**
   - Today, Overdue, and Upcoming tasks
   - Swipe to mark tasks complete
 
- - 🪴 **Plant Detail Pages**
-   - Displays plant nickname, species, hero image, quick stats, and care timeline
-   - Log personal notes on each plant
-   - Coach suggestions *(coming soon)*
+- 🪴 **Plant Detail Pages**
+  - Displays plant nickname, species, hero image, quick stats, and care timeline
+  - Log personal notes and photo updates on each plant
+  - Coach suggestions *(coming soon)*
 
 - 📷 **Photo Journal**
   - Upload progress photos for each plant
