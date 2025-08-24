@@ -36,6 +36,7 @@ Flora creates personalized care plans and adapts them to your environment.
 - 📅 **Daily Task List**
   - Shows upcoming care tasks grouped by date
   - Complete or snooze tasks directly from the list
+  - Swipe right on a task to mark it as done
 
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline

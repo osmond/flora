@@ -53,24 +53,12 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
           <div className="mb-2 text-sm font-medium text-muted-foreground">{day}</div>
           <ul className="space-y-4">
             {dayTasks.map((task) => (
-              <li key={task.id} className="rounded-md border p-4">
-                <p className="font-medium">{task.plantName}</p>
-                <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
-                <div className="mt-2 flex gap-2">
-                  <button
-                    onClick={() => handleComplete(task.id)}
-                    className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
-                  >
-                    Done
-                  </button>
-                  <button
-                    onClick={() => handleSnooze(task.id)}
-                    className="rounded bg-secondary px-2 py-1 text-xs text-secondary-foreground"
-                  >
-                    Snooze
-                  </button>
-                </div>
-              </li>
+              <TaskItem
+                key={task.id}
+                task={task}
+                onComplete={handleComplete}
+                onSnooze={handleSnooze}
+              />
             ))}
           </ul>
         </li>
@@ -78,3 +66,63 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
     </ul>
   );
 }
+
+type TaskItemProps = {
+  task: Task;
+  onComplete: (id: string) => Promise<void> | void;
+  onSnooze: (id: string, days?: number) => Promise<void> | void;
+};
+
+function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
+  const [startX, setStartX] = useState<number | null>(null);
+  const [offsetX, setOffsetX] = useState(0);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLLIElement>) => {
+    setStartX(e.clientX);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLLIElement>) => {
+    if (startX !== null) {
+      const delta = e.clientX - startX;
+      if (delta > 0) setOffsetX(delta);
+    }
+  };
+
+  const handlePointerEnd = () => {
+    if (offsetX > 100) {
+      void onComplete(task.id);
+    }
+    setStartX(null);
+    setOffsetX(0);
+  };
+
+  return (
+    <li
+      className="rounded-md border p-4 transition-transform"
+      style={{ transform: `translateX(${offsetX}px)`, touchAction: 'pan-y' }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerEnd}
+      onPointerLeave={startX !== null ? handlePointerEnd : undefined}
+      onPointerCancel={handlePointerEnd}
+    >
+      <p className="font-medium">{task.plantName}</p>
+      <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
+      <div className="mt-2 flex gap-2">
+        <button
+          onClick={() => onComplete(task.id)}
+          className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
+        >
+          Done
+        </button>
+        <button
+          onClick={() => onSnooze(task.id)}
+          className="rounded bg-secondary px-2 py-1 text-xs text-secondary-foreground"
+        >
+          Snooze
+        </button>
+      </div>
+    </li>
+  );
+}
+

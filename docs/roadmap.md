@@ -65,7 +65,7 @@ All views should adhere to the [style guide](./style-guide.md).
 
 ### `/app/today`
 - [x] Task List: water/fertilizer/note tasks grouped by date
-- [ ] Swipe right: mark as done
+- [x] Swipe right: mark as done
 - [x] Snooze tasks to defer/reschedule
 - [x] Quick-add logs from the task
 
@@ -114,7 +114,7 @@ All views should adhere to the [style guide](./style-guide.md).
 - [ ] Submit Add Plant form to Supabase
 - [ ] `/plants` grid & list toggle
 - [ ] `/plants/[id]` view with timeline & stats
-- [ ] Swipe to mark care task complete
+- [x] Swipe to mark care task complete
 - [ ] Watering logic engine based on intervals
 - [x] Prisma `seed.ts` file for demo data
  - [x] File upload to Cloudinary
