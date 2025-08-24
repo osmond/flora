@@ -1,18 +1,18 @@
 # 🌱 Flora App Roadmap
 
 ## ✅ Phase 0 – Foundations
-- [x] Supabase setup and schema
-- [x] Project structure + Tailwind + shadcn/ui
+- [] Supabase setup and schema
+- [] Project structure + Tailwind + shadcn/ui
 
 ## 🌱 Phase 1 – Add Plant Flow
-- [x] Species autosuggest (Perenual API)
-- [x] Care plan generation (OpenAI)
-- [x] Plant creation and photo upload
+- [] Species autosuggest (OpenAI)
+- [] Care plan generation (OpenAI)
+- [] Plant creation and photo upload
 
 ## 🌾 Phase 2 – Core Views
-- [x] Today View
-- [x] Plant Detail Page
-- [x] Timeline, Gallery, Notes
+- [] Today View
+- [] Plant Detail Page
+- [] Timeline, Gallery, Notes
 
 ## 🌿 Phase 3 – Environment-Aware Care
 - [ ] Weather + Humidity sensors
