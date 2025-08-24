@@ -1,6 +1,7 @@
 import { getCurrentUserId } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { logEvent } from '@/lib/analytics';
+import { addDays, formatISO, parseISO } from 'date-fns';
 
 interface Params {
   params: { id: string };
@@ -48,9 +49,8 @@ export async function PATCH(req: Request, { params }: Params) {
       return new Response('Task not found', { status: 404 });
     }
 
-    const due = new Date(task.due_date as string);
-    due.setDate(due.getDate() + days);
-    const newDue = due.toISOString().slice(0, 10);
+    const due = parseISO(task.due_date as string);
+    const newDue = formatISO(addDays(due, days), { representation: 'date' });
 
     const { error: updateError } = await supabaseAdmin
       .from('tasks')

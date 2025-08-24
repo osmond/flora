@@ -73,7 +73,7 @@ All views should adhere to the [style guide](./style-guide.md).
 - [ ] Use `waterEvery` and `fertEvery` intervals
 - [ ] Schedule CareEvents per plant
 - [ ] Hydrate timeline from completed + upcoming tasks
-- [ ] Timezone-aware comparisons (`dayjs` or `date-fns`)
+- [x] Timezone-aware comparisons (`dayjs` or `date-fns`)
 
 ### AI Enhancements
 - [ ] Coach suggests “you may want to water early due to low humidity”
