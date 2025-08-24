@@ -26,7 +26,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 
 ### To Finish
  - [x] Submit form → create plant in Supabase
-- [ ] Redirect to `/plants/[id]`
+- [x] Redirect to `/plants/[id]`
  - [x] Fallback when no species selected
 - [ ] Light UI polish: spacing, transitions, preview step
 

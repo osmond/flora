@@ -16,6 +16,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Room assignment & environment tagging
   - Persists new plants to Supabase via API
   - Species field is optional with a sensible "Unknown" fallback
+  - Redirects to the plant detail page after creation
 
 - 🪴 **Plant API**
   - List all plants
@@ -27,6 +28,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Swipe to mark tasks complete
 
 - 🪴 **Plant Detail Pages**
+  - Displays plant nickname and species
   - Hero image, Quick Stats, Timeline
   - Notes, Photos, and Coach suggestions
 
