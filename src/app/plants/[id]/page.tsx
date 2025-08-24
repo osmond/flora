@@ -5,6 +5,7 @@ import CareTimeline from '@/components/CareTimeline';
 import AddNoteForm from '@/components/AddNoteForm';
 import AddPhotoForm from '@/components/AddPhotoForm';
 import PhotoGallery from '@/components/PhotoGallery';
+import CareCoach from '@/components/plant/CareCoach';
 
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
   const { data: plant, error } = await supabaseAdmin
@@ -49,6 +50,7 @@ export default async function PlantDetailPage({ params }: { params: { id: string
           <p className="text-muted-foreground">{plant.species}</p>
         )}
         <QuickStats plant={plant} />
+        <CareCoach plant={plant} />
       </div>
       <div className="p-4">
         <h2 className="mb-4 text-xl font-semibold">Add Note</h2>
