@@ -89,10 +89,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [ ] Swipe card transitions
 - [ ] Soothing sound on task complete (optional)
 
-### Home View (Empty State)
-- [ ] Show “Plant of the Day”
-- [ ] Animated CTA to explore plant detail view
-- [ ] AI name suggester for new plants (“How about Pippin?”)
+
 
 ### Responsive Testing
 - [ ] Tune layout for iPad/tablet
