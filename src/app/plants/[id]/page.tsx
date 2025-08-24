@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import QuickStats from '@/components/plant/QuickStats';
 import CareTimeline from '@/components/CareTimeline';
+import AddNoteForm from '@/components/AddNoteForm';
 
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
   const { data: plant, error } = await supabaseAdmin
@@ -46,6 +47,10 @@ export default async function PlantDetailPage({ params }: { params: { id: string
           <p className="text-muted-foreground">{plant.species}</p>
         )}
         <QuickStats plant={plant} />
+      </div>
+      <div className="p-4">
+        <h2 className="mb-4 text-xl font-semibold">Add Note</h2>
+        <AddNoteForm plantId={plant.id} />
       </div>
       <div className="p-4">
         <h2 className="mb-4 text-xl font-semibold">Timeline</h2>
