@@ -3,24 +3,32 @@
 ## Directory Overview
 
 ```
-/app
-  page.tsx             # Root dashboard
-  today/page.tsx       # Today's tasks
-  plants/[id]/page.tsx # Plant detail
-  add/page.tsx         # Add plant flow
+src/app
+  layout.tsx        # Root layout
+  page.tsx          # Root dashboard
+  today/page.tsx    # Today's tasks
 
-/components
-  plant/    # Plant-specific UI
-  layout/   # Header, nav, etc
-  ui/       # Shared primitives (Card, Button, etc)
+src/components
+  SpeciesAutosuggest.tsx  # Species search component
+  plant/                  # Plant-specific UI
+  ui/                     # Shared primitives (Card, Button, etc)
 
-/lib
-  supabase/ # Supabase helpers
-  utils.ts  # Shared utilities
+src/lib
+  analytics.ts        # Analytics helpers
+  auth.ts             # Auth helpers
+  config.ts           # Project config
+  supabase/           # Supabase helpers
+  supabaseAdmin.ts    # Supabase admin utilities
 
-/public     # App assets (logo, favicon, etc)
-/styles     # Tailwind + global CSS
-/supabase   # SQL schema and seed files
+src/libs
+  apis/               # External API clients
+
+src/types
+  event.ts            # Event types
+  plant.ts            # Plant types
+
+public    # App assets (logo, favicon, etc)
+supabase  # SQL schema and seed files
 ```
 
 ## Database
