@@ -108,7 +108,7 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       onPointerLeave={startX !== null ? handlePointerEnd : undefined}
       onPointerCancel={handlePointerEnd}
     >
-      <p className="font-medium">{task.plantName}</p>
+      <p className="font-medium animate-pulse-weight">{task.plantName}</p>
       <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
       <div className="mt-2 flex gap-2">
         <button

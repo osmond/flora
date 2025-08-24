@@ -48,6 +48,15 @@ export default {
       boxShadow: {
         card: "0 4px 6px -1px rgba(0,0,0,0.05)",
       },
+      keyframes: {
+        "pulse-weight": {
+          "0%, 100%": { fontWeight: "500" },
+          "50%": { fontWeight: "700" },
+        },
+      },
+      animation: {
+        "pulse-weight": "pulse-weight 1s ease-in-out infinite",
+      },
     },
   },
   plugins: [animate],
