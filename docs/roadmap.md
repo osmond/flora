@@ -139,7 +139,5 @@ This roadmap outlines upcoming development phases across both functionality and 
 ## 📘 Related Docs
 - `/docs/roadmap.md` — Matches this plan
 - `/docs/style-guide.md` — UI tokens, fonts, color
-- `/prisma/schema.prisma` — DB model source of truth
-- `/app/plants/[id]/page.tsx` — Scaffolded detail view
-- `/api/ai-care/route.ts` — OpenAI endpoint scaffolded
+
 
