@@ -53,7 +53,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [x] Supabase queries for plant list and detail views
  - [x] Supabase writes for care logs (water/fertilize)
  - [x] Prisma queries for photos and updates
-- [ ] Optimistic updates on log creation
+ - [x] Optimistic updates on log creation
 - [ ] Responsive styling (mobile first, then tablet/desktop)
 
 ---

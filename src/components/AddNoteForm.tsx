@@ -1,23 +1,47 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import type { CareEvent } from '@/types';
 
-export default function AddNoteForm({ plantId }: { plantId: string }) {
+interface Props {
+  plantId: string;
+  onAdd: (evt: CareEvent) => void;
+  onReplace: (tempId: string, evt: CareEvent) => void;
+}
+
+export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
   const [note, setNote] = useState('');
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmed = note.trim();
     if (!trimmed) return;
-    await fetch('/api/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plant_id: plantId, type: 'note', note: trimmed }),
-    });
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: CareEvent = {
+      id: tempId,
+      type: 'note',
+      note: trimmed,
+      image_url: null,
+      created_at: new Date().toISOString(),
+    };
+    onAdd(optimistic);
     setNote('');
-    router.refresh();
+    try {
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plant_id: plantId, type: 'note', note: trimmed }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const real = Array.isArray(data) ? data[0] : data;
+        if (real) {
+          onReplace(tempId, real);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to add note', err);
+    }
   }
 
   return (

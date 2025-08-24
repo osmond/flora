@@ -1,11 +1,10 @@
 import Image from 'next/image';
 import db from '@/lib/db';
 import QuickStats from '@/components/plant/QuickStats';
-import CareTimeline from '@/components/CareTimeline';
-import AddNoteForm from '@/components/AddNoteForm';
-import AddPhotoForm from '@/components/AddPhotoForm';
 import PhotoGallery from '@/components/PhotoGallery';
 import CareCoach from '@/components/plant/CareCoach';
+import EventsSection from '@/components/EventsSection';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
   const plant = await db.plant.findUnique({ where: { id: params.id } });
@@ -22,6 +21,12 @@ export default async function PlantDetailPage({ params }: { params: { id: string
     });
     heroUrl = photo?.url ?? null;
   }
+
+  const { data: events } = await supabaseAdmin
+    .from('events')
+    .select('id, type, note, image_url, created_at')
+    .eq('plant_id', plant.id)
+    .order('created_at', { ascending: false });
 
   return (
     <div>
@@ -45,19 +50,11 @@ export default async function PlantDetailPage({ params }: { params: { id: string
         <CareCoach plant={plant} />
       </div>
       <div className="p-4">
-        <h2 className="mb-4 text-xl font-semibold">Add Note</h2>
-        <AddNoteForm plantId={plant.id} />
+        <EventsSection plantId={plant.id} initialEvents={events ?? []} />
       </div>
       <div className="p-4">
         <h2 className="mb-4 text-xl font-semibold">Photos</h2>
-        <AddPhotoForm plantId={plant.id} />
-        <div className="mt-4">
-          <PhotoGallery plantId={plant.id} />
-        </div>
-      </div>
-      <div className="p-4">
-        <h2 className="mb-4 text-xl font-semibold">Timeline</h2>
-        <CareTimeline plantId={plant.id} />
+        <PhotoGallery plantId={plant.id} />
       </div>
     </div>
   );
