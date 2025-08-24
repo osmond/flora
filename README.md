@@ -45,6 +45,18 @@ Flora creates personalized care plans and adapts them to your environment.
 
 ---
 
+## 🗃️ Database
+
+All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
+
+- `plants.sql` – plants and species tables with RLS policies
+- `tasks.sql` – care task table and policies
+- `events.sql` – user event log
+- `analytics.sql` – analytics events table
+- `sample_data.sql` – optional seed data for plants and tasks
+
+---
+
 ## 📦 Setup
 
 ```bash
@@ -52,6 +64,14 @@ git clone https://github.com/osmond/flora.git
 cd flora
 pnpm install
 cp .env.example .env.local  # Fill in your keys
+# apply schema (requires Supabase CLI)
+supabase db execute supabase/plants.sql
+supabase db execute supabase/tasks.sql
+supabase db execute supabase/events.sql
+supabase db execute supabase/analytics.sql
+
+# optional sample data
+supabase db execute supabase/sample_data.sql
 pnpm dev
 ```
 
