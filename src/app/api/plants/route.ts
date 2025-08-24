@@ -36,3 +36,17 @@ export async function POST(req: Request) {
 
   return new Response(JSON.stringify(inserted), { status: 200 });
 }
+
+export async function GET(_req: Request) {
+  const userId = getCurrentUserId();
+  const { data, error } = await supabaseAdmin
+    .from("plants")
+    .select("*")
+    .eq("user_id", userId);
+
+  if (error) {
+    return new Response("Database error", { status: 500 });
+  }
+
+  return new Response(JSON.stringify(data), { status: 200 });
+}
