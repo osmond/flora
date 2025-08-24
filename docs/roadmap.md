@@ -44,7 +44,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 ### `/app/plants/[id]`
  - [x] Hero Section: cover photo or placeholder
  - [x] Quick Stats: next/last watering, schedule, fertilizing
- - [ ] Timeline View: care events sorted by date (styled vertical feed)
+ - [x] Timeline View: care events sorted by date (styled vertical feed)
  - [ ] Notes: freeform journaling
  - [ ] Gallery: uploaded photos of the plant
  - [ ] Care Coach: context-aware suggestions (e.g., "Looks overdue for watering")
