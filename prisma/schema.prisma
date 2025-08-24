@@ -21,6 +21,7 @@ model Plant {
   waterAmount   String?
   fertEvery     String?
   fertFormula   String?
+  humidity      String?
 
   // relationships
   room          Room?    @relation(fields: [roomId], references: [id])

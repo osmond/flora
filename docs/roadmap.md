@@ -76,7 +76,7 @@ All views should adhere to the [style guide](./style-guide.md).
 - [x] Timezone-aware comparisons (`dayjs` or `date-fns`)
 
 ### AI Enhancements
-- [ ] Coach suggests “you may want to water early due to low humidity”
+- [x] Coach suggests “you may want to water early due to low humidity”
 - [ ] Long-term: ET₀ model integration
 
 ---
