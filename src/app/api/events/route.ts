@@ -2,11 +2,19 @@ import cloudinary from '@/lib/cloudinary';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { z } from 'zod';
 
-const jsonSchema = z.object({
+// JSON body can log a note or a simple care event (e.g. watering)
+const baseSchema = z.object({
   plant_id: z.string().uuid(),
+});
+const noteSchema = baseSchema.extend({
   type: z.literal('note'),
   note: z.string().min(1),
 });
+const careSchema = baseSchema.extend({
+  type: z.enum(['water', 'fertilize']),
+  note: z.string().optional(),
+});
+const jsonSchema = z.union([noteSchema, careSchema]);
 
 const formSchema = z.object({
   plant_id: z.string().uuid(),
@@ -26,7 +34,7 @@ export async function POST(req: Request) {
         .from('events')
         .insert({
           plant_id: parsed.data.plant_id,
-          type: 'note',
+          type: parsed.data.type,
           note: parsed.data.note,
         })
         .select();
