@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateTasks } from '../src/lib/tasks';
+import { generateTasks, hydrateTimeline } from '../src/lib/tasks';
+import type { CareEvent } from '../src/types';
 
 describe('generateTasks', () => {
   it('creates a water task when interval has passed', () => {
@@ -55,5 +56,26 @@ describe('generateTasks', () => {
     const tasks = generateTasks(plants, new Date('2024-01-15'));
     expect(tasks).toHaveLength(1);
     expect(tasks[0]).toMatchObject({ plantName: 'Rose', type: 'water' });
+  });
+});
+
+describe('hydrateTimeline', () => {
+  it('adds upcoming care events based on intervals', () => {
+    const events: CareEvent[] = [
+      {
+        id: '1',
+        type: 'water',
+        note: null,
+        image_url: null,
+        created_at: '2024-01-01',
+      },
+    ];
+    const timeline = hydrateTimeline(events, {
+      id: 'plant1',
+      waterEvery: '7 days',
+      fertEvery: null,
+    });
+    const hasUpcoming = timeline.some((e) => e.type === 'water due');
+    expect(hasUpcoming).toBe(true);
   });
 });
