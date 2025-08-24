@@ -1,107 +1,78 @@
-# Flora
+# 🌿 Flora – Personalized Plant Care Companion
 
-Flora is a personalized plant care companion built with Next.js and Supabase.
+Flora is your intelligent, self-hosted plant care companion.
+It helps you track, understand, and nurture your plants with ease.
 
-## Features
+Powered by Supabase, OpenAI, and a weather-aware care engine,
+Flora creates personalized care plans and adapts them to your environment.
 
-- Add plants with species autosuggest, room suggestions, optional photo uploads, pot size/material/light level/drainage/soil/indoor–outdoor fields, and automatic geolocation + local humidity capture.
-- Assign plants to rooms and view them grouped by room.
-- Toggle between list and grid views when browsing plants.
-- If you have no plants yet, a friendly CTA helps you add your first one.
-- Open a plant to see its detail page with a photo hero and timeline of care events.
-- Jot down freeform notes on each plant's detail page.
-- Upload additional photos and view them in a gallery on each plant's detail page.
-- Remove unwanted photos from a plant's gallery.
-- See quick stats for each plant's care plan, including watering schedule, water amount, and last/next watering dates.
-- Edit a plant's care plan from its detail page.
-- Get gentle Care Coach suggestions when a plant's watering is overdue.
-- Review overdue, today, and upcoming care tasks on the home page.
-- Swipe a task right to mark it done or left to snooze it on the Today page.
-- Snoozing tasks asks for an optional reason to help adjust care plans.
-- Receive push notifications for due tasks via Supabase Edge Functions.
-- Enjoy a subtle fade-out animation when completing tasks.
-- Cached data fetching with friendly loading states on list pages.
-- Generate an AI-powered care plan when creating a plant, including watering amounts.
-- Care plan suggestions now factor in real-time local weather data.
-- Care plan suggestions now incorporate your climate zone.
-- Polished UI with Inter typography and improved form interactions.
-- Saving a plant now shows a success toast and redirects to its detail page.
-- Switch between light and dark themes with a simple toggle.
-- Optional HTTP Basic Auth to gate access when deploying.
-- Export your plant data in JSON or CSV via `/api/export?format=csv`.
-- Restore plant data by POSTing exported JSON to `/api/import`.
+---
 
-## Architecture
+## 🚀 Features
 
-Flora uses the Next.js App Router under `src/app` for pages and API routes,
-with Supabase providing both the Postgres database and object storage for
-uploaded plant photos. Server‑side logic lives in route handlers in
-`src/app/api`, and push notifications are delivered via Supabase Edge
-Functions.
+- 🌱 **Add a Plant**
+  - Smart species autosuggest (via Perenual API)
+  - Auto-generated AI care plan
+  - Room assignment & environment tagging
 
-## Rate limits and caching
+- 📅 **Care Dashboard**
+  - Today, Overdue, and Upcoming tasks
+  - Swipe to mark tasks complete
 
-Species suggestions are powered by the OpenAI API, which may enforce rate
-limits. The `/api/species` endpoint keeps a short-lived in-memory cache keyed by
-query string to avoid hitting those limits repeatedly. Each returned `image_url`
-is verified with a `HEAD` request, and inaccessible links are omitted so the
-client can fall back to a placeholder image.
+- 🪴 **Plant Detail Pages**
+  - Hero image, Quick Stats, Timeline
+  - Notes, Photos, and Coach suggestions
 
-## Development
+- 📷 **Photo Journal**
+  - Upload progress photos for each plant
 
-### Prerequisites
+- 🧠 **Care Coach** *(Coming Soon)*
+  - AI-based suggestions when care is overdue or inconsistent
 
-- Node.js 20+
-- pnpm 10+
+- 📍 **Environment-aware Schedules**
+  - Uses location and weather APIs to adjust care intervals
 
-### Setup
+---
 
-Install dependencies and start the development server:
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15 w/ App Router, Server Components, Turbopack
+- **UI**: Tailwind CSS, shadcn/ui, Cabinet Grotesk + Inter fonts
+- **Database**: Supabase (Postgres + Auth + Storage)
+- **AI**: OpenAI (for care plan generation)
+- **Weather**: Forecast API (local humidity, ET₀ support)
+- **Hosting**: Vercel
+
+---
+
+## 📦 Setup
 
 ```bash
+git clone https://github.com/osmond/flora.git
+cd flora
 pnpm install
+cp .env.example .env.local  # Fill in your keys
 pnpm dev
 ```
 
-Set the following environment variables in `.env.local`:
+See `/docs/deployment.md` for full production deployment steps.
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `OPENAI_API_KEY` (species suggestions)
-- `BASIC_AUTH_USER` (optional)
-- `BASIC_AUTH_PASSWORD` (optional)
+---
 
-Get an API key from [OpenAI](https://platform.openai.com/). Flora uses the
-OpenAI API to suggest plant species when adding a plant. If `OPENAI_API_KEY` is
-not set, species suggestions will be unavailable.
+## 🤝 Contributing
 
-Create a storage bucket named `plant-photos` in your Supabase project to store uploaded plant images.
+See `/docs/contributing.md` to get started with local development and best practices.
 
-### Testing
+---
 
-Run the unit test suite:
+## 📘 Documentation
 
-```bash
-pnpm test
-```
+- [`/docs/style-guide.md`](./docs/style-guide.md) – UI/UX guidelines
+- [`/docs/roadmap.md`](./docs/roadmap.md) – Upcoming features
+- [`/docs/architecture.md`](./docs/architecture.md) – Tech architecture
 
-### Sample data
+---
 
-To quickly try Flora with some example plants and tasks, run the SQL in
-[`supabase/sample_data.sql`](supabase/sample_data.sql) against your Supabase
-database after creating the tables.
+## 📄 License
 
-### Authentication
-
-Flora currently runs in a single-user mode and skips Supabase Auth. Set
-`NEXT_PUBLIC_SINGLE_USER_ID` to control which user ID is used in database
-queries. Database rows in `plants` and `tasks` are now protected with
-row-level security scoped to this ID, so be sure to run the SQL setup files in
-`supabase/` on your project. See [docs/auth.md](docs/auth.md) for more details
-on the decision and future plans. When `BASIC_AUTH_USER` and `BASIC_AUTH_PASSWORD`
-are set, all routes are protected with simple HTTP Basic Auth.
-
-## Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for planned and in‑progress work.
+MIT © Jonathan Osmond
