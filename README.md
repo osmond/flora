@@ -28,7 +28,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Delete plants
 
 - 📝 **Events API**
-  - Log notes and photo events for plants
+  - Log notes, watering, fertilizing, and photo events for plants
   - Delete events and associated images
 
 - 📅 **Care Dashboard**
@@ -37,7 +37,7 @@ Flora creates personalized care plans and adapts them to your environment.
 
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline
-  - Log personal notes and upload new photos on each plant
+  - Log personal notes, watering/fertilizing events, and upload new photos on each plant
   - Coach suggestions highlight overdue watering or fertilizing
 
 - 📷 **Photo Journal**
