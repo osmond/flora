@@ -25,6 +25,20 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
     }
   };
 
+  const handleSnooze = async (id: string, days = 1) => {
+    try {
+      await fetch(`/api/tasks/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'snooze', days }),
+      });
+    } catch (err) {
+      console.error('Failed to snooze task', err);
+    } finally {
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+    }
+  };
+
   const grouped = tasks.reduce<Record<string, Task[]>>((acc, task) => {
     const day = format(new Date(task.due), 'PPP');
     if (!acc[day]) acc[day] = [];
@@ -42,12 +56,20 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
               <li key={task.id} className="rounded-md border p-4">
                 <p className="font-medium">{task.plantName}</p>
                 <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
-                <button
-                  onClick={() => handleComplete(task.id)}
-                  className="mt-2 rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
-                >
-                  Done
-                </button>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => handleComplete(task.id)}
+                    className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
+                  >
+                    Done
+                  </button>
+                  <button
+                    onClick={() => handleSnooze(task.id)}
+                    className="rounded bg-secondary px-2 py-1 text-xs text-secondary-foreground"
+                  >
+                    Snooze
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
