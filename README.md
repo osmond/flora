@@ -18,6 +18,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Species field is optional with a sensible "Unknown" fallback
   - Redirects to the plant detail page after creation
   - Caches species lookups to reduce repeated OpenAI requests
+  - Preview plant details before creation
 
 - 🗂️ **Plant Collection**
   - Browse plants grouped by room with a grid or list toggle
