@@ -4,9 +4,10 @@
 
 ```
 /app
-  layout.tsx           # Application layout
   page.tsx             # Root dashboard
   today/page.tsx       # Today's tasks
+  plants/[id]/page.tsx # Plant detail
+  add/page.tsx         # Add plant flow
 
 /components
   plant/    # Plant-specific UI
@@ -21,10 +22,6 @@
 /styles     # Tailwind + global CSS
 /supabase   # SQL schema and seed files
 ```
-
-Future routes (planned):
-- `/app/plants/[id]/page.tsx` – Plant detail
-- `/app/add/page.tsx` – Add plant flow
 
 ## Database
 
