@@ -43,6 +43,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Swipe right on a task to mark it as done
   - Cards slide away with a smooth transition when completed
   - Celebrate completed tasks with a burst of confetti
+  - Optional soothing chime plays when marking tasks complete
   - Active tasks gently pulse with a variable font weight animation
   - Timezone-aware scheduling keeps tasks aligned with your local day
 
