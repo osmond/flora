@@ -1,32 +1,27 @@
 import TaskList from '@/components/TaskList';
-import type { Task } from '@/types/task';
+import { generateTasks } from '@/lib/tasks';
 
-const sampleTasks: Task[] = [
+const samplePlants = [
   {
     id: '1',
-    plantName: 'Monstera',
-    type: 'water',
-    due: new Date().toISOString(),
+    name: 'Monstera',
+    waterEvery: '7 days',
+    lastWateredAt: new Date(Date.now() - 8 * 86400000).toISOString(),
   },
   {
     id: '2',
-    plantName: 'Fiddle Leaf Fig',
-    type: 'fertilize',
-    due: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    plantName: 'Snake Plant',
-    type: 'note',
-    due: new Date(Date.now() + 86400000).toISOString(),
+    name: 'Fiddle Leaf Fig',
+    fertEvery: '30 days',
+    lastFertilizedAt: new Date(Date.now() - 31 * 86400000).toISOString(),
   },
 ];
 
 export default function TodayPage() {
+  const tasks = generateTasks(samplePlants);
   return (
     <section className="p-4">
       <h1 className="mb-4 text-xl font-semibold">Today&apos;s Tasks</h1>
-      <TaskList tasks={sampleTasks} />
+      <TaskList tasks={tasks} />
     </section>
   );
 }
