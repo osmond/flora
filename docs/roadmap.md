@@ -10,7 +10,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [x] Project Init: Next.js App Router, Tailwind, shadcn/ui
 - [x] Data Layer: Supabase project, `.env` integration
 - [x] ORM: Prisma set up with Plant, Room, CareEvent, Photo, Note models
-- [x] AI / APIs: Connected OpenAI and Perenual APIs
+- [x] AI / APIs: Connected OpenAI API for species suggestions
 - [x] Style Guide: Color palette, fonts, layout principles documented in `/docs`
 - [x] Docs: `/roadmap.md`, `/style-guide.md`, `/README.md` complete
 
@@ -20,12 +20,12 @@ This roadmap outlines upcoming development phases across both functionality and 
 **Goal:** “From curious plant person to confident caretaker — in under a minute.”
 
 ### Completed
-- [x] Multi-step form with nickname, species autosuggest (Perenual), pot size, room assignment, photo (optional), drainage, soil, humidity, light, etc.
+- [x] Multi-step form with nickname, species autosuggest (OpenAI), pot size, room assignment, photo (optional), drainage, soil, humidity, light, etc.
 - [x] Smart AI care plan generation (mocked)
 - [x] Local form state management + strong types
 
 ### To Finish
-- [ ] Submit form → create plant in Supabase
+ - [x] Submit form → create plant in Supabase
 - [ ] Redirect to `/plants/[id]`
 - [ ] Fallback when no species selected
 - [ ] Light UI polish: spacing, transitions, preview step
