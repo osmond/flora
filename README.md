@@ -21,6 +21,7 @@ Flora creates personalized care plans and adapts them to your environment.
 
 - 🗂️ **Plant Collection**
   - Browse plants grouped by room with a grid or list toggle
+  - Mobile-first responsive layout scales to tablets and desktops
   - Friendly empty state prompting you to add your first plant
 
 - 🪴 **Plant API**
@@ -38,6 +39,7 @@ Flora creates personalized care plans and adapts them to your environment.
 
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline
+  - Responsive layout works across mobile, tablet, and desktop
 - Care timeline groups events by date for a cleaner history
 - Log personal notes, watering/fertilizing events, and upload new photos on each plant
   - New notes and photos appear instantly via optimistic updates

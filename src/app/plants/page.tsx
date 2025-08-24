@@ -8,7 +8,9 @@ export default async function PlantsPage() {
     .select('id, name, species, image_url, room:rooms(id, name)');
 
   if (error) {
-    return <div className="p-4">Failed to load plants</div>;
+    return (
+      <div className="p-4 md:p-6 max-w-md mx-auto">Failed to load plants</div>
+    );
   }
 
   const mappedPlants =
@@ -22,7 +24,7 @@ export default async function PlantsPage() {
 
   if (mappedPlants.length === 0) {
     return (
-      <div className="p-4 text-center">
+      <div className="p-4 md:p-6 text-center max-w-md mx-auto">
         <p className="mb-4">You haven&apos;t added any plants yet.</p>
         <Link href="/plants/new" className="text-primary underline">
           Add your first plant
@@ -32,7 +34,7 @@ export default async function PlantsPage() {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 md:p-6 max-w-4xl mx-auto">
       <PlantList plants={mappedPlants} />
     </div>
   );
