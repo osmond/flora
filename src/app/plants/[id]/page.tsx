@@ -1,20 +1,49 @@
+import Image from 'next/image';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export default async function PlantDetailPage({ params }: { params: { id: string } }) {
-  const { data, error } = await supabaseAdmin
+  const { data: plant, error } = await supabaseAdmin
     .from('plants')
     .select('*')
     .eq('id', params.id)
     .single();
 
-  if (error || !data) {
+  if (error || !plant) {
     return <div className="p-4">Plant not found</div>;
   }
 
+  let heroUrl = plant.image_url as string | null;
+
+  if (!heroUrl) {
+    const { data: photos } = await supabaseAdmin
+      .from('events')
+      .select('image_url')
+      .eq('plant_id', plant.id)
+      .eq('type', 'photo')
+      .order('created_at', { ascending: false });
+
+    heroUrl = photos?.[0]?.image_url ?? null;
+  }
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">{data.name}</h1>
-      <p className="text-muted-foreground">{data.species}</p>
+    <div>
+      {heroUrl ? (
+        <Image
+          src={heroUrl}
+          alt={plant.name}
+          width={800}
+          height={400}
+          className="h-64 w-full object-cover"
+        />
+      ) : (
+        <div className="h-64 w-full bg-muted" />
+      )}
+      <div className="p-4">
+        <h1 className="text-2xl font-bold">{plant.name}</h1>
+        {plant.species && (
+          <p className="text-muted-foreground">{plant.species}</p>
+        )}
+      </div>
     </div>
   );
 }
