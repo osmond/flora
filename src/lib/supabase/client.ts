@@ -1,0 +1,1 @@
+// Placeholder for lib/supabase/client.ts
