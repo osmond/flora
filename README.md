@@ -11,9 +11,10 @@ Flora creates personalized care plans and adapts them to your environment.
 ## 🚀 Features
 
 - 🌱 **Add a Plant**
-  - Smart species autosuggest (via Perenual API)
+  - Smart species autosuggest (via OpenAI API)
   - Auto-generated AI care plan
   - Room assignment & environment tagging
+  - Persists new plants to Supabase via API
 
 - 📅 **Care Dashboard**
   - Today, Overdue, and Upcoming tasks
@@ -39,7 +40,7 @@ Flora creates personalized care plans and adapts them to your environment.
 - **Framework**: Next.js 15 w/ App Router, Server Components, Turbopack
 - **UI**: Tailwind CSS, shadcn/ui, Cabinet Grotesk + Inter fonts
 - **Database**: Supabase (Postgres + Auth + Storage)
-- **AI**: OpenAI (for care plan generation)
+- **AI**: OpenAI (for species suggestions & care plan generation)
 - **Weather**: Forecast API (local humidity, ET₀ support)
 - **Hosting**: Vercel
 
@@ -88,7 +89,7 @@ See `/docs/deployment.md` for full production deployment steps.
 
 ## 🤝 Contributing
 
-See `/docs/contributing.md` to get started with local development and best practices.
+See [docs/contributing.md](./docs/contributing.md) for local development and best practices. For design standards, review the [style guide](./docs/style-guide.md).
 
 ---
 

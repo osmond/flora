@@ -11,7 +11,7 @@ _Tailwind CSS + shadcn/ui_
 - **Single-user focus**: personal, conversational copy (“Your plants”, “You watered Kay”).
 - **Accessible by default**: WCAG AA contrast, obvious focus, keyboard & screen-reader parity.
 
----
+
 
 ## 2) Foundations
 
@@ -381,3 +381,25 @@ You can preview example UI components in `/preview` (or `PreviewPage.tsx`).
 ---
 
 Let this guide evolve as the app grows. For visual references, see the canvas mockups.
+=======
+### Tailwind & shadcn mapping
+
+| Token     | Tailwind classes                     | shadcn CSS variables                     |
+|-----------|--------------------------------------|------------------------------------------|
+| Primary   | `bg-primary`, `text-primary-foreground`         | `--primary`, `--primary-foreground`     |
+| Secondary | `bg-secondary`, `text-secondary-foreground`     | `--secondary`, `--secondary-foreground` |
+| Background| `bg-background`, `text-foreground`               | `--background`, `--foreground`          |
+| Foreground| `text-foreground`                                | `--foreground`                          |
+| Muted     | `bg-muted`, `text-muted-foreground`              | `--muted`, `--muted-foreground`        |
+
+```tsx
+// components/Example.tsx
+export function Example() {
+  return (
+    <div className="bg-primary text-primary-foreground p-4 rounded-lg">
+      <p className="text-muted-foreground">Water me today!</p>
+    </div>
+  );
+}
+```
+
