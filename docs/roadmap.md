@@ -118,7 +118,7 @@ This roadmap outlines upcoming development phases across both functionality and 
  - [x] File upload to Cloudinary
 - [ ] RLS policies for Supabase
 - [ ] Responsive testing (mobile/tablet/desktop)
-- [ ] Timeline component polish (grouped by date)
+- [x] Timeline component polish (grouped by date)
 - [x] Setup `@/lib/db.ts` for Prisma client
 
 ---
