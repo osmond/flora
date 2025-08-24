@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const plantSchema = z.object({
   name: z.string().min(1),
-  species: z.string().min(1),
+  species: z.string().optional(),
   potSize: z.string().optional(),
   potMaterial: z.string().optional(),
   lightLevel: z.string().optional(),
@@ -25,9 +25,13 @@ export async function POST(req: Request) {
   }
 
   const userId = getCurrentUserId();
+  const plantData = {
+    ...parsed.data,
+    species: parsed.data.species?.trim() || "Unknown",
+  };
   const { error, data: inserted } = await supabaseAdmin
     .from("plants")
-    .insert({ ...parsed.data, user_id: userId })
+    .insert({ ...plantData, user_id: userId })
     .select();
 
   if (error) {
