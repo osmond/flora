@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin as supabase } from "../../../../lib/supabaseAdmin";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
 

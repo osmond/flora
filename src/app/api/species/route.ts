@@ -1,6 +1,6 @@
 // src/app/api/species/route.ts
 import { NextResponse } from "next/server";
-import config from "../../../lib/config";
+import config from "@/lib/config";
 
 async function fetchWithTimeout(
   url: string,

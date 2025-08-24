@@ -1,9 +1,9 @@
 // src/app/api/plants/route.ts
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { supabaseAdmin as supabase } from "../../../lib/supabaseAdmin";
-import { getCurrentUserId } from "../../../lib/auth";
-import { logEvent } from "../../../lib/analytics";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
+import { getCurrentUserId } from "@/lib/auth";
+import { logEvent } from "@/lib/analytics";
 import { z } from "zod";
 
 

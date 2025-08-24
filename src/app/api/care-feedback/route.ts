@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { supabaseAdmin as supabase } from "../../../lib/supabaseAdmin";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 
 
