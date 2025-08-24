@@ -1,4 +1,4 @@
-# 🌿 Flora Style Guide (Merged)
+# 🌿 Flora Style Guide 
 
 This document is the canonical source of design standards for the Flora app. It consolidates all previous style guides and extensions.
 
