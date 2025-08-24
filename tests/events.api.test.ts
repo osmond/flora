@@ -31,6 +31,7 @@ vi.mock("@/lib/cloudinary", () => ({
 
 let updatedImageUrl: string | null = null;
 let eventDeleted = false;
+let insertedValues: Record<string, unknown> | null = null;
 const eventRecord = {
   id: "1",
   plant_id: "4aa97bee-71f1-428e-843b-4c3c77493994",
@@ -67,13 +68,16 @@ vi.mock("@supabase/supabase-js", () => ({
       }
       if (table === "events") {
         return {
-          insert: () => ({
-            select: () =>
-              Promise.resolve({
-                data: [eventRecord],
-                error: null,
-              }),
-          }),
+          insert: (vals: Record<string, unknown>) => {
+            insertedValues = vals;
+            return {
+              select: () =>
+                Promise.resolve({
+                  data: [eventRecord],
+                  error: null,
+                }),
+            };
+          },
           select: () => ({
             eq: () => ({
               single: () => Promise.resolve({ data: eventRecord, error: null }),
@@ -94,6 +98,10 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 describe("POST /api/events", () => {
+  beforeEach(() => {
+    insertedValues = null;
+  });
+
   it("returns 200 for valid submission", async () => {
     const { POST } = await import("../src/app/api/events/route");
     const req = new Request("http://localhost", {
@@ -131,6 +139,21 @@ describe("POST /api/events", () => {
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
+  });
+
+  it("logs a water event", async () => {
+    const { POST } = await import("../src/app/api/events/route");
+    const req = new Request("http://localhost", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        plant_id: "4aa97bee-71f1-428e-843b-4c3c77493994",
+        type: "water",
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect((insertedValues as { type?: string })?.type).toBe("water");
   });
 
   it("updates plant image_url when uploading a photo", async () => {
