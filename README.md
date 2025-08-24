@@ -42,6 +42,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Completing a task automatically logs a care event on the plant
   - Swipe right on a task to mark it as done
   - Celebrate completed tasks with a burst of confetti
+  - Active tasks gently pulse with a variable font weight animation
   - Timezone-aware scheduling keeps tasks aligned with your local day
 
 - 🪴 **Plant Detail Pages**
