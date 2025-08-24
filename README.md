@@ -76,6 +76,9 @@ supabase db execute supabase/analytics.sql
 # optional sample data
 supabase db execute supabase/sample_data.sql
 
+# optional Prisma demo data
+pnpm db:seed
+
 pnpm dev
 ```
 

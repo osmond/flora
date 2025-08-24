@@ -127,7 +127,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [ ] `/plants/[id]` view with timeline & stats
 - [ ] Swipe to mark care task complete
 - [ ] Watering logic engine based on intervals
-- [ ] Prisma `seed.ts` file for demo data
+- [x] Prisma `seed.ts` file for demo data
 - [ ] File upload to Cloudinary
 - [ ] RLS policies for Supabase
 - [ ] Responsive testing (mobile/tablet/desktop)
