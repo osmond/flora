@@ -31,10 +31,9 @@ Flora creates personalized care plans and adapts them to your environment.
   - Today, Overdue, and Upcoming tasks
   - Swipe to mark tasks complete
 
-- 🪴 **Plant Detail Pages**
-  - Displays plant nickname and species
-  - Hero image, Quick Stats, Timeline
-  - Notes, Photos, and Coach suggestions
+ - 🪴 **Plant Detail Pages**
+   - Displays plant nickname, species, and hero image
+   - Quick stats, timeline, notes, and coach suggestions *(coming soon)*
 
 - 📷 **Photo Journal**
   - Upload progress photos for each plant

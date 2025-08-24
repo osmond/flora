@@ -42,7 +42,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [ ] Handle "no plants" state with friendly CTA
 
 ### `/app/plants/[id]`
-- [ ] Hero Section: cover photo or placeholder
+ - [x] Hero Section: cover photo or placeholder
 - [ ] Quick Stats: next/last watering, schedule, fertilizing
 - [ ] Timeline View: care events sorted by date (styled vertical feed)
 - [ ] Notes: freeform journaling
