@@ -50,6 +50,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [ ] Care Coach: context-aware suggestions (e.g., "Looks overdue for watering")
 
 ### To Build
+- [x] Supabase queries for plant list and detail views
 - [ ] Prisma queries + Supabase writes for logs, photos, and updates
 - [ ] Optimistic updates on log creation
 - [ ] Responsive styling (mobile first, then tablet/desktop)
