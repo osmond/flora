@@ -37,6 +37,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Shows upcoming care tasks grouped by date
   - Complete or snooze tasks directly from the list
   - Swipe right on a task to mark it as done
+  - Timezone-aware scheduling keeps tasks aligned with your local day
 
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline

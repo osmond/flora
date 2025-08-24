@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import type { Task } from '@/types/task';
 
 export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
@@ -40,7 +40,7 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
   };
 
   const grouped = tasks.reduce<Record<string, Task[]>>((acc, task) => {
-    const day = format(new Date(task.due), 'PPP');
+    const day = format(parseISO(task.due), 'PPP');
     if (!acc[day]) acc[day] = [];
     acc[day].push(task);
     return acc;
