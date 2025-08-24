@@ -4,9 +4,6 @@ import { renderToString } from "react-dom/server";
 
 (globalThis as unknown as { React: typeof React }).React = React;
 
-process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
-process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
-
 vi.mock("@/lib/auth", () => ({
   getCurrentUserId: () => "user-123",
 }));
@@ -16,6 +13,9 @@ vi.mock("@/components/AddPhotoForm", () => ({ default: () => null }));
 vi.mock("@/components/CareTimeline", () => ({ default: () => null }));
 vi.mock("@/components/DeletePhotoButton", () => ({ default: () => null }));
 vi.mock("@/components/CareSuggestion", () => ({ default: () => null }));
+vi.mock("@/components/PhotoGallery", () => ({ default: () => null }));
+vi.mock("@/components/plant/QuickStats", () => ({ default: () => null }));
+vi.mock("@/components/plant/CareCoach", () => ({ default: () => null }));
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) => (
     <a href={href}>{children}</a>
@@ -59,62 +59,24 @@ vi.mock("@/components/ui/label", () => ({
 }));
 vi.mock("@/components/ui", () => ({ Button: ({ children }: { children: React.ReactNode }) => <button>{children}</button> }));
 
-vi.mock("@supabase/supabase-js", () => ({
-  createClient: () => ({
-    from: (table: string) => {
-      if (table === "plants") {
-        return {
-          select: () => ({
-            eq: () => ({
-              eq: () => ({
-                single: () =>
-                  Promise.resolve({
-                    data: {
-                      id: "plant-1",
-                      name: "My Plant",
-                      species: null,
-                      common_name: null,
-                      pot_size: null,
-                      pot_material: null,
-                      drainage: null,
-                      soil_type: null,
-                      image_url: null,
-                      indoor: null,
-                      care_plan: null,
-                    },
-                    error: null,
-                  }),
-              }),
-            }),
-          }),
-        };
-      }
-      if (table === "events") {
-        return {
-          select: () => ({
-            eq: () => ({
-              eq: () => ({
-                order: () =>
-                  Promise.resolve({
-                    data: [
-                      {
-                        id: "evt1",
-                        type: "photo",
-                        note: null,
-                        image_url: "https://example.com/latest.jpg",
-                        created_at: "2023-01-01T00:00:00Z",
-                      },
-                    ],
-                    error: null,
-                  }),
-              }),
-            }),
-          }),
-        };
-      }
-      return {} as Record<string, unknown>;
+vi.mock("@/lib/db", () => ({
+  default: {
+    plant: {
+      findUnique: () =>
+        Promise.resolve({
+          id: "plant-1",
+          name: "My Plant",
+          species: null,
+          imageUrl: null,
+        }),
     },
-  }),
+    photo: {
+      findFirst: () =>
+        Promise.resolve({
+          url: "https://example.com/latest.jpg",
+        }),
+    },
+  },
 }));
 
 describe("PlantDetailPage", () => {

@@ -1,29 +1,23 @@
 import Image from 'next/image';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
-
-interface PhotoEvent {
-  id: string;
-  image_url: string | null;
-}
+import db from '@/lib/db';
 
 export default async function PhotoGallery({ plantId }: { plantId: string }) {
-  const { data: photos, error } = await supabaseAdmin
-    .from('events')
-    .select('id, image_url')
-    .eq('plant_id', plantId)
-    .eq('type', 'photo')
-    .order('created_at', { ascending: false });
+  const photos = await db.photo.findMany({
+    where: { plantId },
+    orderBy: { createdAt: 'desc' },
+    select: { id: true, url: true },
+  });
 
-  if (error || !photos || photos.length === 0) {
+  if (photos.length === 0) {
     return <p className="text-sm text-muted-foreground">No photos yet.</p>;
   }
 
   return (
     <div className="grid grid-cols-2 gap-2">
-      {photos.map((photo: PhotoEvent) => (
+      {photos.map((photo) => (
         <Image
           key={photo.id}
-          src={photo.image_url ?? ''}
+          src={photo.url ?? ''}
           alt="Plant photo"
           width={300}
           height={300}
