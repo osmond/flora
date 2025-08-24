@@ -38,6 +38,7 @@ Flora creates personalized care plans and adapts them to your environment.
   - Supports intervals defined in days, weeks, months, or years
   - Shows upcoming care tasks grouped by date
   - Complete or snooze tasks directly from the list
+  - Completing a task automatically logs a care event on the plant
   - Swipe right on a task to mark it as done
   - Timezone-aware scheduling keeps tasks aligned with your local day
 

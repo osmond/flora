@@ -23,6 +23,16 @@ export async function PATCH(req: Request, { params }: Params) {
   }
 
   if (body.action === 'complete') {
+    const { data: task, error: taskError } = await supabaseAdmin
+      .from('tasks')
+      .select('plant_id, type')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
+    if (taskError || !task) {
+      return new Response('Task not found', { status: 404 });
+    }
+
     const { error } = await supabaseAdmin
       .from('tasks')
       .update({ completed_at: new Date().toISOString() })
@@ -31,6 +41,17 @@ export async function PATCH(req: Request, { params }: Params) {
     if (error) {
       return new Response('Database error', { status: 500 });
     }
+
+    const { error: eventError } = await supabaseAdmin
+      .from('events')
+      .insert({
+        plant_id: task.plant_id as string,
+        type: task.type as string,
+      });
+    if (eventError) {
+      return new Response('Database error', { status: 500 });
+    }
+
     await logEvent('task_completed', { task_id: id });
     return new Response(null, { status: 200 });
   }
