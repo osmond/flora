@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
@@ -7,12 +7,16 @@ vi.mock("@/lib/auth", () => ({
   getCurrentUserId: () => "user-123",
 }));
 
+let inserted: any;
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
     from: () => ({
-      insert: () => ({
-        select: () => Promise.resolve({ data: [{ id: "1" }], error: null }),
-      }),
+      insert: (payload: any) => {
+        inserted = payload;
+        return {
+          select: () => Promise.resolve({ data: [payload], error: null }),
+        };
+      },
       delete: () => ({
         eq: () => ({
           eq: () => Promise.resolve({ error: null }),
@@ -29,6 +33,10 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 describe("POST /api/plants", () => {
+  beforeEach(() => {
+    inserted = null;
+  });
+
   it("returns 200 for valid submission", async () => {
     const { POST } = await import("../src/app/api/plants/route");
     const form = new FormData();
@@ -46,6 +54,16 @@ describe("POST /api/plants", () => {
     const req = new Request("http://localhost", { method: "POST", body: form });
     const res = await POST(req);
     expect(res.status).toBe(400);
+  });
+
+  it("falls back to 'Unknown' when species is missing", async () => {
+    const { POST } = await import("../src/app/api/plants/route");
+    const form = new FormData();
+    form.set("name", "Fern");
+    const req = new Request("http://localhost", { method: "POST", body: form });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(inserted.species).toBe("Unknown");
   });
 
   it("returns 400 for invalid field types", async () => {
