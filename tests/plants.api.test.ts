@@ -18,6 +18,12 @@ vi.mock("@supabase/supabase-js", () => ({
           eq: () => Promise.resolve({ error: null }),
         }),
       }),
+      select: () => ({
+        eq: (col: string) =>
+          col === "id"
+            ? { eq: () => Promise.resolve({ data: [{ id: "1" }], error: null }) }
+            : Promise.resolve({ data: [{ id: "1" }], error: null }),
+      }),
     }),
   }),
 }));
@@ -51,6 +57,28 @@ describe("POST /api/plants", () => {
     const req = new Request("http://localhost", { method: "POST", body: form });
     const res = await POST(req);
     expect(res.status).toBe(400);
+  });
+});
+
+describe("GET /api/plants", () => {
+  it("returns list of plants", async () => {
+    const { GET } = await import("../src/app/api/plants/route");
+    const req = new Request("http://localhost", { method: "GET" });
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data).toEqual([{ id: "1" }]);
+  });
+});
+
+describe("GET /api/plants/[id]", () => {
+  it("returns a single plant", async () => {
+    const { GET } = await import("../src/app/api/plants/[id]/route");
+    const req = new Request("http://localhost", { method: "GET" });
+    const res = await GET(req, { params: Promise.resolve({ id: "1" }) });
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data).toEqual({ id: "1" });
   });
 });
 
