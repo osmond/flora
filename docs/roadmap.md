@@ -30,7 +30,7 @@ All views should adhere to the [style guide](./style-guide.md).
  - [x] Submit form → create plant in Supabase
 - [x] Redirect to `/plants/[id]`
  - [x] Fallback when no species selected
-- [ ] Light UI polish: spacing, transitions, preview step
+ - [x] Light UI polish: spacing, transitions, preview step
 
 ---
 
