@@ -94,7 +94,7 @@ See `/docs/contributing.md` to get started with local development and best pract
 
 ## 📘 Documentation
 
-- [`/docs/style-guide.md`](./docs/style-guide.md) – UI/UX guidelines
+- [`/docs/style-guide.md`](./docs/style-guide.md) – canonical source of Flora design standards
 - [`/docs/roadmap.md`](./docs/roadmap.md) – Upcoming features
 - [`/docs/architecture.md`](./docs/architecture.md) – Tech architecture
 
