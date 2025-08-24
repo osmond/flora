@@ -42,4 +42,18 @@ describe('generateTasks', () => {
     expect(tasks).toHaveLength(1);
     expect(tasks[0]).toMatchObject({ plantName: 'Fern', type: 'fertilize' });
   });
+
+  it('handles week-based intervals', () => {
+    const plants = [
+      {
+        id: '1',
+        name: 'Rose',
+        waterEvery: '2 weeks',
+        lastWateredAt: '2024-01-01',
+      },
+    ];
+    const tasks = generateTasks(plants, new Date('2024-01-15'));
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0]).toMatchObject({ plantName: 'Rose', type: 'water' });
+  });
 });
