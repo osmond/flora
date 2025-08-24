@@ -25,7 +25,7 @@ This roadmap outlines upcoming development phases across both functionality and 
 - [x] Local form state management + strong types
 
 ### To Finish
-- [ ] Submit form → create plant in Supabase
+ - [x] Submit form → create plant in Supabase
 - [ ] Redirect to `/plants/[id]`
 - [ ] Fallback when no species selected
 - [ ] Light UI polish: spacing, transitions, preview step
