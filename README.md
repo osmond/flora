@@ -33,9 +33,8 @@ Flora creates personalized care plans and adapts them to your environment.
   - Log notes, watering, fertilizing, and photo events for plants
   - Delete events and associated images
 
-- 📅 **Care Dashboard**
-  - Today, Overdue, and Upcoming tasks
-  - Swipe to mark tasks complete
+- 📅 **Daily Task List**
+  - Shows upcoming care tasks grouped by date
 
 - 🪴 **Plant Detail Pages**
   - Displays plant nickname, species, hero image, quick stats, photo gallery, and care timeline
