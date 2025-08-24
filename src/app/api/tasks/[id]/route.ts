@@ -1,0 +1,92 @@
+import { getCurrentUserId } from '@/lib/auth';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { logEvent } from '@/lib/analytics';
+
+interface Params {
+  params: { id: string };
+}
+
+type CompleteAction = { action: 'complete' };
+type SnoozeAction = { action: 'snooze'; days: number; reason?: string };
+type RequestBody = CompleteAction | SnoozeAction;
+
+export async function PATCH(req: Request, { params }: Params) {
+  const userId = getCurrentUserId();
+  const { id } = params;
+
+  let body: RequestBody;
+  try {
+    body = (await req.json()) as RequestBody;
+  } catch {
+    return new Response('Invalid JSON', { status: 400 });
+  }
+
+  if (body.action === 'complete') {
+    const { error } = await supabaseAdmin
+      .from('tasks')
+      .update({ completed_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('user_id', userId);
+    if (error) {
+      return new Response('Database error', { status: 500 });
+    }
+    await logEvent('task_completed', { task_id: id });
+    return new Response(null, { status: 200 });
+  }
+
+  if (body.action === 'snooze') {
+    const days = typeof body.days === 'number' ? body.days : 0;
+    const reason = body.reason as string | undefined;
+
+    const { data: task, error: taskError } = await supabaseAdmin
+      .from('tasks')
+      .select('due_date, plant_id')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
+    if (taskError || !task) {
+      return new Response('Task not found', { status: 404 });
+    }
+
+    const due = new Date(task.due_date as string);
+    due.setDate(due.getDate() + days);
+    const newDue = due.toISOString().slice(0, 10);
+
+    const { error: updateError } = await supabaseAdmin
+      .from('tasks')
+      .update({ due_date: newDue, snooze_reason: reason })
+      .eq('id', id)
+      .eq('user_id', userId);
+    if (updateError) {
+      return new Response('Database error', { status: 500 });
+    }
+
+    const { data: plant } = await supabaseAdmin
+      .from('plants')
+      .select('care_plan')
+      .eq('id', task.plant_id as string)
+      .eq('user_id', userId)
+      .single();
+
+    const current = plant?.care_plan as { waterEvery?: string } | null;
+    if (current?.waterEvery) {
+      const match = current.waterEvery.match(/(\d+)/);
+      const interval = match ? parseInt(match[1], 10) : 0;
+      const updatedPlan = {
+        ...current,
+        waterEvery: `${interval + days} days`,
+      };
+      await supabaseAdmin
+        .from('plants')
+        .update({ care_plan: updatedPlan })
+        .eq('id', task.plant_id as string)
+        .eq('user_id', userId);
+    }
+
+    return new Response(null, { status: 200 });
+  }
+
+  return new Response('Invalid action', { status: 400 });
+}
+
+export const runtime = 'edge';
