@@ -1,94 +1,29 @@
-import { getCurrentUserId } from "@/lib/auth";
-import { supabaseAdmin } from "../../../lib/supabaseAdmin";
-import cloudinary from "@/lib/cloudinary";
-import db from "@/lib/db";
-import { z } from "zod";
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-const plantSchema = z.object({
-  name: z.string().min(1),
-  species: z.string().optional(),
-  potSize: z.string().optional(),
-  potMaterial: z.string().optional(),
-  lightLevel: z.string().optional(),
-  indoor: z.enum(["Indoor", "Outdoor"]).optional(),
-  drainage: z.string().optional(),
-  soilType: z.string().optional(),
-  humidity: z.string().optional(),
-  latitude: z.coerce.number().optional(),
-  longitude: z.coerce.number().optional(),
-});
+// Create a server client using service role (server-only).
+function supabaseServer() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  if (!url || !key) {
+    throw new Error("Missing SUPABASE env vars. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
+  }
+  return createClient(url, key, { auth: { persistSession: false } });
+}
 
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
-    const file = formData.get("photo");
-    const entries = Array.from(formData.entries()).filter(([k]) => k !== "photo");
-    const data = Object.fromEntries(entries);
-    const parsed = plantSchema.safeParse(data);
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
-    }
-
-    const userId = await getCurrentUserId();
-    const plantData = {
-      ...parsed.data,
-      species: parsed.data.species?.trim() || "Unknown",
+    const body = await req.json();
+    const supabase = supabaseServer();
+    const payload = {
+      nickname: body?.nickname ?? null,
+      species_scientific: body?.speciesScientific ?? null,
+      species_common: body?.speciesCommon ?? null,
     };
-
-    let upload: { secure_url: string; public_id: string } | null = null;
-    if (file instanceof File) {
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      upload = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream({}, (err, result) => {
-          if (err || !result) return reject(err);
-          resolve({ secure_url: result.secure_url, public_id: result.public_id });
-        });
-        stream.end(buffer);
-      });
-    }
-
-    const { error, data: inserted } = await supabaseAdmin
-      .from("plants")
-      .insert({ ...plantData, user_id: userId, image_url: upload?.secure_url })
-      .select();
-
-    if (error) {
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
-    }
-
-    const id = inserted?.[0]?.id as string | undefined;
-    if (upload && id) {
-      await db.photo.create({ data: { plantId: id, url: upload.secure_url } });
-    }
-
-    return NextResponse.json(inserted, { status: 200 });
-  } catch (err) {
-    if (err instanceof Error && err.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
-}
-
-export async function GET() {
-  try {
-    const userId = await getCurrentUserId();
-    const { data, error } = await supabaseAdmin
-      .from("plants")
-      .select("*")
-      .eq("user_id", userId);
-
-    if (error) {
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
-    }
-
-    return NextResponse.json(data, { status: 200 });
-  } catch (err) {
-    if (err instanceof Error && err.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const { data, error } = await supabase.from("plants").insert(payload).select().single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ plant: data }, { status: 201 });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message ?? "Server error" }, { status: 500 });
   }
 }

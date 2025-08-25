@@ -1,7 +1,8 @@
-import { type Config } from "tailwindcss"
+// tailwind.config.ts
+import type { Config } from "tailwindcss"
 
-const config: Config = {
-  darkMode: "class",
+export default {
+  darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
@@ -19,29 +20,17 @@ const config: Config = {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
-        },
-        success: {
-          DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))",
-        },
-        warning: {
-          DEFAULT: "hsl(var(--warning))",
-          foreground: "hsl(var(--warning-foreground))",
-        },
-        info: {
-          DEFAULT: "hsl(var(--info))",
-          foreground: "hsl(var(--info-foreground))",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
@@ -49,29 +38,13 @@ const config: Config = {
         },
       },
       borderRadius: {
-        lg: "0.5rem",
-        md: "0.375rem",
-        sm: "0.25rem",
-      },
-      fontFamily: {
-        inter: ["var(--font-inter)", "sans-serif"],
-      },
-      boxShadow: {
-        card: "0 4px 6px -1px rgba(0,0,0,0.05)",
-      },
-      keyframes: {
-        "pulse-weight": {
-          "0%, 100%": { fontWeight: "500" },
-          "50%": { fontWeight: "700" },
-        },
-      },
-      animation: {
-        "pulse-weight": "pulse-weight 1s ease-in-out infinite",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate")],
-}
-
-export default config
+  // If you use tailwindcss-animate and it's v4-compatible, keep it here.
+  // Otherwise, comment out the next line or install it:
+  // plugins: [require("tailwindcss-animate")],
+} satisfies Config
