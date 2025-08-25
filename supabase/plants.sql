@@ -6,6 +6,7 @@ create extension if not exists pgcrypto;
 -- Plants table
 create table if not exists public.plants (
   id uuid primary key default gen_random_uuid(),
+  room_id bigint references public.rooms(id),
   user_id text not null,
   name text not null,
   species text not null,
@@ -25,6 +26,7 @@ create table if not exists public.plants (
 
 -- Ensure columns exist for existing installations
 alter table if exists public.plants add column if not exists room text;
+alter table if exists public.plants add column if not exists room_id bigint references public.rooms(id);
 alter table if exists public.plants add column if not exists common_name text;
 alter table if exists public.plants add column if not exists image_url text;
 alter table if exists public.plants add column if not exists pot_size text;
