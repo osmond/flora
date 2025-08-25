@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   const data = Object.fromEntries(formData.entries());
   const parsed = plantSchema.safeParse(data);
   if (!parsed.success) {
-    return new Response("Invalid data", { status: 400 });
+    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
 
   const userId = getCurrentUserId();
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     .select();
 
   if (error) {
-    return new Response("Database error", { status: 500 });
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 
   return NextResponse.json(inserted, { status: 200 });
@@ -50,7 +50,7 @@ export async function GET() {
     .eq("user_id", userId);
 
   if (error) {
-    return new Response("Database error", { status: 500 });
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 
   return NextResponse.json(data, { status: 200 });
