@@ -90,7 +90,7 @@ export function EmptyToday() {
 - [x] Layout hero image, nickname, species, and room badge
 - [x] Display quick stats for last/next watering and cadence
     - [x] Implement tabs for timeline, care plan, photos, notes
-- [ ] Add "Mark as watered" and event logging
+- [x] Add "Mark as watered" and event logging
 - [ ] Support schedule adjustments and AI suggestions
 
 **Hero + Quick Stats Example:**
