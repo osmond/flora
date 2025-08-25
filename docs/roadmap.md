@@ -124,11 +124,11 @@ All views should adhere to the [style guide](./style-guide.md).
 
 ## 🧾 Task Backlog Snapshot (In No Order)
 
-- [ ] Submit Add Plant form to Supabase
-- [ ] `/plants` grid & list toggle
-- [ ] `/plants/[id]` view with timeline & stats
+- [x] Submit Add Plant form to Supabase
+- [x] `/plants` grid & list toggle
+- [x] `/plants/[id]` view with timeline & stats
 - [x] Swipe to mark care task complete
-- [ ] Watering logic engine based on intervals
+- [x] Watering logic engine based on intervals
 - [x] Prisma `seed.ts` file for demo data
 - [x] File upload to Cloudinary
 - [x] RLS policies for Supabase
