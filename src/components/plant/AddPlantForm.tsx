@@ -32,6 +32,25 @@ export default function AddPlantForm(): JSX.Element {
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [carePreview, setCarePreview] = useState<string | null>(null);
+  const [_previewing, setPreviewing] = useState<boolean>(false);
+
+  async function fetchPreview(scientific: string, common?: string) {
+    setCarePreview(null);
+    setPreviewing(true);
+    try {
+      const species = common || scientific;
+      const res = await fetch(
+        `/api/ai-care/preview?species=${encodeURIComponent(species)}`,
+      );
+      const json = await res.json();
+      setCarePreview(typeof json?.preview === "string" ? json.preview : null);
+    } catch {
+      setCarePreview(null);
+    } finally {
+      setPreviewing(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -87,9 +106,17 @@ export default function AddPlantForm(): JSX.Element {
           onSelect={(scientific, common) => {
             setSpeciesScientific(scientific);
             setSpeciesCommon(common || "");
+            fetchPreview(scientific, common);
           }}
         />
       </div>
+
+      {carePreview && (
+        <div className="rounded-md border bg-secondary/30 p-4 text-sm">
+          <p className="font-medium">AI Care Preview</p>
+          <p className="text-muted-foreground">{carePreview}</p>
+        </div>
+      )}
 
       <div>
         <button
