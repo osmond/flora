@@ -2,10 +2,18 @@
 
 import { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { isBefore, isSameDay, parseISO, startOfDay } from 'date-fns';
+import {
+  addDays,
+  formatISO,
+  isBefore,
+  isSameDay,
+  parseISO,
+  startOfDay,
+} from 'date-fns';
 import Link from 'next/link';
 import type { Task } from '@/types/task';
 import { Button } from '@/components/ui/button';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 
 function playChime() {
   if (typeof window === 'undefined') return;
@@ -60,7 +68,18 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
     } catch (err) {
       console.error('Failed to snooze task', err);
     } finally {
-      setTasks((prev) => prev.filter((t) => t.id !== id));
+      setTasks((prev) =>
+        prev
+          .map((t) =>
+            t.id === id
+              ? {
+                  ...t,
+                  due: formatISO(addDays(parseISO(t.due), days)),
+                }
+              : t
+          )
+          .sort((a, b) => a.due.localeCompare(b.due))
+      );
     }
   };
 
@@ -78,31 +97,35 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
   }
 
   return (
-    <ul className="space-y-8">
-      {(
-        [
-          ['overdue', 'Overdue'],
-          ['due', 'Due Today'],
-          ['upcoming', 'Upcoming'],
-        ] as const
-      ).map(([key, label]) =>
-        sections[key].length ? (
-          <li key={key}>
-            <div className="mb-2 text-sm font-medium text-muted-foreground">{label}</div>
-            <ul className="space-y-4">
-              {sections[key].map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onComplete={handleComplete}
-                  onSnooze={handleSnooze}
-                />
-              ))}
-            </ul>
-          </li>
-        ) : null
-      )}
-    </ul>
+    <LayoutGroup>
+      <ul className="space-y-8">
+        {(
+          [
+            ['overdue', 'Overdue'],
+            ['due', 'Due Today'],
+            ['upcoming', 'Upcoming'],
+          ] as const
+        ).map(([key, label]) =>
+          sections[key].length ? (
+            <li key={key}>
+              <div className="mb-2 text-sm font-medium text-muted-foreground">{label}</div>
+              <motion.ul layout className="space-y-4">
+                <AnimatePresence>
+                  {sections[key].map((task) => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      onComplete={handleComplete}
+                      onSnooze={handleSnooze}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.ul>
+            </li>
+          ) : null
+        )}
+      </ul>
+    </LayoutGroup>
   );
 }
 
@@ -115,7 +138,6 @@ type TaskItemProps = {
 function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
   const [startX, setStartX] = useState<number | null>(null);
   const [offsetX, setOffsetX] = useState(0);
-  const [removing, setRemoving] = useState(false);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLLIElement>) => {
     setStartX(e.clientX);
@@ -129,28 +151,29 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
   };
 
   const triggerComplete = () => {
-    setRemoving(true);
-    setTimeout(() => {
-      void onComplete(task.id);
-    }, 200);
+    void onComplete(task.id);
   };
 
   const handlePointerEnd = () => {
     if (offsetX > 100) {
       triggerComplete();
+    } else {
+      setOffsetX(0);
     }
     setStartX(null);
-    setOffsetX(0);
   };
 
   return (
-    <li
-      className="rounded-xl border py-4 px-4 sm:px-6 md:px-8 transition-all duration-200"
+    <motion.li
+      layout
+      layoutId={task.id}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: 100 }}
+      transition={{ duration: 0.2 }}
+      className="rounded-xl border py-4 px-4 sm:px-6 md:px-8"
       style={{
-        transform: removing
-          ? 'translateX(100%)'
-          : `translateX(${offsetX}px)`,
-        opacity: removing ? 0 : 1,
+        transform: `translateX(${offsetX}px)`,
         touchAction: 'pan-y',
       }}
       onPointerDown={handlePointerDown}
@@ -176,7 +199,7 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
           <Link href={`/plants/${task.plantId}`}>View</Link>
         </Button>
       </div>
-    </li>
+    </motion.li>
   );
 }
 

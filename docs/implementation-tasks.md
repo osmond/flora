@@ -91,7 +91,7 @@ export function EmptyToday() {
 - [x] Display quick stats for last/next watering and cadence
     - [x] Implement tabs for timeline, care plan, photos, notes
 - [x] Add "Mark as watered" and event logging
-- [ ] Support schedule adjustments and AI suggestions
+ - [x] Support schedule adjustments and AI suggestions
 
 **Hero + Quick Stats Example:**
 ```tsx
@@ -138,7 +138,7 @@ export function EmptyToday() {
 - [x] Build checklist segmented into overdue, due, and upcoming
 - [x] Implement task cards with quick actions (done, snooze, view)
 - [x] Recompute schedule after marking tasks done
-- [ ] Animate task completion and movement between sections
+ - [x] Animate task completion and movement between sections
 
 **Task Row Example:**
 ```tsx
