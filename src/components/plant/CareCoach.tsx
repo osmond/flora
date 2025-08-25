@@ -1,5 +1,6 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { addDays } from 'date-fns';
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getCurrentUserId } from "@/lib/auth";
+import { addDays } from "date-fns";
 
 interface Plant {
   id: string;
@@ -21,20 +22,23 @@ function parseInterval(value?: string | null) {
 }
 
 export default async function CareCoach({ plant }: CareCoachProps) {
+  const userId = getCurrentUserId();
   const { data: waterEvents } = await supabaseAdmin
-    .from('events')
-    .select('created_at')
-    .eq('plant_id', plant.id)
-    .eq('type', 'water')
-    .order('created_at', { ascending: false })
+    .from("events")
+    .select("created_at")
+    .eq("plant_id", plant.id)
+    .eq("user_id", userId)
+    .eq("type", "water")
+    .order("created_at", { ascending: false })
     .limit(1);
 
   const { data: fertEvents } = await supabaseAdmin
-    .from('events')
-    .select('created_at')
-    .eq('plant_id', plant.id)
-    .eq('type', 'fertilize')
-    .order('created_at', { ascending: false })
+    .from("events")
+    .select("created_at")
+    .eq("plant_id", plant.id)
+    .eq("user_id", userId)
+    .eq("type", "fertilize")
+    .order("created_at", { ascending: false })
     .limit(1);
 
   const lastWaterDate = waterEvents?.[0]?.created_at
@@ -48,26 +52,28 @@ export default async function CareCoach({ plant }: CareCoachProps) {
   const fertInterval = parseInterval(plant.fert_every || plant.fertEvery);
 
   const nextWaterDate =
-    lastWaterDate && waterInterval ? addDays(lastWaterDate, waterInterval) : null;
+    lastWaterDate && waterInterval
+      ? addDays(lastWaterDate, waterInterval)
+      : null;
   const nextFertDate =
     lastFertDate && fertInterval ? addDays(lastFertDate, fertInterval) : null;
 
   const suggestions: string[] = [];
 
-  if (plant.humidity && plant.humidity.toLowerCase() === 'low') {
-    suggestions.push('You may want to water early due to low humidity.');
+  if (plant.humidity && plant.humidity.toLowerCase() === "low") {
+    suggestions.push("You may want to water early due to low humidity.");
   }
 
   if (nextWaterDate && nextWaterDate < new Date()) {
-    suggestions.push('Looks overdue for watering.');
+    suggestions.push("Looks overdue for watering.");
   }
 
   if (nextFertDate && nextFertDate < new Date()) {
-    suggestions.push('Time to fertilize soon.');
+    suggestions.push("Time to fertilize soon.");
   }
 
   if (suggestions.length === 0) {
-    suggestions.push('All good! 🌿');
+    suggestions.push("All good! 🌿");
   }
 
   return (
