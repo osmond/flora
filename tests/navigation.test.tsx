@@ -38,6 +38,22 @@ describe('Navigation', () => {
     expect(html).toMatch(/href="\/plants"[^>]*aria-current="page"/);
   });
 
+  it('highlights nested routes', () => {
+    pathname = '/plants/123';
+    const html = renderToString(<Navigation />);
+    expect(html).toMatch(/href="\/plants"[^>]*aria-current="page"/);
+  });
+
+  it('only highlights home on the root path', () => {
+    pathname = '/';
+    const rootHtml = renderToString(<Navigation />);
+    expect(rootHtml).toMatch(/href="\/"[^>]*aria-current="page"/);
+
+    pathname = '/plants';
+    const plantsHtml = renderToString(<Navigation />);
+    expect(plantsHtml).not.toMatch(/href="\/"[^>]*aria-current="page"/);
+  });
+
   it('renders theme toggle button', () => {
     const html = renderToString(<Navigation />);
     expect(html).toContain('Toggle theme');
