@@ -1,5 +1,5 @@
 import React from "react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderToString } from "react-dom/server";
 
 (globalThis as unknown as { React: typeof React }).React = React;
@@ -19,7 +19,10 @@ vi.mock("@/components/DeletePhotoButton", () => ({ default: () => null }));
 vi.mock("@/components/CareSuggestion", () => ({ default: () => null }));
 vi.mock("@/components/plant/QuickStats", () => ({ default: () => null }));
 vi.mock("@/components/plant/CareCoach", () => ({ default: () => null }));
-vi.mock("@/components/plant/PlantTabs", () => ({ default: () => null }));
+const plantTabsMock = vi.fn(() => null);
+vi.mock("@/components/plant/PlantTabs", () => ({
+  default: (props: any) => plantTabsMock(props),
+}));
 vi.mock("@/components/plant/PhotoGalleryClient", () => ({ default: () => null }));
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -85,6 +88,26 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
+const mockOrder = vi.fn();
+vi.mock("@/lib/supabaseAdmin", () => ({
+  supabaseAdmin: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          eq: () => ({
+            order: mockOrder,
+          }),
+        }),
+      }),
+    }),
+  },
+}));
+
+beforeEach(() => {
+  plantTabsMock.mockClear();
+  mockOrder.mockImplementation(() => Promise.resolve({ data: [], error: null }));
+});
+
 describe("PlantDetailPage", () => {
   it("falls back to latest photo when plant has no main image", async () => {
     const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
@@ -107,6 +130,15 @@ describe("PlantDetailPage", () => {
     const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
     const html = renderToString(element);
     expect(html).toContain("Mark as watered");
+  });
+
+  it("sets timelineError when events fetch fails", async () => {
+    mockOrder.mockResolvedValueOnce({ data: null, error: { message: "fail" } });
+    const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
+    const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
+    renderToString(element);
+    expect(plantTabsMock).toHaveBeenCalled();
+    expect(plantTabsMock.mock.calls[0][0].timelineError).toBe(true);
   });
 });
 
