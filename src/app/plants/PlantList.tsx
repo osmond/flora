@@ -45,8 +45,8 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
       {Object.entries(grouped).map(([roomName, roomPlants]) => (
         <section key={roomName} className="mb-8">
           <h2 className="mb-4 text-xl font-semibold">{roomName}</h2>
-          {view === 'grid' ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {view === 'grid' ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {roomPlants.map((plant) => (
                 <PlantCard key={plant.id} plant={plant} />
               ))}

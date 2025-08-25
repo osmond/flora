@@ -106,9 +106,9 @@ All views should adhere to the [style guide](./style-guide.md).
 
 ### Responsive Testing
 
-- [ ] Tune layout for iPad/tablet
-- [x] Dark mode polish
-- [ ] Offline support (optional)
+ - [x] Tune layout for iPad/tablet
+ - [x] Dark mode polish
+ - [ ] Offline support (optional)
 
 ---
 
@@ -132,7 +132,7 @@ All views should adhere to the [style guide](./style-guide.md).
 - [x] Prisma `seed.ts` file for demo data
 - [x] File upload to Cloudinary
 - [x] RLS policies for Supabase
-- [ ] Responsive testing (mobile/tablet/desktop)
+- [x] Responsive testing (mobile/tablet/desktop)
 - [x] Timeline component polish (grouped by date)
 - [x] Setup `@/lib/db.ts` for Prisma client
 
