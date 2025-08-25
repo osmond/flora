@@ -58,7 +58,7 @@ export default async function PlantDetailPage({
       {heroUrl ? (
         <Image
           src={heroUrl}
-          alt={plant.name}
+          alt={plant.nickname}
           width={800}
           height={400}
           className="h-48 w-full rounded-xl object-cover md:h-64"
@@ -69,9 +69,11 @@ export default async function PlantDetailPage({
       <div className="p-4 md:p-6 max-w-3xl mx-auto">
         <div className="mt-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold">{plant.name}</h2>
-            {plant.species && (
-              <p className="text-sm text-muted-foreground">{plant.species}</p>
+            <h2 className="text-xl font-semibold">{plant.nickname}</h2>
+            {(plant.speciesScientific || plant.speciesCommon) && (
+              <p className="text-sm text-muted-foreground">
+                {plant.speciesScientific || plant.speciesCommon}
+              </p>
             )}
           </div>
           <div className="flex items-center gap-2">

@@ -5,7 +5,7 @@ import EmptyPlantState from '@/components/EmptyPlantState';
 export default async function PlantsPage() {
   const { data: plants, error } = await supabaseAdmin
     .from('plants')
-    .select('id, name, species, image_url, room:rooms(id, name)');
+    .select('id, nickname, species_scientific, species_common, image_url, room:rooms(id, name)');
 
   if (error) {
     return (
@@ -16,8 +16,9 @@ export default async function PlantsPage() {
   const mappedPlants =
     plants?.map((p) => ({
       id: p.id,
-      name: p.name,
-      species: p.species,
+      nickname: p.nickname as string,
+      speciesScientific: p.species_scientific as string | null,
+      speciesCommon: p.species_common as string | null,
       imageUrl: p.image_url as string | null,
       room: p.room as { id: string; name: string } | null,
     })) ?? [];

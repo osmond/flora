@@ -5,7 +5,7 @@ import type { WeatherDay } from '../src/types/forecast';
 const plants = [
   {
     id: '1',
-    name: 'Monstera',
+    nickname: 'Monstera',
     waterEvery: '7 days',
     lastWateredAt: '2024-01-01',
   },

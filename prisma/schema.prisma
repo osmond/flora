@@ -10,19 +10,20 @@ datasource db {
 }
 
 model Plant {
-  id            String   @id @default(cuid())
-  name          String
-  species       String?
-  roomId        BigInt?
-  imageUrl      String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  waterEvery    String?
-  waterAmount   String?
-  fertEvery     String?
-  fertFormula   String?
-  humidity      String?
-  archived      Boolean  @default(false)
+  id               String   @id @default(uuid()) @db.Uuid
+  nickname         String
+  speciesScientific String?
+  speciesCommon    String?
+  roomId           BigInt?  @db.BigInt
+  imageUrl         String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  waterEvery       String?
+  waterAmount      String?
+  fertEvery        String?
+  fertFormula      String?
+  humidity         String?
+  archived         Boolean  @default(false)
 
   // relationships
   room          Room?    @relation(fields: [roomId], references: [id])
@@ -32,7 +33,7 @@ model Plant {
 }
 
 model Room {
-  id     BigInt  @id @default(autoincrement())
+  id     BigInt  @id @default(autoincrement()) @db.BigInt
   name   String
   plants Plant[]
 }
@@ -42,7 +43,7 @@ model CareEvent {
   type      String   // "water", "fertilize", etc.
   date      DateTime
   plant     Plant    @relation(fields: [plantId], references: [id])
-  plantId   String
+  plantId   String   @db.Uuid
 }
 
 model Note {
@@ -50,7 +51,7 @@ model Note {
   content   String
   createdAt DateTime @default(now())
   plant     Plant    @relation(fields: [plantId], references: [id])
-  plantId   String
+  plantId   String   @db.Uuid
 }
 
 model Photo {
@@ -58,5 +59,5 @@ model Photo {
   url       String
   createdAt DateTime @default(now())
   plant     Plant    @relation(fields: [plantId], references: [id])
-  plantId   String
+  plantId   String   @db.Uuid
 }

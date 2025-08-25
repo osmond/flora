@@ -3,8 +3,9 @@ import Link from 'next/link';
 
 interface Plant {
   id: string;
-  name: string;
-  species?: string | null;
+  nickname: string;
+  speciesScientific?: string | null;
+  speciesCommon?: string | null;
   imageUrl?: string | null;
 }
 
@@ -17,7 +18,7 @@ export default function PlantCard({ plant }: { plant: Plant }) {
       {plant.imageUrl ? (
         <Image
           src={plant.imageUrl}
-          alt={plant.name}
+          alt={plant.nickname}
           width={400}
           height={300}
           className="h-40 w-full object-cover"
@@ -26,9 +27,11 @@ export default function PlantCard({ plant }: { plant: Plant }) {
         <div className="h-40 w-full bg-muted" />
       )}
       <div className="p-2">
-        <h3 className="font-semibold">{plant.name}</h3>
-        {plant.species && (
-          <p className="text-sm text-muted-foreground">{plant.species}</p>
+        <h3 className="font-semibold">{plant.nickname}</h3>
+        {(plant.speciesScientific || plant.speciesCommon) && (
+          <p className="text-sm text-muted-foreground">
+            {plant.speciesScientific || plant.speciesCommon}
+          </p>
         )}
       </div>
     </Link>

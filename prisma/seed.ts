@@ -21,8 +21,8 @@ async function main() {
   // Create plants
   await prisma.plant.create({
     data: {
-      name: "Fiona the Fern",
-      species: "Nephrolepis exaltata",
+      nickname: "Fiona the Fern",
+      speciesScientific: "Nephrolepis exaltata",
       roomId: livingRoom.id,
       waterEvery: "7 days",
       waterAmount: "250ml",
@@ -39,8 +39,8 @@ async function main() {
 
   await prisma.plant.create({
     data: {
-      name: "Spike",
-      species: "Carnegiea gigantea",
+      nickname: "Spike",
+      speciesScientific: "Carnegiea gigantea",
       roomId: kitchen.id,
       waterEvery: "14 days",
       humidity: "low",
