@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SpeciesAutosuggest } from '@/components';
+import { Button } from '@/components/ui/button';
 
 export default function NewPlantPage() {
   const router = useRouter();
@@ -47,64 +48,61 @@ export default function NewPlantPage() {
 
   if (preview) {
     return (
-      <div className="max-w-md space-y-4 p-4 md:p-6 mx-auto">
-        <h2 className="text-lg font-semibold">Preview</h2>
-        <div className="rounded-lg border p-4 transition-all">
-          <p className="text-sm text-muted-foreground">Nickname</p>
-          <p className="font-medium">{name}</p>
-          {species && (
-            <p className="mt-2 text-sm text-muted-foreground">{species}</p>
-          )}
-        </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
-        <div className="flex gap-3">
-          <button
-            onClick={() => setPreview(false)}
-            className="rounded bg-secondary px-4 py-2 text-sm text-secondary-foreground"
-          >
-            Edit
-          </button>
-          <button
-            onClick={createPlant}
-            disabled={loading}
-            className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
-          >
-            {loading ? 'Creating…' : 'Create Plant'}
-          </button>
+
+      <div className="max-w-md p-4 md:p-6 mx-auto">
+        <div className="space-y-6 rounded-xl border bg-card p-4 md:p-6 shadow-sm">
+          <h2 className="text-lg font-semibold">Preview</h2>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Nickname</p>
+            <p className="font-medium">{name}</p>
+            {species && (
+              <p className="text-sm text-muted-foreground">{species}</p>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setPreview(false)}
+            >
+              Edit
+            </Button>
+            <Button type="button" onClick={createPlant}>
+              Create Plant
+            </Button>
+          </div>
+
         </div>
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        setPreview(true);
-      }}
-      className="space-y-4 p-4 md:p-6 max-w-md mx-auto"
-    >
-      <div className="space-y-1">
-        <label className="block text-sm font-medium" htmlFor="name">
-          Nickname
-        </label>
-        <input
-          id="name"
-          name="name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="h-11 w-full rounded-xl border px-3 py-2 text-sm transition-colors focus:border-primary focus:outline-none"
-        />
-      </div>
-      <SpeciesAutosuggest value={species} onSelect={setSpecies} />
-      <button
-        type="submit"
-        className="rounded bg-primary px-4 py-2 text-primary-foreground"
+    <div className="max-w-md p-4 md:p-6 mx-auto">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setPreview(true);
+        }}
+        className="space-y-6 rounded-xl border bg-card p-4 md:p-6 shadow-sm"
       >
-        Preview
-      </button>
-    </form>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium" htmlFor="name">
+            Nickname
+          </label>
+          <input
+            id="name"
+            name="name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="h-11 w-full rounded-lg border px-3 text-sm transition-colors focus:border-primary focus:outline-none"
+          />
+        </div>
+        <SpeciesAutosuggest value={species} onSelect={setSpecies} />
+        <Button type="submit">Preview</Button>
+      </form>
+    </div>
   );
 }
 
