@@ -1,53 +1,27 @@
-import { getCurrentUserId } from "@/lib/auth";
-import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+function supabaseServer() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  if (!url || !key) throw new Error("Missing SUPABASE env vars");
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
+export async function GET(_req: Request, ctx: { params: { id: string } }) {
   try {
-    const { id } = await params;
-    const userId = await getCurrentUserId();
-    const { data, error } = await supabaseAdmin
+    const id = Number(ctx.params.id);
+    if (!id) return NextResponse.json({ error: "invalid id" }, { status: 400 });
+    const supabase = supabaseServer();
+    const { data, error } = await supabase
       .from("plants")
       .select("*")
       .eq("id", id)
-      .eq("user_id", userId);
-
-    if (error) {
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
-    }
-
-    if (!data || data.length === 0) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(data[0], { status: 200 });
-  } catch (err) {
-    if (err instanceof Error && err.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
-}
-
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    const { id } = await params;
-    const userId = await getCurrentUserId();
-    const { error } = await supabaseAdmin
-      .from("plants")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
-
-    if (error) {
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
-    }
-
-    return NextResponse.json({}, { status: 200 });
-  } catch (err) {
-    if (err instanceof Error && err.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+      .single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 404 });
+    return NextResponse.json(data, { status: 200 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
