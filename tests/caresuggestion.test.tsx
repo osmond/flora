@@ -1,0 +1,60 @@
+import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import CareSuggestion from '../src/components/CareSuggestion';
+
+(globalThis as unknown as { React: typeof React }).React = React;
+
+
+describe('CareSuggestion', () => {
+  it('posts feedback when applying suggestion', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ suggestions: ['Test nudge'] }) })
+      .mockResolvedValue({ ok: true, json: async () => ({}) });
+    // @ts-expect-error - mock fetch for suggestions
+    global.fetch = fetchMock;
+
+    render(<CareSuggestion plantId="plant-1" />);
+
+    await screen.findByText('Test nudge');
+
+    await fireEvent.click(screen.getByText('Apply'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenLastCalledWith(
+        '/api/care-feedback',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ plant_id: 'plant-1', feedback: 'applied' }),
+        })
+      );
+    });
+  });
+
+  it('posts feedback when dismissing suggestion', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ suggestions: ['Another nudge'] }) })
+      .mockResolvedValue({ ok: true, json: async () => ({}) });
+    // @ts-expect-error - mock fetch for suggestions
+    global.fetch = fetchMock;
+
+    render(<CareSuggestion plantId="plant-2" />);
+
+    await screen.findByText('Another nudge');
+
+    await fireEvent.click(screen.getByText('Dismiss'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenLastCalledWith(
+        '/api/care-feedback',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ plant_id: 'plant-2', feedback: 'dismissed' }),
+        })
+      );
+    });
+  });
+});
+
