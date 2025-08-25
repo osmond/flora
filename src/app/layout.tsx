@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
+import Navigation from '@/components/Navigation';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -12,9 +13,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
         />
       </head>
-      <body className="bg-background text-foreground">
+      <body className="flex min-h-screen flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <Navigation />
+          <main className="flex-1">{children}</main>
           <Toaster richColors />
         </ThemeProvider>
       </body>
