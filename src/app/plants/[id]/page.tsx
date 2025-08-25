@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { hydrateTimeline } from "@/lib/tasks";
 import { getCurrentUserId } from "@/lib/auth";
+import type { CareEvent } from "@/types";
 
 export default async function PlantDetailPage({
   params,
@@ -36,18 +37,20 @@ export default async function PlantDetailPage({
   }
 
   const userId = await getCurrentUserId();
-  const events = supabaseAdmin
-    ? (
-        await supabaseAdmin
-          .from("events")
-          .select("id, type, note, image_url, created_at")
-          .eq("plant_id", plant.id)
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false })
-      ).data
-    : [];
+  let events: CareEvent[] = [];
+  let timelineError = false;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin
+      .from("events")
+      .select("id, type, note, image_url, created_at")
+      .eq("plant_id", plant.id)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+    if (error) timelineError = true;
+    events = data ?? [];
+  }
 
-  const timelineEvents = hydrateTimeline(events ?? [], {
+  const timelineEvents = hydrateTimeline(events, {
     id: plant.id,
     waterEvery: plant.waterEvery,
     fertEvery: plant.fertEvery,
@@ -93,9 +96,13 @@ export default async function PlantDetailPage({
         <ScheduleAdjuster plantId={plant.id} waterEvery={plant.waterEvery} />
         <WaterPlantButton plantId={plant.id} />
         <CareSuggestion plantId={plant.id} />
-        <CareCoach plant={plant} />
-        <PlantTabs plantId={plant.id} initialEvents={timelineEvents} />
+          <CareCoach plant={plant} />
+          <PlantTabs
+            plantId={plant.id}
+            initialEvents={timelineEvents}
+            timelineError={timelineError}
+          />
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }

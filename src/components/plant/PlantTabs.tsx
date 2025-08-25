@@ -11,9 +11,14 @@ import PhotoGalleryClient from './PhotoGalleryClient';
 interface PlantTabsProps {
   plantId: string;
   initialEvents: CareEvent[];
+  timelineError?: boolean;
 }
 
-export default function PlantTabs({ plantId, initialEvents }: PlantTabsProps) {
+export default function PlantTabs({
+  plantId,
+  initialEvents,
+  timelineError = false,
+}: PlantTabsProps) {
   const [events, setEvents] = useState<CareEvent[]>(initialEvents);
 
   useEffect(() => {
@@ -39,7 +44,7 @@ export default function PlantTabs({ plantId, initialEvents }: PlantTabsProps) {
         <TabsTrigger value="notes">Notes</TabsTrigger>
       </TabsList>
       <TabsContent value="timeline" className="mt-6">
-        <CareTimeline events={events} />
+        <CareTimeline events={events} error={timelineError} />
       </TabsContent>
       <TabsContent value="care" className="mt-6">
         <p className="text-sm text-muted-foreground">Care plan coming soon.</p>
