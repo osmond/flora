@@ -1,9 +1,8 @@
 import Image from "next/image";
 import db from "@/lib/db";
 import QuickStats from "@/components/plant/QuickStats";
-import PhotoGallery from "@/components/PhotoGallery";
 import CareCoach from "@/components/plant/CareCoach";
-import EventsSection from "@/components/EventsSection";
+import PlantTabs from "@/components/plant/PlantTabs";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { hydrateTimeline } from "@/lib/tasks";
 import { getCurrentUserId } from "@/lib/auth";
@@ -78,13 +77,7 @@ export default async function PlantDetailPage({
         </div>
         <QuickStats plant={plant} />
         <CareCoach plant={plant} />
-      </div>
-      <div className="p-4 md:p-6 max-w-3xl mx-auto">
-        <EventsSection plantId={plant.id} initialEvents={timelineEvents} />
-      </div>
-      <div className="p-4 md:p-6 max-w-3xl mx-auto">
-        <h2 className="mb-4 text-xl font-semibold">Photos</h2>
-        <PhotoGallery plantId={plant.id} />
+        <PlantTabs plantId={plant.id} initialEvents={timelineEvents} />
       </div>
     </div>
   );
