@@ -148,13 +148,13 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       <div className="mt-2 flex gap-3 sm:gap-4 md:gap-6">
         <button
           onClick={triggerComplete}
-          className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
+          className="rounded-lg bg-primary px-4 py-2 text-xs text-primary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
         >
           Done
         </button>
         <button
           onClick={() => onSnooze(task.id)}
-          className="rounded bg-secondary px-2 py-1 text-xs text-secondary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
+          className="rounded-lg bg-secondary px-4 py-2 text-xs text-secondary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
         >
           Snooze
         </button>

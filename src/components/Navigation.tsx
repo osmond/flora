@@ -34,7 +34,7 @@ export default function Navigation() {
         type="button"
         aria-label="Toggle theme"
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        className="rounded px-2 py-1"
+        className="rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
       >
         Toggle theme
       </button>
