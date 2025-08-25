@@ -12,7 +12,13 @@ const samplePlants = [
     id: '2',
     name: 'Fiddle Leaf Fig',
     fertEvery: '30 days',
-    lastFertilizedAt: new Date(Date.now() - 31 * 86400000).toISOString(),
+    lastFertilizedAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+  },
+  {
+    id: '3',
+    name: 'Snake Plant',
+    waterEvery: '14 days',
+    lastWateredAt: new Date(Date.now() - 10 * 86400000).toISOString(),
   },
 ];
 
