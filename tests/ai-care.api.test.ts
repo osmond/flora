@@ -36,4 +36,16 @@ describe("POST /api/ai-care", () => {
     const json = await res.json();
     expect(json.confidence).toBe("medium");
   });
+
+  it("returns 400 for invalid data", async () => {
+    const { POST } = await import("../src/app/api/ai-care/route");
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body: JSON.stringify({ potSize: 10, potUnit: "mm" }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toBe("Invalid data");
+  });
 });
