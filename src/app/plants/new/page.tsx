@@ -1,11 +1,9 @@
 import AddPlantForm from '@/components/plant/AddPlantForm';
 
-export default function NewPlantPage() {
-
+export default function Page() {
   return (
-    <div className="max-w-md p-4 md:p-6 mx-auto">
+    <main className="container mx-auto px-4 py-8">
       <AddPlantForm />
-
-    </div>
+    </main>
   );
 }
