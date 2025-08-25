@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 // Ensure React is available when components are rendered in tests
 (globalThis as unknown as { React?: typeof React }).React ??= React;
@@ -20,6 +21,7 @@ const links: NavLink[] = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
 
   return (
     <nav aria-label="Main" className="flex gap-4">
@@ -28,6 +30,14 @@ export default function Navigation() {
           {label}
         </Link>
       ))}
+      <button
+        type="button"
+        aria-label="Toggle theme"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="rounded px-2 py-1"
+      >
+        Toggle theme
+      </button>
     </nav>
   );
 }

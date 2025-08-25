@@ -23,6 +23,7 @@ Flora creates personalized care plans and adapts them to your environment.
 - 🧭 **Navigation**
   - Quick links to home, plant list, and add form
   - Highlights the current page for accessibility
+  - Toggle between light and dark themes
 
 - 🗂️ **Plant Collection**
   - Browse plants grouped by room with a grid or list toggle
