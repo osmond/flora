@@ -13,6 +13,12 @@ import {
 import Link from 'next/link';
 import type { Task } from '@/types/task';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import EmptyTasksState from '@/components/EmptyTasksState';
 
@@ -189,13 +195,24 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
         <Button onClick={triggerComplete} className="text-xs">
           Done
         </Button>
-        <Button
-          onClick={() => onSnooze(task.id)}
-          variant="secondary"
-          className="text-xs"
-        >
-          Snooze
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary" className="text-xs">
+              Snooze
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {[1, 3, 7].map((days) => (
+              <DropdownMenuItem
+                key={days}
+                onSelect={() => onSnooze(task.id, days)}
+                className="text-xs"
+              >
+                Snooze {days}d
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button asChild variant="outline" className="text-xs">
           <Link href={`/plants/${task.plantId}`}>View</Link>
         </Button>
