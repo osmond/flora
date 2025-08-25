@@ -1,20 +1,33 @@
 import React from "react";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import AddPlantForm from "@/components/plant/AddPlantForm";
 
 (globalThis as unknown as { React: typeof React }).React = React;
 
+const push = vi.fn();
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push }),
+}));
+
+vi.mock("@/components/plant/SpeciesAutosuggest", () => ({
+  __esModule: true,
+  default: ({ value = "", onSelect }: { value?: string; onSelect: (s: string, c?: string) => void }) => (
+    <input
+      aria-label="species"
+      value={value}
+      onChange={(e) => onSelect(e.target.value, e.target.value)}
+    />
+  ),
 }));
 
 const originalFetch = global.fetch;
 
 beforeEach(() => {
+  push.mockReset();
   // stub fetch to avoid network calls from RoomSelect
   global.fetch = vi.fn(() =>
-    Promise.resolve({ json: () => Promise.resolve([]) })
+    Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
   ) as unknown as typeof fetch;
 });
 
@@ -46,5 +59,38 @@ describe("AddPlantForm validation", () => {
       screen.getByText(/please select a species/i),
     ).toBeInTheDocument();
     expect(global.fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("AddPlantForm submission", () => {
+  it("posts data and redirects to detail page", async () => {
+    global.fetch = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      if (typeof input === "string" && input.startsWith("/api/ai-care/preview")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ preview: "test" }) });
+      }
+      if (typeof input === "string" && input === "/api/plants" && init?.method === "POST") {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ plant: { id: 42 } }) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    }) as unknown as typeof fetch;
+
+    render(<AddPlantForm />);
+
+    fireEvent.change(screen.getByLabelText(/nickname/i), {
+      target: { value: "Kay" },
+    });
+    fireEvent.change(screen.getByLabelText(/species/i), {
+      target: { value: "Pothos" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /create plant/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/plants",
+        expect.objectContaining({ method: "POST" })
+      );
+      expect(push).toHaveBeenCalledWith("/plants/42");
+    });
   });
 });
