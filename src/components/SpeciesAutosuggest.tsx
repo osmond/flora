@@ -18,6 +18,7 @@ export default function SpeciesAutosuggest({
   const [query, setQuery] = React.useState(value);
   const [results, setResults] = React.useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setQuery(value);
@@ -26,6 +27,7 @@ export default function SpeciesAutosuggest({
   React.useEffect(() => {
     if (!query) {
       setResults([]);
+      setError(null);
       return;
     }
 
@@ -40,10 +42,14 @@ export default function SpeciesAutosuggest({
               )
             : [];
           setResults(names);
+          setError(null);
           setOpen(true);
+        } else {
+          setError('Failed to load species');
         }
       } catch (err) {
         console.error('Species search failed', err);
+        setError('Failed to load species');
       }
     }, 300);
 
@@ -73,6 +79,11 @@ export default function SpeciesAutosuggest({
         placeholder="Search species..."
         className="h-11 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       />
+      {error && (
+        <p className="mt-1 text-sm text-destructive" aria-live="polite">
+          {error}
+        </p>
+      )}
       {open && results.length > 0 && (
         <ul className="absolute z-10 mt-1 w-full rounded-md border bg-background text-foreground shadow-md" role="listbox">
           {results.map((r) => (

@@ -90,7 +90,7 @@ colors: {
 ### 2.3 Spacing, Radius, Shadow, Motion
 
 * **Spacing**: `p-4/6/8`, `gap-3/4/6`.
-* **Corners**: `rounded-xl` for cards, `rounded-lg` for inputs.
+* **Corners**: `rounded-xl` for cards and inputs.
 * **Depth**: `shadow-sm` resting, `shadow-md` on hover.
 * **Motion durations**: 120–280ms based on element type.
 * **Easings**: emphasized out, standard out, smooth in‑out (defined in globals).

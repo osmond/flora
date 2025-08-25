@@ -30,14 +30,14 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
         <button
           aria-label="Grid view"
           onClick={() => setView('grid')}
-          className={`rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'grid' ? 'bg-muted' : ''}`}
+          className={`rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'grid' ? 'bg-muted' : ''}`}
         >
           Grid
         </button>
         <button
           aria-label="List view"
           onClick={() => setView('list')}
-          className={`rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'list' ? 'bg-muted' : ''}`}
+          className={`rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'list' ? 'bg-muted' : ''}`}
         >
           List
         </button>
@@ -63,10 +63,10 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                       <img
                         src={plant.imageUrl}
                         alt={plant.name}
-                        className="h-12 w-12 rounded-lg object-cover"
+                        className="h-12 w-12 rounded-xl object-cover"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded-lg bg-muted" />
+                      <div className="h-12 w-12 rounded-xl bg-muted" />
                     )}
                     <div>
                       <p className="font-medium">{plant.name}</p>

@@ -107,7 +107,7 @@ export default function NewPlantPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="h-11 w-full rounded-lg border px-3 text-sm transition-colors focus:border-primary focus:outline-none"
+            className="h-11 w-full rounded-xl border px-3 text-sm transition-colors focus:border-primary focus:outline-none"
           />
         </div>
         <SpeciesAutosuggest value={species} onSelect={setSpecies} />

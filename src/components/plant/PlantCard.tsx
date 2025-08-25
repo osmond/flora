@@ -12,7 +12,7 @@ export default function PlantCard({ plant }: { plant: Plant }) {
   return (
     <Link
       href={`/plants/${plant.id}`}
-      className="block overflow-hidden rounded-lg border"
+      className="block overflow-hidden rounded-xl border"
     >
       {plant.imageUrl ? (
         <Image

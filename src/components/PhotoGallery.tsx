@@ -21,7 +21,7 @@ export default async function PhotoGallery({ plantId }: { plantId: string }) {
           alt="Plant photo"
           width={300}
           height={300}
-          className="h-32 w-full rounded-lg object-cover"
+          className="h-32 w-full rounded-xl object-cover"
         />
       ))}
     </div>

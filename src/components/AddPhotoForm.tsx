@@ -12,6 +12,7 @@ interface Props {
 
 export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
   const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +31,7 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
     formData.append('type', 'photo');
     formData.append('photo', file);
     setFile(null);
+    setError(null);
     (e.target as HTMLFormElement).reset();
     try {
       const res = await fetch('/api/events', {
@@ -42,9 +44,12 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
         if (real) {
           onReplace(tempId, real);
         }
+      } else {
+        setError('Failed to upload photo');
       }
     } catch (err) {
       console.error('Failed to upload photo', err);
+      setError('Failed to upload photo');
     }
   }
 
@@ -55,6 +60,11 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
         accept="image/*"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
       />
+      {error && (
+        <p className="text-sm text-destructive" aria-live="polite">
+          {error}
+        </p>
+      )}
       <Button type="submit" className="p-4">
         Upload Photo
       </Button>
