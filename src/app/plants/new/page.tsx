@@ -9,8 +9,12 @@ export default function NewPlantPage() {
   const [name, setName] = useState('');
   const [species, setSpecies] = useState('');
   const [preview, setPreview] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function createPlant() {
+    setLoading(true);
+    setError(null);
     const formData = new FormData();
     formData.set('name', name);
     if (species) {
@@ -30,9 +34,14 @@ export default function NewPlantPage() {
         if (id) {
           router.push(`/plants/${id}`);
         }
+      } else {
+        setError('Failed to create plant');
       }
     } catch (err) {
+      setError('Failed to create plant');
       console.error('Failed to create plant', err);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -47,6 +56,7 @@ export default function NewPlantPage() {
             <p className="mt-2 text-sm text-muted-foreground">{species}</p>
           )}
         </div>
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="flex gap-3">
           <button
             onClick={() => setPreview(false)}
@@ -56,9 +66,10 @@ export default function NewPlantPage() {
           </button>
           <button
             onClick={createPlant}
-            className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground"
+            disabled={loading}
+            className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
           >
-            Create Plant
+            {loading ? 'Creating…' : 'Create Plant'}
           </button>
         </div>
       </div>
