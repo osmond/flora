@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import db from "@/lib/db";
 import QuickStats from "@/components/plant/QuickStats";
 import ScheduleAdjuster from "@/components/plant/ScheduleAdjuster";
@@ -6,6 +7,7 @@ import CareCoach from "@/components/plant/CareCoach";
 import CareSuggestion from "@/components/CareSuggestion";
 import PlantTabs from "@/components/plant/PlantTabs";
 import WaterPlantButton from "@/components/plant/WaterPlantButton";
+import { Button } from "@/components/ui/button";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { hydrateTimeline } from "@/lib/tasks";
 import { getCurrentUserId } from "@/lib/auth";
@@ -72,11 +74,18 @@ export default async function PlantDetailPage({
               <p className="text-sm text-muted-foreground">{plant.species}</p>
             )}
           </div>
-          {plant.room?.name && (
-            <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium">
-              {plant.room.name}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {plant.room?.name && (
+              <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+                {plant.room.name}
+              </span>
+            )}
+            <Link href={`/plants/${plant.id}/edit`}>
+              <Button variant="outline" size="sm">
+                Edit
+              </Button>
+            </Link>
+          </div>
         </div>
         <QuickStats plant={plant} />
         <ScheduleAdjuster plantId={plant.id} waterEvery={plant.waterEvery} />
