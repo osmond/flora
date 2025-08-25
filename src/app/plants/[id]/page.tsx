@@ -17,8 +17,8 @@ export default async function PlantDetailPage({
 }: {
   params: { id: string };
 }) {
-  const plant = await db.plant.findUnique({
-    where: { id: params.id },
+  const plant = await db.plant.findFirst({
+    where: { id: params.id, archived: false },
     include: { room: { select: { name: true } } },
   });
   if (!plant) {

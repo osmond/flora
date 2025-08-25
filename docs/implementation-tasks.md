@@ -199,7 +199,7 @@ Reuses Plant Detail timeline snippet above.
 
 ## 8. Edit & Maintenance
 - [x] Edit metadata, replace photo
-- [ ] Archive/delete flows
+ - [x] Archive/delete flows
 
 ---
 
