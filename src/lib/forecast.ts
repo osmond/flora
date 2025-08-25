@@ -25,7 +25,7 @@ export function generateWeeklyCareForecast(
           tasks.push({
             id: `${plant.id}-water-${dateStr}`,
             plantId: plant.id,
-            plantName: plant.name,
+            plantName: plant.nickname,
             type: 'water',
             due: nextWaterStr,
           });
@@ -40,7 +40,7 @@ export function generateWeeklyCareForecast(
           tasks.push({
             id: `${plant.id}-fertilize-${dateStr}`,
             plantId: plant.id,
-            plantName: plant.name,
+            plantName: plant.nickname,
             type: 'fertilize',
             due: nextFertStr,
           });

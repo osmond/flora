@@ -1,6 +1,7 @@
 export type Plant = {
-  name: string;
-  species: string;
+  nickname: string;
+  speciesScientific: string;
+  speciesCommon?: string;
   potSize: string;
   potMaterial: string;
   lightLevel: string;

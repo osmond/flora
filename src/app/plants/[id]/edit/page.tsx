@@ -8,7 +8,7 @@ export default async function EditPlantPage({
 }) {
   const plant = await db.plant.findFirst({
     where: { id: params.id, archived: false },
-    select: { id: true, name: true, species: true, imageUrl: true },
+    select: { id: true, nickname: true, speciesScientific: true, imageUrl: true },
   });
   if (!plant) {
     return <div className="p-4 md:p-6 max-w-md mx-auto">Plant not found</div>;

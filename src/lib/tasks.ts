@@ -4,7 +4,7 @@ import type { CareEvent } from '@/types';
 
 export interface Plant {
   id: string;
-  name: string;
+  nickname: string;
   waterEvery?: string | null;
   fertEvery?: string | null;
   lastWateredAt?: string | null; // ISO date string
@@ -52,7 +52,7 @@ export function generateTasks(
         tasks.push({
           id: `${plant.id}-water`,
           plantId: plant.id,
-          plantName: plant.name,
+          plantName: plant.nickname,
           type: 'water',
           due: formatISO(due),
         });
@@ -66,7 +66,7 @@ export function generateTasks(
         tasks.push({
           id: `${plant.id}-fertilize`,
           plantId: plant.id,
-          plantName: plant.name,
+          plantName: plant.nickname,
           type: 'fertilize',
           due: formatISO(due),
         });

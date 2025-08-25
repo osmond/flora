@@ -7,7 +7,7 @@ describe('generateTasks', () => {
     const plants = [
       {
         id: '1',
-        name: 'Monstera',
+        nickname: 'Monstera',
         waterEvery: '7 days',
         lastWateredAt: '2024-01-01',
       },
@@ -21,7 +21,7 @@ describe('generateTasks', () => {
     const plants = [
       {
         id: '1',
-        name: 'Monstera',
+        nickname: 'Monstera',
         waterEvery: '7 days',
         lastWateredAt: '2024-01-05',
       },
@@ -34,7 +34,7 @@ describe('generateTasks', () => {
     const plants = [
       {
         id: '1',
-        name: 'Monstera',
+        nickname: 'Monstera',
         waterEvery: '7 days',
         lastWateredAt: '2024-01-01',
       },
@@ -47,7 +47,7 @@ describe('generateTasks', () => {
     const plants = [
       {
         id: '1',
-        name: 'Fern',
+        nickname: 'Fern',
         fertEvery: '30 days',
         lastFertilizedAt: '2024-01-01',
       },
@@ -61,7 +61,7 @@ describe('generateTasks', () => {
     const plants = [
       {
         id: '1',
-        name: 'Rose',
+        nickname: 'Rose',
         waterEvery: '2 weeks',
         lastWateredAt: '2024-01-01',
       },
