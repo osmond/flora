@@ -12,8 +12,7 @@ describe('CareSuggestion', () => {
       .fn()
       .mockResolvedValueOnce({ ok: true, json: async () => ({ suggestions: ['Test nudge'] }) })
       .mockResolvedValue({ ok: true, json: async () => ({}) });
-    // @ts-expect-error - mock fetch for suggestions
-    global.fetch = fetchMock;
+    global.fetch = fetchMock as unknown as typeof fetch;
 
     render(<CareSuggestion plantId="plant-1" />);
 
@@ -37,8 +36,7 @@ describe('CareSuggestion', () => {
       .fn()
       .mockResolvedValueOnce({ ok: true, json: async () => ({ suggestions: ['Another nudge'] }) })
       .mockResolvedValue({ ok: true, json: async () => ({}) });
-    // @ts-expect-error - mock fetch for suggestions
-    global.fetch = fetchMock;
+    global.fetch = fetchMock as unknown as typeof fetch;
 
     render(<CareSuggestion plantId="plant-2" />);
 

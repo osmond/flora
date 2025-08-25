@@ -11,7 +11,9 @@ vi.mock("next/navigation", () => ({
 
 describe("AddNoteForm", () => {
   it("renders textarea and button", () => {
-    const html = renderToString(<AddNoteForm plantId="1" />);
+    const html = renderToString(
+      <AddNoteForm plantId="1" onAdd={() => undefined} onReplace={() => undefined} />,
+    );
     expect(html).toContain("textarea");
     expect(html).toContain("Add Note");
   });

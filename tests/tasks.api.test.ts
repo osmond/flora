@@ -97,7 +97,7 @@ describe("PATCH /api/tasks/[id]", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "complete" }),
     });
-    const res = await PATCH(req, { params: { id: "1" } });
+    const res = await PATCH(req, { params: Promise.resolve({ id: "1" }) });
     expect(res.status).toBe(200);
     expect(taskUpdates[0]).toHaveProperty("completed_at");
     expect(eventInserts[0]).toEqual({
@@ -119,7 +119,7 @@ describe("PATCH /api/tasks/[id]", () => {
         reason: "Soil still wet",
       }),
     });
-    const res = await PATCH(req, { params: { id: "1" } });
+    const res = await PATCH(req, { params: Promise.resolve({ id: "1" }) });
     expect(res.status).toBe(200);
     expect(taskUpdates[0]).toEqual({
       due_date: "2024-01-02",

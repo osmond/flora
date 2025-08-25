@@ -14,7 +14,7 @@ export default async function PhotoGallery({ plantId }: { plantId: string }) {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {photos.map((photo) => (
+      {photos.map((photo: { id: string; url: string | null }) => (
         <Image
           key={photo.id}
           src={photo.url ?? ''}
