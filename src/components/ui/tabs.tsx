@@ -1,12 +1,7 @@
 'use client';
 import * as React from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: Array<string | undefined | null | false>) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '@/lib/utils';
 
 const Tabs = TabsPrimitive.Root;
 
