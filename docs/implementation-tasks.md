@@ -137,7 +137,7 @@ export function EmptyToday() {
 ## 3. Daily Care – Today (`/today`)
 - [x] Build checklist segmented into overdue, due, and upcoming
 - [x] Implement task cards with quick actions (done, snooze, view)
-- [ ] Recompute schedule after marking tasks done
+- [x] Recompute schedule after marking tasks done
 - [ ] Animate task completion and movement between sections
 
 **Task Row Example:**
