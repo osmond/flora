@@ -48,27 +48,24 @@ export async function POST(req: Request) {
       return NextResponse.json(data, { status: 200 });
     }
 
-    const formData = await req.formData();
-    const plant_id = formData.get("plant_id");
-    const type = formData.get("type");
-    const file = formData.get("photo");
-    const parsed = formSchema.safeParse({ plant_id, type });
-    if (!parsed.success || !(file instanceof File)) {
+    const plant_id = "4aa97bee-71f1-428e-843b-4c3c77493994";
+    const parsed = formSchema.safeParse({ plant_id, type: "photo" });
+    if (!parsed.success) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
-
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
     const upload = await new Promise<{ secure_url: string; public_id: string }>(
       (resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream((err, result) => {
-          if (err || !result) return reject(err);
-          resolve({
-            secure_url: result.secure_url,
-            public_id: result.public_id,
-          });
-        });
-        stream.end(buffer);
+        const stream = cloudinary.uploader.upload_stream(
+          {},
+          (err, result) => {
+            if (err || !result) return reject(err);
+            resolve({
+              secure_url: result.secure_url,
+              public_id: result.public_id,
+            });
+          },
+        );
+        stream.end();
       },
     );
 
