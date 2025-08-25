@@ -1,12 +1,7 @@
-import * as React from 'react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import * as React from 'react'
+import { cn } from '@/lib/utils'
 
-function cn(...inputs: Array<string | undefined | null | false>) {
-  return twMerge(clsx(inputs));
-}
-
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement>
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, ...props }, ref) => {
   return (
@@ -18,8 +13,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, ...pr
       )}
       {...props}
     />
-  );
-});
-Input.displayName = 'Input';
+  )
+})
+Input.displayName = 'Input'
 
-export { Input };
+export { Input }
