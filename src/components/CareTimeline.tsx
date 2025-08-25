@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
 import type { CareEvent } from '@/types';
 
 export default function CareTimeline({
@@ -13,7 +14,16 @@ export default function CareTimeline({
 }) {
   if (error) {
     return (
-      <p className="text-sm text-destructive">Failed to load timeline.</p>
+      <div className="flex items-center gap-2 text-sm text-destructive">
+        <span>Failed to load timeline.</span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.location.reload()}
+        >
+          Retry
+        </Button>
+      </div>
     );
   }
 
