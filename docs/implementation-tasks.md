@@ -138,7 +138,8 @@ export function EmptyToday() {
 - [x] Build checklist segmented into overdue, due, and upcoming
 - [x] Implement task cards with quick actions (done, snooze, view)
 - [x] Recompute schedule after marking tasks done
- - [x] Animate task completion and movement between sections
+- [x] Animate task completion and movement between sections
+- [x] Show empty state with CTA when there are no tasks
 
 **Task Row Example:**
 ```tsx
