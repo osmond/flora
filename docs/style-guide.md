@@ -26,13 +26,15 @@ This document is the canonical source of design standards for the Flora app. It 
 
 ```tsx
 // app/layout.tsx
-import { Inter } from "next/font/google";
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-// <html className={`${inter.variable}`}> ... </html>
+<head>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+  />
+</head>
 
 // app/globals.css
-:root { --font-inter: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
-.body { font-family: var(--font-inter); }
+body { font-family: 'Inter', sans-serif; }
 ```
 
 ### 2.2 Color & Theming (with `next-themes` + shadcn tokens)
