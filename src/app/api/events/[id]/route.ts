@@ -13,8 +13,8 @@ export async function DELETE(
     const { data, error } = await supabaseAdmin
       .from("events")
       .select("id, public_id")
-      .eq("id", id)
       .eq("user_id", userId)
+      .eq("id", id)
       .single();
     if (error || !data) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -27,8 +27,8 @@ export async function DELETE(
     const { error: delError } = await supabaseAdmin
       .from("events")
       .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .eq("id", id);
     if (delError) {
       return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
