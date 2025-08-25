@@ -155,7 +155,7 @@ export function EmptyToday() {
 ---
 
 ## 4. AI Care Coach
-- [ ] Collect environment and history data for suggestions
+- [x] Collect environment and history data for suggestions
 - [ ] Surface AI nudges at key moments
 - [ ] Allow apply/dismiss, record feedback
 
