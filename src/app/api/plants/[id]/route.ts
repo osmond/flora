@@ -21,7 +21,8 @@ export async function GET(
       .from("plants")
       .select("*")
       .eq("user_id", userId)
-      .eq("id", id);
+      .eq("id", id)
+      .eq("archived", false);
     if (error || !data || data.length === 0)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(data[0], { status: 200 });
@@ -44,6 +45,7 @@ export async function PATCH(
     if (body.name !== undefined) updates.name = body.name;
     if (body.species !== undefined) updates.species = body.species;
     if (body.image_url !== undefined) updates.image_url = body.image_url;
+    if (body.archived !== undefined) updates.archived = body.archived;
     const { data, error } = await supabase
       .from("plants")
       .update(updates)

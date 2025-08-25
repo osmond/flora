@@ -22,6 +22,7 @@ model Plant {
   fertEvery     String?
   fertFormula   String?
   humidity      String?
+  archived      Boolean  @default(false)
 
   // relationships
   room          Room?    @relation(fields: [roomId], references: [id])
