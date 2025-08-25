@@ -42,8 +42,12 @@ export async function PATCH(
     const supabase = supabaseServer();
     const userId = await getCurrentUserId();
     const updates: Record<string, unknown> = {};
-    if (body.name !== undefined) updates.name = body.name;
-    if (body.species !== undefined) updates.species = body.species;
+    if (body.nickname !== undefined) updates.nickname = body.nickname;
+    if (body.species_scientific !== undefined)
+      updates.species_scientific = body.species_scientific;
+    if (body.species_common !== undefined)
+      updates.species_common = body.species_common;
+    if (body.room_id !== undefined) updates.room_id = body.room_id;
     if (body.image_url !== undefined) updates.image_url = body.image_url;
     if (body.archived !== undefined) updates.archived = body.archived;
     const { data, error } = await supabase
