@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { PlantCard } from '@/components';
+import Image from "next/image";
 
 interface Plant {
   id: string;
@@ -60,11 +61,15 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                     className="flex items-center gap-4 p-2"
                   >
                     {plant.imageUrl ? (
-                      <img
-                        src={plant.imageUrl}
-                        alt={plant.name}
-                        className="h-12 w-12 rounded-lg object-cover"
-                      />
+                      <div className="relative w-full h-48 rounded-xl overflow-hidden">
+                        <Image
+                          src={plant.imageUrl}
+                          alt="Plant photo"
+                          fill
+                          className="h-12 w-12 rounded-lg object-cover"
+                          sizes="(min-width: 768px) 768px, 100vw"
+                        />
+                      </div>
                     ) : (
                       <div className="h-12 w-12 rounded-lg bg-muted" />
                     )}
