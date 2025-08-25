@@ -10,7 +10,7 @@ Deno.serve(async () => {
   const today = new Date().toISOString().slice(0, 10);
   const { data, error } = await supabase
     .from("tasks")
-    .select("type, plant:plants(name)")
+    .select("type, plant:plants(nickname)")
     .lte("due_date", today)
     .is("completed_at", null)
     .eq("user_id", userId);

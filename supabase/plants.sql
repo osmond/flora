@@ -8,10 +8,9 @@ create table if not exists public.plants (
   id uuid primary key default gen_random_uuid(),
   room_id bigint references public.rooms(id),
   user_id text not null,
-  name text not null,
-  species text not null,
-  room text,
-  common_name text,
+  nickname text not null,
+  species_scientific text not null,
+  species_common text,
   pot_size text,
   pot_material text,
   drainage text,
@@ -25,9 +24,17 @@ create table if not exists public.plants (
 );
 
 -- Ensure columns exist for existing installations
-alter table if exists public.plants add column if not exists room text;
+-- Rename legacy columns to canonical names
+alter table if exists public.plants rename column name to nickname;
+alter table if exists public.plants rename column species to species_scientific;
+alter table if exists public.plants rename column common_name to species_common;
+alter table if exists public.plants drop column if exists room;
+
+-- Ensure columns exist for existing installations
 alter table if exists public.plants add column if not exists room_id bigint references public.rooms(id);
-alter table if exists public.plants add column if not exists common_name text;
+alter table if exists public.plants add column if not exists species_common text;
+alter table if exists public.plants add column if not exists species_scientific text;
+alter table if exists public.plants add column if not exists nickname text;
 alter table if exists public.plants add column if not exists image_url text;
 alter table if exists public.plants add column if not exists pot_size text;
 alter table if exists public.plants add column if not exists pot_material text;
