@@ -21,6 +21,28 @@ export default async function DashboardPage() {
         </section>
 
         <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Needs Attention</h2>
+          {stats?.attention?.length ? (
+            <ul className="space-y-3">
+              {stats.attention.map((t: any) => (
+                <li key={t.id} className="flex items-center justify-between">
+                  <div className="font-medium">{t.plantName}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {t.type === "water"
+                      ? "Water"
+                      : t.type === "fertilize"
+                      ? "Fertilize"
+                      : t.type}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">All plants are happy 🌿</p>
+          )}
+        </section>
+
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
           <h2 className="text-lg font-medium mb-4">Activity (7 days)</h2>
           <div className="grid grid-cols-7 gap-2">
             {(stats?.hist || []).map((d: any) => (
