@@ -14,6 +14,9 @@ type CreatePayload = {
   speciesScientific?: string | null;
   speciesCommon?: string | null;
   room_id?: number | null;
+  pot?: string | null;
+  light?: string | null;
+  notes?: string | null;
 };
 
 export default function AddPlantForm(): JSX.Element {
@@ -22,6 +25,11 @@ export default function AddPlantForm(): JSX.Element {
   const [speciesScientific, setSpeciesScientific] = useState<string>("");
   const [speciesCommon, setSpeciesCommon] = useState<string>("");
   const [roomId, setRoomId] = useState<number | null>(null);
+  const [pot, setPot] = useState<string>("");
+  const [light, setLight] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
+  const [_photoFile, setPhotoFile] = useState<File | null>(null);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -35,6 +43,9 @@ export default function AddPlantForm(): JSX.Element {
         speciesScientific: speciesScientific || null,
         speciesCommon: speciesCommon || null,
         room_id: roomId,
+        pot: pot.trim() || null,
+        light: light.trim() || null,
+        notes: notes.trim() || null,
       };
 
       const res = await fetch("/api/plants", {
@@ -80,10 +91,64 @@ export default function AddPlantForm(): JSX.Element {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label>Room</Label>
-        <RoomSelect value={roomId ?? null} onChange={setRoomId} />
+      <div>
+        <button
+          type="button"
+          onClick={() => setShowDetails((s) => !s)}
+          className="text-sm text-muted-foreground underline"
+        >
+          {showDetails ? "Hide details" : "Add details"}
+        </button>
       </div>
+
+      {showDetails && (
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="room">Room</Label>
+            <RoomSelect id="room" value={roomId ?? null} onChange={setRoomId} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="pot">Pot</Label>
+            <Input
+              id="pot"
+              placeholder='e.g. 4" terracotta'
+              value={pot}
+              onChange={(e) => setPot(e.target.value)}
+              className="h-10"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="light">Light</Label>
+            <Input
+              id="light"
+              placeholder="e.g. Bright indirect"
+              value={light}
+              onChange={(e) => setLight(e.target.value)}
+              className="h-10"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes</Label>
+            <textarea
+              id="notes"
+              placeholder="Add notes…"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="photo">Photo</Label>
+            <Input
+              id="photo"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
+              className="h-10"
+            />
+          </div>
+        </div>
+      )}
 
       {errorMsg ? (
         <p className="text-sm text-destructive">{errorMsg}</p>
