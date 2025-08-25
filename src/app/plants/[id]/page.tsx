@@ -1,6 +1,7 @@
 import Image from "next/image";
 import db from "@/lib/db";
 import QuickStats from "@/components/plant/QuickStats";
+import ScheduleAdjuster from "@/components/plant/ScheduleAdjuster";
 import CareCoach from "@/components/plant/CareCoach";
 import PlantTabs from "@/components/plant/PlantTabs";
 import WaterPlantButton from "@/components/plant/WaterPlantButton";
@@ -77,6 +78,7 @@ export default async function PlantDetailPage({
           )}
         </div>
         <QuickStats plant={plant} />
+        <ScheduleAdjuster plantId={plant.id} waterEvery={plant.waterEvery} />
         <WaterPlantButton plantId={plant.id} />
         <CareCoach plant={plant} />
         <PlantTabs plantId={plant.id} initialEvents={timelineEvents} />

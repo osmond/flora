@@ -25,3 +25,23 @@ export async function GET(_req: Request, ctx: { params: { id: string } }) {
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+
+export async function PATCH(req: Request, ctx: { params: { id: string } }) {
+  try {
+    const id = Number(ctx.params.id);
+    if (!id) return NextResponse.json({ error: "invalid id" }, { status: 400 });
+    const body = await req.json();
+    const supabase = supabaseServer();
+    const { data, error } = await supabase
+      .from("plants")
+      .update({ water_every: body.waterEvery ?? null })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ plant: data }, { status: 200 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
