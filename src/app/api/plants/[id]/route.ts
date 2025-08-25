@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const userId = getCurrentUserId();
+    const userId = await getCurrentUserId();
     const { data, error } = await supabaseAdmin
       .from("plants")
       .select("*")
@@ -32,7 +32,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const userId = getCurrentUserId();
+    const userId = await getCurrentUserId();
     const { error } = await supabaseAdmin
       .from("plants")
       .delete()

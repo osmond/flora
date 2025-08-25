@@ -28,7 +28,7 @@ export default async function PlantDetailPage({
     heroUrl = photo?.url ?? null;
   }
 
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const events = supabaseAdmin
     ? (
         await supabaseAdmin
