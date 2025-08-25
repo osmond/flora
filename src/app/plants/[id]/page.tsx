@@ -46,8 +46,12 @@ export default async function PlantDetailPage({
       .eq("plant_id", plant.id)
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
-    if (error) timelineError = true;
+    if (error) {
+      timelineError = true;
+    }
     events = data ?? [];
+  } else {
+    timelineError = true;
   }
 
   const timelineEvents = hydrateTimeline(events, {
