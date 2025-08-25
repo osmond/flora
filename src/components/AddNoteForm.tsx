@@ -12,11 +12,14 @@ interface Props {
 
 export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
   const [note, setNote] = useState('');
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (saving) return;
     const trimmed = note.trim();
     if (!trimmed) return;
+    setSaving(true);
     const tempId = `temp-${Date.now()}`;
     const optimistic: CareEvent = {
       id: tempId,
@@ -42,6 +45,8 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
       }
     } catch (err) {
       console.error('Failed to add note', err);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -53,7 +58,7 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
-      <Button type="submit" className="p-4">
+      <Button type="submit" className="p-4" disabled={saving}>
         Add Note
       </Button>
     </form>
