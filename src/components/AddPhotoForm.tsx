@@ -48,7 +48,7 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <input
         type="file"
         accept="image/*"
@@ -56,7 +56,7 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
       />
       <button
         type="submit"
-        className="rounded bg-primary px-3 py-1 text-sm text-primary-foreground"
+        className="rounded bg-primary p-4 text-sm text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary"
       >
         Upload Photo
       </button>
