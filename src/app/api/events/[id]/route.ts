@@ -1,13 +1,13 @@
 import cloudinary from "@/lib/cloudinary";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
-  _req: Request,
-  { params }: { params: { id: string } },
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const id = params.id;
+  const { id } = await params;
   try {
     const userId = await getCurrentUserId();
     const { data, error } = await supabaseAdmin
