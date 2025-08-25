@@ -1,6 +1,7 @@
 import cloudinary from "@/lib/cloudinary";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
+import db from "@/lib/db";
 import { z } from "zod";
 import { NextResponse } from "next/server";
 
@@ -48,11 +49,20 @@ export async function POST(req: Request) {
       return NextResponse.json(data, { status: 200 });
     }
 
-    const plant_id = "4aa97bee-71f1-428e-843b-4c3c77493994";
-    const parsed = formSchema.safeParse({ plant_id, type: "photo" });
+    const formData = await req.formData();
+    const parsed = formSchema.safeParse({
+      plant_id: formData.get("plant_id"),
+      type: formData.get("type"),
+    });
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
+    const file = formData.get("photo");
+    if (!(file instanceof File)) {
+      return NextResponse.json({ error: "Photo required" }, { status: 400 });
+    }
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
     const upload = await new Promise<{ secure_url: string; public_id: string }>(
       (resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -65,7 +75,7 @@ export async function POST(req: Request) {
             });
           },
         );
-        stream.end();
+        stream.end(buffer);
       },
     );
 
@@ -87,6 +97,10 @@ export async function POST(req: Request) {
       .from("plants")
       .update({ image_url: upload.secure_url })
       .eq("id", parsed.data.plant_id);
+
+    await db.photo.create({
+      data: { plantId: parsed.data.plant_id, url: upload.secure_url },
+    });
 
     return NextResponse.json(inserted, { status: 200 });
   } catch (err) {

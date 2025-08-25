@@ -3,6 +3,12 @@
 import { useState } from 'react';
 import type { CareEvent } from '@/types';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@/components/ui/tooltip';
 
 interface Props {
   plantId: string;
@@ -55,9 +61,16 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
         accept="image/*"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
       />
-      <Button type="submit" className="p-4">
-        Upload Photo
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button type="submit" className="p-4">
+              Upload Photo
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Save to gallery</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </form>
   );
 }
