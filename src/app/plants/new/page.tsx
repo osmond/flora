@@ -47,7 +47,7 @@ export default function NewPlantPage() {
             <p className="mt-2 text-sm text-muted-foreground">{species}</p>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             onClick={() => setPreview(false)}
             className="rounded bg-secondary px-4 py-2 text-sm text-secondary-foreground"
