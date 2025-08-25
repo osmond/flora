@@ -52,8 +52,8 @@ export function EmptyToday() {
 ---
 
 ## 1. Add a Plant (`/plants/new`)
-- [ ] Build form with nickname and species autosuggest
-- [ ] Implement optional detail expanders (room, pot, light, notes, photo)
+- [x] Build form with nickname and species autosuggest
+- [x] Implement optional detail expanders (room, pot, light, notes, photo)
 - [ ] Call AI preview endpoint after species selection
 - [ ] Validate inputs and handle inline errors
 - [ ] Submit plant to backend and redirect to detail page
