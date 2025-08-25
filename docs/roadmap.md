@@ -115,7 +115,7 @@ All views should adhere to the [style guide](./style-guide.md).
 ## 🔮 Phase 6 – Future Ideas (Exploration Only)
 
 - [ ] AI-powered photo insights (e.g., "looks dry")
-- [ ] Weekly care forecast with weather integration
+- [x] Weekly care forecast with weather integration
 - [ ] Cloud sync or backup
 - [ ] AI care plan that evolves over time
 - [ ] PWA installable version (Add to Home Screen)
