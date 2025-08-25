@@ -9,5 +9,6 @@ describe("CareTimeline", () => {
   it("shows error message when error is true", () => {
     render(<CareTimeline events={[]} error />);
     expect(screen.getByText("Failed to load timeline.")).toBeDefined();
+    expect(screen.getByRole("button", { name: "Retry" })).toBeDefined();
   });
 });
