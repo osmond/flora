@@ -6,3 +6,4 @@ export { default as EventsSection } from './EventsSection';
 export { default as TaskList } from './TaskList';
 export { default as Navigation } from './Navigation';
 export { default as EmptyPlantState } from './EmptyPlantState';
+export { default as EmptyTasksState } from './EmptyTasksState';
