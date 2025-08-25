@@ -28,6 +28,7 @@ Flora creates personalized care plans and adapts them to your environment.
 - 🗂️ **Plant Collection**
   - Browse plants grouped by room with a grid or list toggle
   - Mobile-first responsive layout scales to tablets and desktops
+  - Optimized tablet layout with a two-column grid
   - Friendly empty state prompting you to add your first plant
 
 - 🪴 **Plant API**
