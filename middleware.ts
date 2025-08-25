@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { baseUrl, appName, isDev } from "@/lib/config";
 
 
 export function middleware(req: NextRequest) {

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PlantCard } from '@/components';
 
 interface Plant {
@@ -60,9 +61,11 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                     className="flex items-center gap-4 p-2"
                   >
                     {plant.imageUrl ? (
-                      <img
+                      <Image
                         src={plant.imageUrl}
                         alt={plant.name}
+                        width={48}
+                        height={48}
                         className="h-12 w-12 rounded-lg object-cover"
                       />
                     ) : (

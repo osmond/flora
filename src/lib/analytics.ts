@@ -9,6 +9,7 @@ export async function logEvent(
   _event: string,
   _data: Record<string, unknown> = {},
 ): Promise<void> {
-  // Intentionally left blank.
+  void _event;
+  void _data;
 }
 

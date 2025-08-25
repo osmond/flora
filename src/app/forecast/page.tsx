@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { generateWeeklyCareForecast } from '@/lib/forecast';
 import type { DayForecast } from '@/types/forecast';
+import { getLocation } from '@/lib/location';
+import { getWeather } from '@/lib/weather';
 
 const samplePlants = [
   {
@@ -24,8 +26,11 @@ export default function ForecastPage() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch('/api/weather');
-      const weather = await res.json();
+      const loc = await getLocation();
+      const weather = await getWeather(
+        loc?.latitude ?? 40.71,
+        loc?.longitude ?? -74.01
+      );
       const data = generateWeeklyCareForecast(samplePlants, weather);
       setForecast(data);
     }

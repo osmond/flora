@@ -36,8 +36,9 @@ export default function AddPlantForm() {
       const id = json?.plant?.id;
       if (id) router.push(`/plants/${id}`);
       else router.push(`/plants`);
-    } catch (e: any) {
-      setErr(e.message || "Create failed");
+    } catch (err) {
+      if (err instanceof Error) setErr(err.message || "Create failed");
+      else setErr("Create failed");
     } finally {
       setLoading(false);
     }
