@@ -1,35 +1,40 @@
-import Image from 'next/image';
-import db from '@/lib/db';
-import QuickStats from '@/components/plant/QuickStats';
-import PhotoGallery from '@/components/PhotoGallery';
-import CareCoach from '@/components/plant/CareCoach';
-import EventsSection from '@/components/EventsSection';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { hydrateTimeline } from '@/lib/tasks';
+import Image from "next/image";
+import db from "@/lib/db";
+import QuickStats from "@/components/plant/QuickStats";
+import PhotoGallery from "@/components/PhotoGallery";
+import CareCoach from "@/components/plant/CareCoach";
+import EventsSection from "@/components/EventsSection";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { hydrateTimeline } from "@/lib/tasks";
+import { getCurrentUserId } from "@/lib/auth";
 
-export default async function PlantDetailPage({ params }: { params: { id: string } }) {
+export default async function PlantDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const plant = await db.plant.findUnique({ where: { id: params.id } });
   if (!plant) {
-    return (
-      <div className="p-4 md:p-6 max-w-md mx-auto">Plant not found</div>
-    );
+    return <div className="p-4 md:p-6 max-w-md mx-auto">Plant not found</div>;
   }
 
   let heroUrl = plant.imageUrl;
   if (!heroUrl) {
     const photo = await db.photo.findFirst({
       where: { plantId: plant.id },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       select: { url: true },
     });
     heroUrl = photo?.url ?? null;
   }
 
+  const userId = getCurrentUserId();
   const { data: events } = await supabaseAdmin
-    .from('events')
-    .select('id, type, note, image_url, created_at')
-    .eq('plant_id', plant.id)
-    .order('created_at', { ascending: false });
+    .from("events")
+    .select("id, type, note, image_url, created_at")
+    .eq("plant_id", plant.id)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
   const timelineEvents = hydrateTimeline(events ?? [], {
     id: plant.id,
@@ -68,4 +73,3 @@ export default async function PlantDetailPage({ params }: { params: { id: string
     </div>
   );
 }
-

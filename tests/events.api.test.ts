@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
@@ -13,7 +13,10 @@ vi.mock("@/lib/cloudinary", () => ({
     uploader: {
       upload_stream: (
         _opts: unknown,
-        cb: (err: unknown, res?: { secure_url: string; public_id: string }) => void,
+        cb: (
+          err: unknown,
+          res?: { secure_url: string; public_id: string },
+        ) => void,
       ) => ({
         end: () =>
           cb(null, {
@@ -37,6 +40,7 @@ const eventRecord = {
   plant_id: "4aa97bee-71f1-428e-843b-4c3c77493994",
   image_url: "https://example.com/uploaded.jpg",
   public_id: "cloud123",
+  user_id: "user-123",
 };
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
@@ -48,7 +52,10 @@ vi.mock("@supabase/supabase-js", () => ({
               eq: () => ({
                 single: () =>
                   Promise.resolve({
-                    data: { id: "4aa97bee-71f1-428e-843b-4c3c77493994", image_url: null },
+                    data: {
+                      id: "4aa97bee-71f1-428e-843b-4c3c77493994",
+                      image_url: null,
+                    },
                     error: null,
                   }),
               }),
@@ -80,14 +87,19 @@ vi.mock("@supabase/supabase-js", () => ({
           },
           select: () => ({
             eq: () => ({
-              single: () => Promise.resolve({ data: eventRecord, error: null }),
+              eq: () => ({
+                single: () =>
+                  Promise.resolve({ data: eventRecord, error: null }),
+              }),
             }),
           }),
           delete: () => ({
-            eq: (_col: string, id: string) => {
-              eventDeleted = id === "1";
-              return Promise.resolve({ error: null });
-            },
+            eq: () => ({
+              eq: (_col: string, id: string) => {
+                eventDeleted = id === "1";
+                return Promise.resolve({ error: null });
+              },
+            }),
           }),
         };
       }
@@ -108,11 +120,9 @@ describe("POST /api/events", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-
         plant_id: "4aa97bee-71f1-428e-843b-4c3c77493994",
         type: "note",
         note: "hello",
-
       }),
     });
     const res = await POST(req);
@@ -153,7 +163,10 @@ describe("POST /api/events", () => {
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
-    expect((insertedValues as { type?: string })?.type).toBe("water");
+    expect(insertedValues).toMatchObject({
+      type: "water",
+      user_id: "user-123",
+    });
   });
 
   it("updates plant image_url when uploading a photo", async () => {
@@ -173,9 +186,12 @@ describe("POST /api/events", () => {
 describe("DELETE /api/events/[id]", () => {
   it("deletes the event and associated image", async () => {
     const { DELETE } = await import("../src/app/api/events/[id]/route");
-    const res = await DELETE(new Request("http://localhost", { method: "DELETE" }), {
-      params: { id: "1" },
-    });
+    const res = await DELETE(
+      new Request("http://localhost", { method: "DELETE" }),
+      {
+        params: { id: "1" },
+      },
+    );
     expect(res.status).toBe(200);
     expect(eventDeleted).toBe(true);
     expect(destroyedId).toBe("cloud123");
