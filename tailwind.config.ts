@@ -1,4 +1,3 @@
-// tailwind.config.ts
 import type { Config } from "tailwindcss"
 
 export default {
@@ -44,7 +43,6 @@ export default {
       },
     },
   },
-  // If you use tailwindcss-animate and it's v4-compatible, keep it here.
-  // Otherwise, comment out the next line or install it:
+  // If tailwindcss-animate isn't installed or v4-compatible, leave this commented:
   // plugins: [require("tailwindcss-animate")],
 } satisfies Config
