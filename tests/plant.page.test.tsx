@@ -5,7 +5,7 @@ import { renderToString } from "react-dom/server";
 (globalThis as unknown as { React: typeof React }).React = React;
 
 vi.mock("@/lib/auth", () => ({
-  getCurrentUserId: () => "user-123",
+  getCurrentUserId: () => Promise.resolve("user-123"),
 }));
 
 vi.mock("@/components/AddNoteForm", () => ({ default: () => null }));
