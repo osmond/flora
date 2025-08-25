@@ -205,6 +205,7 @@ Reuses Plant Detail timeline snippet above.
 ---
 
 ## 9. Error & Empty-State Handling
+- [x] Display an error message when plant timeline fails to load
 See empty state example in section 0.
 
 ---
