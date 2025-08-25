@@ -1,112 +1,55 @@
-import cloudinary from "@/lib/cloudinary";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { getCurrentUserId } from "@/lib/auth";
-import db from "@/lib/db";
-import { z } from "zod";
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-// JSON body can log a note or a simple care event (e.g. watering)
-const baseSchema = z.object({
-  plant_id: z.string().uuid(),
-});
-const noteSchema = baseSchema.extend({
-  type: z.literal("note"),
-  note: z.string().min(1),
-});
-const careSchema = baseSchema.extend({
-  type: z.enum(["water", "fertilize"]),
-  note: z.string().optional(),
-});
-const jsonSchema = z.union([noteSchema, careSchema]);
+function supabaseServer() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  if (!url || !key) throw new Error("Missing SUPABASE env vars");
+  return createClient(url, key, { auth: { persistSession: false } });
+}
 
-const formSchema = z.object({
-  plant_id: z.string().uuid(),
-  type: z.literal("photo"),
-});
+export async function GET(req: Request) {
+  try {
+    const supabase = supabaseServer();
+    const { searchParams } = new URL(req.url);
+    const plantId = searchParams.get("plantId");
+    if (!plantId) return NextResponse.json({ error: "plantId is required" }, { status: 400 });
+
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .eq("plant_id", Number(plantId))
+      .order("created_at", { ascending: false });
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(data ?? [], { status: 200 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
-  const contentType = req.headers.get("content-type") || "";
   try {
-    const userId = await getCurrentUserId();
-    if (contentType.includes("application/json")) {
-      const body = await req.json();
-      const parsed = jsonSchema.safeParse(body);
-      if (!parsed.success) {
-        return NextResponse.json({ error: "Invalid data" }, { status: 400 });
-      }
-      const { data, error } = await supabaseAdmin
-        .from("events")
-        .insert({
-          plant_id: parsed.data.plant_id,
-          user_id: userId,
-          type: parsed.data.type,
-          note: parsed.data.note,
-        })
-        .select();
-      if (error) {
-        return NextResponse.json({ error: "Database error" }, { status: 500 });
-      }
-      return NextResponse.json(data, { status: 200 });
+    const body = await req.json();
+    const supabase = supabaseServer();
+    const payload = {
+      plant_id: Number(body?.plantId),
+      type: body?.type as string,
+      amount: body?.amount ?? null,
+      note: (body?.note as string | undefined) ?? null,
+      photo_url: (body?.photoUrl as string | undefined) ?? null,
+    };
+
+    if (!payload.plant_id || !payload.type) {
+      return NextResponse.json({ error: "plantId and type are required" }, { status: 400 });
     }
 
-    const formData = await req.formData();
-    const parsed = formSchema.safeParse({
-      plant_id: formData.get("plant_id"),
-      type: formData.get("type"),
-    });
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
-    }
-    const file = formData.get("photo");
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: "Photo required" }, { status: 400 });
-    }
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const upload = await new Promise<{ secure_url: string; public_id: string }>(
-      (resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {},
-          (err, result) => {
-            if (err || !result) return reject(err);
-            resolve({
-              secure_url: result.secure_url,
-              public_id: result.public_id,
-            });
-          },
-        );
-        stream.end(buffer);
-      },
-    );
-
-    const { data: inserted, error: insertError } = await supabaseAdmin
-      .from("events")
-      .insert({
-        plant_id: parsed.data.plant_id,
-        user_id: userId,
-        type: "photo",
-        image_url: upload.secure_url,
-        public_id: upload.public_id,
-      })
-      .select();
-    if (insertError) {
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
-    }
-
-    await supabaseAdmin
-      .from("plants")
-      .update({ image_url: upload.secure_url })
-      .eq("id", parsed.data.plant_id);
-
-    await db.photo.create({
-      data: { plantId: parsed.data.plant_id, url: upload.secure_url },
-    });
-
-    return NextResponse.json(inserted, { status: 200 });
-  } catch (err) {
-    if (err instanceof Error && err.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const { data, error } = await supabase.from("events").insert(payload).select().single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ event: data }, { status: 201 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

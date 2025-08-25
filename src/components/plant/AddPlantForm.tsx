@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import SpeciesAutosuggest from "./SpeciesAutosuggest";
+import { RoomSelect } from "./RoomSelect";
 
 type CreatePayload = {
   nickname: string;
   speciesScientific?: string | null;
   speciesCommon?: string | null;
+  room_id?: number | null;
 };
 
 export default function AddPlantForm(): JSX.Element {
@@ -19,6 +21,7 @@ export default function AddPlantForm(): JSX.Element {
   const [nickname, setNickname] = useState<string>("");
   const [speciesScientific, setSpeciesScientific] = useState<string>("");
   const [speciesCommon, setSpeciesCommon] = useState<string>("");
+  const [roomId, setRoomId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -31,6 +34,7 @@ export default function AddPlantForm(): JSX.Element {
         nickname: nickname.trim(),
         speciesScientific: speciesScientific || null,
         speciesCommon: speciesCommon || null,
+        room_id: roomId,
       };
 
       const res = await fetch("/api/plants", {
@@ -74,6 +78,11 @@ export default function AddPlantForm(): JSX.Element {
             setSpeciesCommon(common || "");
           }}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Room</Label>
+        <RoomSelect value={roomId ?? null} onChange={setRoomId} />
       </div>
 
       {errorMsg ? (
