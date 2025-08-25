@@ -11,7 +11,7 @@ export interface Plant {
   lastFertilizedAt?: string | null; // ISO date string
 }
 
-function parseInterval(value?: string | null): number | null {
+export function parseInterval(value?: string | null): number | null {
   if (!value) return null;
 
   const match = value
