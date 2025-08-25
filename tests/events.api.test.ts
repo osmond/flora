@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { NextRequest } from "next/server";
 
 process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
@@ -187,12 +188,10 @@ describe("POST /api/events", () => {
 describe("DELETE /api/events/[id]", () => {
   it("deletes the event and associated image", async () => {
     const { DELETE } = await import("../src/app/api/events/[id]/route");
-    const res = await DELETE(
-      new Request("http://localhost", { method: "DELETE" }),
-      {
-        params: { id: "1" },
-      },
-    );
+    const req = new NextRequest(new URL("http://localhost"), {
+      method: "DELETE",
+    });
+    const res = await DELETE(req, { params: Promise.resolve({ id: "1" }) });
     expect(res.status).toBe(200);
     expect(eventDeleted).toBe(true);
     expect(destroyedId).toBe("cloud123");

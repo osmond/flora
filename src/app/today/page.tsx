@@ -1,22 +1,23 @@
 import TaskList from '@/components/TaskList';
 import { generateTasks } from '@/lib/tasks';
+import type { Plant } from '@/lib/tasks';
 
-const samplePlants = [
+const samplePlants: Plant[] = [
   {
     id: '1',
-    name: 'Monstera',
+    nickname: 'Monstera',
     waterEvery: '7 days',
     lastWateredAt: new Date(Date.now() - 8 * 86400000).toISOString(),
   },
   {
     id: '2',
-    name: 'Fiddle Leaf Fig',
+    nickname: 'Fiddle Leaf Fig',
     fertEvery: '30 days',
     lastFertilizedAt: new Date(Date.now() - 30 * 86400000).toISOString(),
   },
   {
     id: '3',
-    name: 'Snake Plant',
+    nickname: 'Snake Plant',
     waterEvery: '14 days',
     lastWateredAt: new Date(Date.now() - 10 * 86400000).toISOString(),
   },

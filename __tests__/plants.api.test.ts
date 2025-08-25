@@ -85,7 +85,9 @@ describe("/api/plants route", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ waterEvery: "10 days" }),
     })
-    const res = await PlantPATCH(req as unknown as Request, { params: { id: "1" } })
+    const res = await PlantPATCH(req as unknown as Request, {
+      params: Promise.resolve({ id: "1" }),
+    })
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.plant).toHaveProperty("water_every", "10 days")

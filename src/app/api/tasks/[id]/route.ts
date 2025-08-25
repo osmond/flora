@@ -6,7 +6,7 @@ import { parseInterval } from "@/lib/tasks";
 import { NextResponse } from "next/server";
 
 interface Params {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 type CompleteAction = { action: "complete" };
@@ -16,7 +16,7 @@ type RequestBody = CompleteAction | SnoozeAction;
 export async function PATCH(req: Request, { params }: Params) {
   try {
     const userId = await getCurrentUserId();
-    const { id } = params;
+    const { id } = await params;
 
     let body: RequestBody;
     try {

@@ -16,10 +16,11 @@ import type { CareEvent } from "@/types";
 export default async function PlantDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const plant = await db.plant.findFirst({
-    where: { id: params.id, archived: false },
+    where: { id, archived: false },
     include: { room: { select: { name: true } } },
   });
   if (!plant) {
