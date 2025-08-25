@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { CareEvent } from '@/types';
+import { Button } from '@/components/ui/button';
 
 interface Props {
   plantId: string;
@@ -54,12 +55,9 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
         accept="image/*"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
       />
-      <button
-        type="submit"
-        className="rounded bg-primary p-4 text-sm text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-      >
+      <Button type="submit" className="p-4">
         Upload Photo
-      </button>
+      </Button>
     </form>
   );
 }

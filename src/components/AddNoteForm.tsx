@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { CareEvent } from '@/types';
+import { Button } from '@/components/ui/button';
 
 interface Props {
   plantId: string;
@@ -52,12 +53,9 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
-      <button
-        type="submit"
-        className="rounded bg-primary p-4 text-sm text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-      >
+      <Button type="submit" className="p-4">
         Add Note
-      </button>
+      </Button>
     </form>
   );
 }
