@@ -10,7 +10,8 @@
     "test": "vitest run",
     "db:seed": "prisma db seed",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "reminders:send": "ts-node scripts/send-reminders.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.2.1",
