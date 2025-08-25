@@ -156,8 +156,8 @@ export function EmptyToday() {
 
 ## 4. AI Care Coach
 - [x] Collect environment and history data for suggestions
-- [ ] Surface AI nudges at key moments
-- [ ] Allow apply/dismiss, record feedback
+- [x] Surface AI nudges at key moments
+- [x] Allow apply/dismiss, record feedback
 
 **Nudge Example:**
 ```tsx
