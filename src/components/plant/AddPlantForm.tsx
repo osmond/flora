@@ -1,98 +1,81 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SpeciesAutosuggest, type Species } from '@/components';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { toast } from 'sonner';
+import * as React from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import SpeciesAutosuggest from "./SpeciesAutosuggest";
 
 export default function AddPlantForm() {
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [species, setSpecies] = useState<Species | null>(null);
+  const [nickname, setNickname] = useState("");
+  const [speciesScientific, setSpeciesScientific] = useState("");
+  const [speciesCommon, setSpeciesCommon] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [nameError, setNameError] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) {
-      setNameError('Nickname is required');
-      return;
-    }
-    setNameError(null);
+    setErr(null);
     setLoading(true);
-    setError(null);
-    const formData = new FormData();
-    formData.set('name', name);
-    if (species?.scientific || species?.common) {
-      formData.set('species', species.scientific || species.common || '');
-      if (species.common) {
-        formData.set('common_name', species.common);
-      }
-    }
     try {
-      const res = await fetch('/api/plants', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'x-user-id': 'demo-user',
-        },
+      const res = await fetch("/api/plants", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nickname,
+          speciesScientific,
+          speciesCommon,
+        }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        const id = Array.isArray(data) ? data[0]?.id : data?.id;
-        if (id) {
-          toast.success('Plant created');
-          router.push(`/plants/${id}`);
-          return;
-        }
-        setError('Failed to create plant');
-      } else {
-        const body = await res.json().catch(() => null);
-        setError(body?.error || 'Failed to create plant');
-      }
-    } catch (err) {
-      setError('Failed to create plant');
-      console.error('Failed to create plant', err);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Failed to create plant");
+      const id = json?.plant?.id;
+      if (id) router.push(`/plants/${id}`);
+      else router.push(`/plants`);
+    } catch (e: any) {
+      setErr(e.message || "Create failed");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Card className="p-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
-          <p className="text-sm text-destructive" aria-live="polite">
-            {error}
-          </p>
-        )}
-        <div className="space-y-2">
-          <Label htmlFor="name">Nickname</Label>
-          <Input
-            id="name"
-            name="name"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            aria-invalid={nameError ? 'true' : 'false'}
-            aria-describedby={nameError ? 'name-error' : undefined}
-          />
-          {nameError && (
-            <p id="name-error" className="text-sm text-destructive">
-              {nameError}
-            </p>
-          )}
-        </div>
-        <SpeciesAutosuggest value={species} onSelect={setSpecies} />
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? 'Creating...' : 'Create Plant'}
-        </Button>
-      </form>
+    <Card className="shadow-lg">
+      <CardContent className="space-y-4 p-6">
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="nickname">Nickname</Label>
+            <Input
+              id="nickname"
+              placeholder="e.g. Kay"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="species">Species</Label>
+            <SpeciesAutosuggest
+              value={speciesCommon || speciesScientific}
+              onSelect={(scientific: string, common?: string) => {
+                setSpeciesScientific(scientific);
+                setSpeciesCommon(common);
+              }}
+            />
+          </div>
+
+          {err ? <p className="text-sm text-destructive">{err}</p> : null}
+
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? "Creating…" : "Create Plant"}
+          </Button>
+        </form>
+      </CardContent>
     </Card>
   );
 }

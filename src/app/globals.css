@@ -5,56 +5,49 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 221 39% 11%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 221 39% 11%;
-    --primary: 166 27% 43%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 164 42% 88%;
-    --secondary-foreground: 173 30% 17%;
-    --accent: 164 42% 88%;
-    --accent-foreground: 173 30% 17%;
-    --muted: 210 20% 96%;
-    --muted-foreground: 220 9% 46%;
+    --card-foreground: 222.2 84% 4.9%;
+    --primary: 166 30% 51%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 170 42% 86%;
+    --secondary-foreground: 163 93% 14%;
+    --muted: 218 11% 65%;
+    --muted-foreground: 215 20% 50%;
+    --accent: 170 42% 86%;
+    --accent-foreground: 163 93% 14%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 20% 98%;
     --border: 220 13% 91%;
-    --ring: 166 27% 43%;
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --success: 142 72% 29%;
-    --success-foreground: 0 0% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
-    --info: 201 96% 32%;
-    --info-foreground: 0 0% 98%;
-    --font-inter: 'Inter', sans-serif;
+    --input: 220 13% 91%;
+    --ring: 166 30% 51%;
+    --radius: 0.75rem;
   }
 
   .dark {
     --background: 220 49% 8%;
-    --foreground: 220 13% 91%;
+    --foreground: 210 13% 91%;
     --card: 220 46% 10%;
-    --card-foreground: 220 13% 91%;
+    --card-foreground: 210 13% 91%;
     --primary: 166 30% 51%;
-    --primary-foreground: 220 49% 8%;
+    --primary-foreground: 220 49% 98%;
     --secondary: 170 42% 16%;
-    --secondary-foreground: 163 39% 93%;
-    --accent: 170 42% 16%;
-    --accent-foreground: 163 39% 93%;
-    --muted: 218 41% 11%;
+    --secondary-foreground: 163 93% 91%;
+    --muted: 218 11% 41%;
     --muted-foreground: 215 20% 65%;
-    --border: 215 28% 17%;
+    --accent: 170 42% 16%;
+    --accent-foreground: 163 93% 91%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 13% 91%;
+    --border: 220 7% 18%;
+    --input: 220 7% 18%;
     --ring: 166 30% 51%;
-    --destructive: 0 70% 58%;
-    --destructive-foreground: 0 0% 98%;
-    --success: 142 70% 42%;
-    --success-foreground: 220 49% 8%;
-    --warning: 38 92% 60%;
-    --warning-foreground: 220 49% 8%;
-    --info: 201 96% 40%;
-    --info-foreground: 220 49% 8%;
   }
-}
 
-body {
-  font-family: var(--font-inter);
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
 }
