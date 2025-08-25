@@ -184,7 +184,7 @@ Reuses Plant Detail timeline snippet above.
 ---
 
 ## 7. Dashboard & Insights (`/dashboard`)
-- [ ] Create widgets for completion rate, overdue trends, and streaks
+- [x] Create widgets for completion rate, overdue trends, and streaks
 - [x] Highlight plants needing attention
 
 **Dashboard Card Example:**
