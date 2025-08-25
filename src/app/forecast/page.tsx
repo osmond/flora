@@ -3,17 +3,18 @@
 import { useEffect, useState } from 'react';
 import { generateWeeklyCareForecast } from '@/lib/forecast';
 import type { DayForecast } from '@/types/forecast';
+import type { Plant } from '@/lib/tasks';
 
-const samplePlants = [
+const samplePlants: Plant[] = [
   {
     id: '1',
-    name: 'Monstera',
+    nickname: 'Monstera',
     waterEvery: '7 days',
     lastWateredAt: new Date(Date.now() - 7 * 86400000).toISOString(),
   },
   {
     id: '2',
-    name: 'Fiddle Leaf Fig',
+    nickname: 'Fiddle Leaf Fig',
     fertEvery: '30 days',
     lastFertilizedAt: new Date(Date.now() - 30 * 86400000).toISOString(),
   },

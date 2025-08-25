@@ -87,8 +87,7 @@ describe("POST /api/plants", () => {
 describe("GET /api/plants", () => {
   it("returns list of plants", async () => {
     const { GET } = await import("../src/app/api/plants/route");
-    const req = new Request("http://localhost", { method: "GET" });
-    const res = await GET(req);
+    const res = await GET();
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data).toEqual([{ id: "1" }]);
