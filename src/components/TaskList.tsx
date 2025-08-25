@@ -116,7 +116,7 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
     setRemoving(true);
     setTimeout(() => {
       void onComplete(task.id);
-    }, 300);
+    }, 200);
   };
 
   const handlePointerEnd = () => {
@@ -129,7 +129,7 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
 
   return (
     <li
-      className="rounded-md border p-4 transition-all duration-300"
+      className="rounded-xl border py-4 px-4 sm:px-6 md:px-8 transition-all duration-200"
       style={{
         transform: removing
           ? 'translateX(100%)'
@@ -145,16 +145,16 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
     >
       <p className="font-medium animate-pulse-weight">{task.plantName}</p>
       <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
-      <div className="mt-2 flex gap-2">
+      <div className="mt-2 flex gap-3 sm:gap-4 md:gap-6">
         <button
           onClick={triggerComplete}
-          className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
+          className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
         >
           Done
         </button>
         <button
           onClick={() => onSnooze(task.id)}
-          className="rounded bg-secondary px-2 py-1 text-xs text-secondary-foreground"
+          className="rounded bg-secondary px-2 py-1 text-xs text-secondary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
         >
           Snooze
         </button>
