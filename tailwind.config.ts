@@ -43,6 +43,5 @@ export default {
       },
     },
   },
-  // If tailwindcss-animate isn't installed or v4-compatible, leave this commented:
-  // plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config
