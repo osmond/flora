@@ -30,14 +30,14 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
         <button
           aria-label="Grid view"
           onClick={() => setView('grid')}
-          className={`rounded px-2 py-1 ${view === 'grid' ? 'bg-muted' : ''}`}
+          className={`rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'grid' ? 'bg-muted' : ''}`}
         >
           Grid
         </button>
         <button
           aria-label="List view"
           onClick={() => setView('list')}
-          className={`rounded px-2 py-1 ${view === 'list' ? 'bg-muted' : ''}`}
+          className={`rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'list' ? 'bg-muted' : ''}`}
         >
           List
         </button>
