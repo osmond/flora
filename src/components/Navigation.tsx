@@ -18,7 +18,7 @@ const links: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/plants', label: 'Plants' },
   { href: '/dashboard', label: 'Dashboard' },
-  { href: '/add', label: 'Add' },
+  { href: '/plants/new', label: 'Add' },
 ];
 
 export default function Navigation() {
