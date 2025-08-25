@@ -19,6 +19,10 @@ vi.mock('next/navigation', () => ({
   usePathname: () => pathname,
 }));
 
+vi.mock('next-themes', () => ({
+  useTheme: () => ({ theme: 'light', setTheme: () => {} }),
+}));
+
 describe('Navigation', () => {
   it('renders links to all sections', () => {
     const html = renderToString(<Navigation />);
@@ -31,5 +35,10 @@ describe('Navigation', () => {
     pathname = '/plants';
     const html = renderToString(<Navigation />);
     expect(html).toMatch(/href="\/plants"[^>]*aria-current="page"/);
+  });
+
+  it('renders theme toggle button', () => {
+    const html = renderToString(<Navigation />);
+    expect(html).toContain('Toggle theme');
   });
 });
