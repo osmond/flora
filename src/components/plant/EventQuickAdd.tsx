@@ -6,22 +6,30 @@ type Props = { plantId: string };
 
 export function EventQuickAdd({ plantId }: Props) {
   const [note, setNote] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
   async function add(type: "water" | "fertilize" | "note") {
+    if (loading) return; // prevent duplicate submissions
+
     const payload: Record<string, unknown> = { plant_id: plantId, type };
     if (type === "note" && note.trim()) payload.note = note.trim();
 
-    const res = await fetch("/api/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (res.ok) {
-      setNote("");
-      // Consumers should refetch timeline; emit custom event
-      window.dispatchEvent(
-        new CustomEvent("flora:events:changed", { detail: { plantId } }),
-      );
+    try {
+      setLoading(true);
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setNote("");
+        // Consumers should refetch timeline; emit custom event
+        window.dispatchEvent(
+          new CustomEvent("flora:events:changed", { detail: { plantId } }),
+        );
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -31,14 +39,16 @@ export function EventQuickAdd({ plantId }: Props) {
         <button
           type="button"
           onClick={() => add("water")}
-          className="h-9 rounded-md bg-primary px-3 text-sm text-primary-foreground"
+          disabled={loading}
+          className="h-9 rounded-md bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50"
         >
           Watered
         </button>
         <button
           type="button"
           onClick={() => add("fertilize")}
-          className="h-9 rounded-md border px-3 text-sm"
+          disabled={loading}
+          className="h-9 rounded-md border px-3 text-sm disabled:opacity-50"
         >
           Fertilized
         </button>
@@ -53,7 +63,8 @@ export function EventQuickAdd({ plantId }: Props) {
         <button
           type="button"
           onClick={() => add("note")}
-          className="h-9 rounded-md border px-3 text-sm"
+          disabled={loading}
+          className="h-9 rounded-md border px-3 text-sm disabled:opacity-50"
         >
           Add note
         </button>

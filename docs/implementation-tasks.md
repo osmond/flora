@@ -211,6 +211,7 @@ See empty state example in section 0.
 ---
 
 ## 10. Performance & UX Hygiene
+- [x] Disable quick-add buttons while posting to prevent duplicate events
 (General principles; no snippet)
 
 ---
