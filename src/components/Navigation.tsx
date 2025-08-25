@@ -28,7 +28,13 @@ export default function Navigation() {
   return (
     <nav aria-label="Main" className="flex gap-4">
       {links.map(({ href, label }) => (
-        <Link key={href} href={href} aria-current={pathname === href ? 'page' : undefined}>
+        <Link
+          key={href}
+          href={href}
+          aria-current={
+            href === '/' ? (pathname === '/' ? 'page' : undefined) : pathname.startsWith(href) ? 'page' : undefined
+          }
+        >
           {label}
         </Link>
       ))}
