@@ -5,5 +5,6 @@ import Image, { ImageProps } from "next/image"
  * Prefer width/height for performance. For unknown sizes, wrap parent in relative container and pass fill.
  */
 export function ImageSafe(props: ImageProps) {
-  return <Image {...props} />
+  const { alt, ...rest } = props
+  return <Image alt={alt} {...rest} />
 }
