@@ -6,8 +6,8 @@ export default async function EditPlantPage({
 }: {
   params: { id: string };
 }) {
-  const plant = await db.plant.findUnique({
-    where: { id: params.id },
+  const plant = await db.plant.findFirst({
+    where: { id: params.id, archived: false },
     select: { id: true, name: true, species: true, imageUrl: true },
   });
   if (!plant) {
