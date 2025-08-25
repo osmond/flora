@@ -107,7 +107,7 @@ All views should adhere to the [style guide](./style-guide.md).
 ### Responsive Testing
 
 - [ ] Tune layout for iPad/tablet
-- [ ] Dark mode polish
+- [x] Dark mode polish
 - [ ] Offline support (optional)
 
 ---
