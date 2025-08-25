@@ -90,7 +90,7 @@ All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
 
 - `plants.sql` – plants and species tables with RLS policies
 - `tasks.sql` – care task table and policies
-- `migrations/20250825045101_rooms_events.sql` – rooms and events tables with RLS policies
+- `supabase/migrations/20250825045101_rooms_events.sql` – rooms and events tables with RLS policies
 - `analytics.sql` – analytics events table
 - `sample_data.sql` – optional seed data for plants and tasks
 
@@ -121,7 +121,7 @@ pnpm db:seed
 pnpm dev
 ```
 
-`supabase/plants.sql` can be re-run safely to add or rename columns. After executing any SQL files, refresh the Supabase API schema with `select pg_notify('pgrst','reload schema');` or restart the API.
+`supabase/plants.sql` can be re-run safely to add or rename columns. After executing any SQL files, Supabase's schema cache must be refreshed with `select pg_notify('pgrst','reload schema');` or by restarting the API.
 
 See `/docs/deployment.md` for full production deployment steps.
 
