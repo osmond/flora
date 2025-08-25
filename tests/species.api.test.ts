@@ -9,6 +9,25 @@ describe("GET /api/species", () => {
     vi.resetModules();
   });
 
+  it("returns empty array when OPENAI_API_KEY is missing", async () => {
+    const originalKey = process.env.OPENAI_API_KEY;
+    delete process.env.OPENAI_API_KEY;
+
+    const fetchMock = vi.fn();
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const { GET } = await import("../src/app/api/species/route");
+
+    const req = new Request("http://localhost/api/species?q=rose");
+    const res = await GET(req);
+    const body = await res.json();
+
+    expect(body).toEqual([]);
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    process.env.OPENAI_API_KEY = originalKey;
+  });
+
   it("returns cached results for repeated queries", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo) => {
       if (typeof input === "string" && input.includes("api.openai.com")) {

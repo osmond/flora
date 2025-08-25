@@ -39,10 +39,8 @@ export async function GET(request: Request) {
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json(
-      { error: 'OPENAI_API_KEY is not configured' },
-      { status: 500 }
-    );
+    console.warn('OPENAI_API_KEY is not configured; returning empty species list');
+    return NextResponse.json([]);
   }
 
   try {
