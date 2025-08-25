@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getCurrentUserId } from "@/lib/auth";
 
 function supabaseServer() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -8,40 +9,74 @@ function supabaseServer() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-export async function GET(_req: Request, ctx: { params: { id: string } }) {
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
-    const id = Number(ctx.params.id);
-    if (!id) return NextResponse.json({ error: "invalid id" }, { status: 400 });
+    const { id } = await params;
     const supabase = supabaseServer();
+    const userId = await getCurrentUserId();
     const { data, error } = await supabase
       .from("plants")
       .select("*")
-      .eq("id", id)
-      .single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 404 });
-    return NextResponse.json(data, { status: 200 });
+      .eq("user_id", userId)
+      .eq("id", id);
+    if (error || !data || data.length === 0)
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json(data[0], { status: 200 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
-export async function PATCH(req: Request, ctx: { params: { id: string } }) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
-    const id = Number(ctx.params.id);
-    if (!id) return NextResponse.json({ error: "invalid id" }, { status: 400 });
+    const { id } = await params;
     const body = await req.json();
     const supabase = supabaseServer();
+    const userId = await getCurrentUserId();
+    const updates: Record<string, unknown> = {};
+    if (body.name !== undefined) updates.name = body.name;
+    if (body.species !== undefined) updates.species = body.species;
+    if (body.image_url !== undefined) updates.image_url = body.image_url;
     const { data, error } = await supabase
       .from("plants")
-      .update({ water_every: body.waterEvery ?? null })
+      .update(updates)
+      .eq("user_id", userId)
       .eq("id", id)
-      .select()
-      .single();
+      .select();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-    return NextResponse.json({ plant: data }, { status: 200 });
+    const updated = Array.isArray(data) ? data[0] : data;
+    return NextResponse.json({ plant: updated }, { status: 200 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+    const supabase = supabaseServer();
+    const userId = await getCurrentUserId();
+    const { error } = await supabase
+      .from("plants")
+      .delete()
+      .eq("user_id", userId)
+      .eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({}, { status: 200 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Server error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
