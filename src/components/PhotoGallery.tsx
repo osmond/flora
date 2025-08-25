@@ -13,7 +13,7 @@ export default async function PhotoGallery({ plantId }: { plantId: string }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-3">
       {photos.map((photo) => (
         <Image
           key={photo.id}
@@ -21,7 +21,7 @@ export default async function PhotoGallery({ plantId }: { plantId: string }) {
           alt="Plant photo"
           width={300}
           height={300}
-          className="h-32 w-full rounded object-cover"
+          className="h-32 w-full rounded-lg object-cover"
         />
       ))}
     </div>

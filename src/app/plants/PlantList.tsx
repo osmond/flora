@@ -26,7 +26,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
 
   return (
     <div>
-      <div className="mb-4 flex justify-end gap-2">
+      <div className="mb-4 flex justify-end gap-3">
         <button
           aria-label="Grid view"
           onClick={() => setView('grid')}
@@ -63,10 +63,10 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                       <img
                         src={plant.imageUrl}
                         alt={plant.name}
-                        className="h-12 w-12 rounded object-cover"
+                        className="h-12 w-12 rounded-lg object-cover"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded bg-muted" />
+                      <div className="h-12 w-12 rounded-lg bg-muted" />
                     )}
                     <div>
                       <p className="font-medium">{plant.name}</p>
