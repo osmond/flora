@@ -3,6 +3,7 @@ import db from "@/lib/db";
 import QuickStats from "@/components/plant/QuickStats";
 import ScheduleAdjuster from "@/components/plant/ScheduleAdjuster";
 import CareCoach from "@/components/plant/CareCoach";
+import CareSuggestion from "@/components/CareSuggestion";
 import PlantTabs from "@/components/plant/PlantTabs";
 import WaterPlantButton from "@/components/plant/WaterPlantButton";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
@@ -80,6 +81,7 @@ export default async function PlantDetailPage({
         <QuickStats plant={plant} />
         <ScheduleAdjuster plantId={plant.id} waterEvery={plant.waterEvery} />
         <WaterPlantButton plantId={plant.id} />
+        <CareSuggestion plantId={plant.id} />
         <CareCoach plant={plant} />
         <PlantTabs plantId={plant.id} initialEvents={timelineEvents} />
       </div>
