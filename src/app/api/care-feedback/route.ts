@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return new Response("Invalid data", { status: 400 });
     }
-    const userId = getCurrentUserId();
+    const userId = await getCurrentUserId();
     const { error: plantError } = await supabaseAdmin
       .from("plants")
       .select("id")

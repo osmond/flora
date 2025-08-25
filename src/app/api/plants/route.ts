@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     return new Response("Invalid data", { status: 400 });
   }
 
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const plantData = {
     ...parsed.data,
     species: parsed.data.species?.trim() || "Unknown",
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET(_req: Request) {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const { data, error } = await supabaseAdmin
     .from("plants")
     .select("*")

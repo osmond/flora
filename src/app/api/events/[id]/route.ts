@@ -7,7 +7,7 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   const id = params.id;
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   try {
     const { data, error } = await supabaseAdmin
       .from("events")

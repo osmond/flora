@@ -12,7 +12,7 @@ type SnoozeAction = { action: "snooze"; days: number; reason?: string };
 type RequestBody = CompleteAction | SnoozeAction;
 
 export async function PATCH(req: Request, { params }: Params) {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const { id } = params;
 
   let body: RequestBody;

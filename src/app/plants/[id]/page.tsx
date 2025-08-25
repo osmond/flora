@@ -28,7 +28,7 @@ export default async function PlantDetailPage({
     heroUrl = photo?.url ?? null;
   }
 
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const { data: events } = await supabaseAdmin
     .from("events")
     .select("id, type, note, image_url, created_at")
