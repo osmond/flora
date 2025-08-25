@@ -1,11 +1,32 @@
 import Link from 'next/link';
 import PlantList from './PlantList';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { getCurrentUserId } from '@/lib/auth';
 
 export default async function PlantsPage() {
+  let userId: string;
+  try {
+    userId = getCurrentUserId();
+  } catch {
+    return (
+      <div className="p-4 md:p-6 max-w-md mx-auto">
+        Please sign in to view your plants.
+      </div>
+    );
+  }
+
   const { data: plants, error } = await supabaseAdmin
     .from('plants')
-    .select('id, name, species, image_url, room:rooms(id, name)');
+    .select('id, name, species, image_url, room:rooms(id, name)')
+    .eq('user_id', userId);
+
+  if (error?.code === '401') {
+    return (
+      <div className="p-4 md:p-6 max-w-md mx-auto">
+        Please sign in to view your plants.
+      </div>
+    );
+  }
 
   if (error) {
     return (

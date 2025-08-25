@@ -1,6 +1,6 @@
-export function toCsv(rows: Record<string, any>[]): string {
+export function toCsv(rows: Record<string, unknown>[]): string {
   const headers = Array.from(new Set(rows.flatMap(r => Object.keys(r))));
-  const escape = (v: any) =>
+  const escape = (v: unknown) =>
     v === undefined || v === null
       ? ''
       : `"${String(v).replace(/"/g, '""')}"`;
