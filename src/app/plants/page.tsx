@@ -20,7 +20,9 @@ export default async function PlantsPage() {
       speciesScientific: p.species_scientific as string | null,
       speciesCommon: p.species_common as string | null,
       imageUrl: p.image_url as string | null,
-      room: p.room as { id: string; name: string } | null,
+      room: (Array.isArray(p.room) ? p.room[0] : p.room) as
+        | { id: string; name: string }
+        | null,
     })) ?? [];
 
   if (mappedPlants.length === 0) {
