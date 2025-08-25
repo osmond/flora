@@ -5,13 +5,18 @@ export async function getAiCareSuggestions(plantId: string) {
   const userId = getCurrentUserId();
   const today = new Date().toISOString().slice(0, 10);
 
-  const { data: tasks } = await supabaseAdmin
+  const { data: tasks, error } = await supabaseAdmin
     .from("tasks")
     .select("type, due_date")
     .eq("user_id", userId)
     .eq("plant_id", plantId)
     .is("completed_at", null)
     .lte("due_date", today);
+
+  if (error) {
+    console.error("Error fetching tasks:", error);
+    throw new Error("Failed to fetch tasks");
+  }
 
   const suggestions: string[] = [];
   tasks?.forEach((t) => {
