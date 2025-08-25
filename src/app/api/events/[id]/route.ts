@@ -9,7 +9,7 @@ export async function DELETE(
 ) {
   const id = params.id;
   try {
-    const userId = getCurrentUserId();
+    const userId = await getCurrentUserId();
     const { data, error } = await supabaseAdmin
       .from("events")
       .select("id, public_id")
