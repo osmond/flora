@@ -5,10 +5,11 @@ import * as React from "react";
 type Room = { id: number; name: string }
 
 export function RoomSelect(props: {
+  id?: string;
   value?: number | null;
   onChange: (roomId: number | null) => void;
 }) {
-  const { value = null, onChange } = props;
+  const { id, value = null, onChange } = props;
   const [rooms, setRooms] = React.useState<Room[]>([]);
   const [newRoom, setNewRoom] = React.useState<string>("");
   const [creating, setCreating] = React.useState(false);
@@ -41,6 +42,7 @@ export function RoomSelect(props: {
   return (
     <div className="space-y-2">
       <select
+        id={id}
         className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)}
