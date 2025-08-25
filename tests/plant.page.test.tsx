@@ -67,11 +67,11 @@ vi.mock("@/components/ui", () => ({ Button: ({ children }: { children: React.Rea
 vi.mock("@/lib/db", () => ({
   default: {
     plant: {
-      findUnique: () =>
+      findFirst: () =>
         Promise.resolve({
           id: "plant-1",
-          name: "My Plant",
-          species: "Pothos",
+          nickname: "My Plant",
+          speciesScientific: "Pothos",
           imageUrl: null,
           room: { name: "Living Room" },
         }),
