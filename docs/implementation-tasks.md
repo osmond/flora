@@ -30,8 +30,8 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ## 0. First Run & Setup
 - [x] Detect user theme and load fonts
 - [x] Load user profile and feature flags
-- [ ] Request location permission and cache city/lat/lon
-- [ ] Fetch and cache weather data (30–60 min)
+- [x] Request location permission and cache city/lat/lon
+- [x] Fetch and cache weather data (30–60 min)
 - [x] Render empty state with CTA to add first plant
 
 **Empty State Example:**
