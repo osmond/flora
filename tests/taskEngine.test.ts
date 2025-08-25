@@ -17,7 +17,7 @@ describe('generateTasks', () => {
     expect(tasks[0]).toMatchObject({ plantName: 'Monstera', type: 'water' });
   });
 
-  it('skips tasks that are not yet due', () => {
+  it('includes upcoming tasks within 7 days', () => {
     const plants = [
       {
         id: '1',
@@ -27,6 +27,19 @@ describe('generateTasks', () => {
       },
     ];
     const tasks = generateTasks(plants, new Date('2024-01-08'));
+    expect(tasks).toHaveLength(1);
+  });
+
+  it('skips tasks beyond the future window', () => {
+    const plants = [
+      {
+        id: '1',
+        name: 'Monstera',
+        waterEvery: '7 days',
+        lastWateredAt: '2024-01-01',
+      },
+    ];
+    const tasks = generateTasks(plants, new Date('2024-01-01'), 3);
     expect(tasks).toHaveLength(0);
   });
 
