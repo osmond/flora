@@ -45,16 +45,16 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <textarea
-        className="w-full rounded border p-2 text-sm"
+        className="w-full rounded-lg border p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         placeholder="Write a note..."
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
       <button
         type="submit"
-        className="rounded bg-primary px-3 py-1 text-sm text-primary-foreground"
+        className="rounded bg-primary p-4 text-sm text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary"
       >
         Add Note
       </button>
