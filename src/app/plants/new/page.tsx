@@ -10,8 +10,12 @@ export default function NewPlantPage() {
   const [name, setName] = useState('');
   const [species, setSpecies] = useState('');
   const [preview, setPreview] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function createPlant() {
+    setLoading(true);
+    setError(null);
     const formData = new FormData();
     formData.set('name', name);
     if (species) {
@@ -31,14 +35,20 @@ export default function NewPlantPage() {
         if (id) {
           router.push(`/plants/${id}`);
         }
+      } else {
+        setError('Failed to create plant');
       }
     } catch (err) {
+      setError('Failed to create plant');
       console.error('Failed to create plant', err);
+    } finally {
+      setLoading(false);
     }
   }
 
   if (preview) {
     return (
+
       <div className="max-w-md p-4 md:p-6 mx-auto">
         <div className="space-y-6 rounded-xl border bg-card p-4 md:p-6 shadow-sm">
           <h2 className="text-lg font-semibold">Preview</h2>
@@ -61,6 +71,7 @@ export default function NewPlantPage() {
               Create Plant
             </Button>
           </div>
+
         </div>
       </div>
     );
