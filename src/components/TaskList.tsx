@@ -145,6 +145,7 @@ type TaskItemProps = {
 function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
   const [startX, setStartX] = useState<number | null>(null);
   const [offsetX, setOffsetX] = useState(0);
+  const [pending, setPending] = useState(false);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLLIElement>) => {
     setStartX(e.clientX);
@@ -158,11 +159,23 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
   };
 
   const triggerComplete = () => {
+    if (pending) return;
+    setPending(true);
     void onComplete(task.id);
   };
 
+  const handleSnoozeSelect = async (days: number) => {
+    if (pending) return;
+    setPending(true);
+    try {
+      await onSnooze(task.id, days);
+    } finally {
+      setPending(false);
+    }
+  };
+
   const handlePointerEnd = () => {
-    if (offsetX > 100) {
+    if (offsetX > 100 && !pending) {
       triggerComplete();
     } else {
       setOffsetX(0);
@@ -192,12 +205,12 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       <p className="font-medium animate-pulse-weight">{task.plantName}</p>
       <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
       <div className="mt-2 flex gap-3 sm:gap-4 md:gap-6">
-        <Button onClick={triggerComplete} className="text-xs">
+        <Button onClick={triggerComplete} className="text-xs" disabled={pending}>
           Done
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="text-xs">
+            <Button variant="secondary" className="text-xs" disabled={pending}>
               Snooze
             </Button>
           </DropdownMenuTrigger>
@@ -205,7 +218,7 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
             {[1, 3, 7].map((days) => (
               <DropdownMenuItem
                 key={days}
-                onSelect={() => onSnooze(task.id, days)}
+                onSelect={() => handleSnoozeSelect(days)}
                 className="text-xs"
               >
                 Snooze {days}d
