@@ -175,7 +175,10 @@ describe("POST /api/events", () => {
     const file = new File(["dummy"], "test.jpg", { type: "image/jpeg" });
     form.set("photo", file);
     const req = new Request("http://localhost", { method: "POST" });
-    (req as any).formData = () => Promise.resolve(form);
+    const reqWithForm = req as unknown as {
+      formData: () => Promise<FormData>;
+    };
+    reqWithForm.formData = () => Promise.resolve(form);
     const res = await POST(req);
     expect(res.status).toBe(200);
     expect(updatedImageUrl).toBe("https://example.com/uploaded.jpg");

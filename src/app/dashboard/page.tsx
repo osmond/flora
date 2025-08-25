@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export default async function DashboardPage() {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const { data: tasks } = await supabaseAdmin
     .from("tasks")
     .select("id, completed_at")
