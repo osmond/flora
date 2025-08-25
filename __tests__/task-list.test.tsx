@@ -33,7 +33,7 @@ vi.mock("next/link", () => ({
 describe("TaskList empty state", () => {
   it("shows call to add a plant when no tasks", () => {
     render(<TaskList tasks={[]} />);
-    expect(screen.getByText(/No plants yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/all caught up/i)).toBeInTheDocument();
     const link = screen.getByRole("link", { name: /Add a Plant/i });
     expect(link).toHaveAttribute("href", "/plants/new");
   });
