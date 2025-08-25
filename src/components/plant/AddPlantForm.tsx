@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import SpeciesAutosuggest from "./SpeciesAutosuggest";
 
 type CreatePayload = {
   nickname: string;
@@ -16,7 +17,6 @@ type CreatePayload = {
 export default function AddPlantForm(): JSX.Element {
   const router = useRouter();
   const [nickname, setNickname] = useState<string>("");
-  const [speciesQuery, setSpeciesQuery] = useState<string>("");
   const [speciesScientific, setSpeciesScientific] = useState<string>("");
   const [speciesCommon, setSpeciesCommon] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -30,7 +30,7 @@ export default function AddPlantForm(): JSX.Element {
       const payload: CreatePayload = {
         nickname: nickname.trim(),
         speciesScientific: speciesScientific || null,
-        speciesCommon: speciesCommon || (speciesQuery ? speciesQuery : null),
+        speciesCommon: speciesCommon || null,
       };
 
       const res = await fetch("/api/plants", {
@@ -66,15 +66,14 @@ export default function AddPlantForm(): JSX.Element {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="species">Species</Label>
-        <Input
-          id="species"
-          placeholder="Search species…"
-          value={speciesQuery}
-          onChange={(e) => setSpeciesQuery(e.target.value)}
-          className="h-10"
+        <Label>Species</Label>
+        <SpeciesAutosuggest
+          value={speciesCommon || speciesScientific}
+          onSelect={(scientific, common) => {
+            setSpeciesScientific(scientific);
+            setSpeciesCommon(common || "");
+          }}
         />
-        {/* Hook up your autosuggest to call `setSpeciesScientific/common` on select */}
       </div>
 
       {errorMsg ? (
