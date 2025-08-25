@@ -12,13 +12,22 @@ type Event = {
 export function Timeline({ plantId }: { plantId: number }) {
   const [items, setItems] = React.useState<Event[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   async function load() {
     setLoading(true);
-    const res = await fetch(`/api/events?plantId=${plantId}`);
-    const data = await res.json();
-    setItems(Array.isArray(data) ? data : []);
-    setLoading(false);
+    setError(null);
+    try {
+      const res = await fetch(`/api/events?plantId=${plantId}`);
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setItems(Array.isArray(data) ? data : []);
+    } catch {
+      setError("Failed to load events");
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   React.useEffect(() => {
@@ -30,6 +39,7 @@ export function Timeline({ plantId }: { plantId: number }) {
   }, [plantId]);
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading timeline…</p>;
+  if (error) return <p className="text-sm text-destructive">{error}</p>;
   if (items.length === 0) return <p className="text-sm text-muted-foreground">No events yet.</p>;
 
   return (
