@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
 
 // Ensure React is available when components are rendered in tests
 (globalThis as unknown as { React?: typeof React }).React ??= React;
@@ -30,14 +31,14 @@ export default function Navigation() {
           {label}
         </Link>
       ))}
-      <button
+      <Button
         type="button"
         aria-label="Toggle theme"
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        className="rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+        variant="ghost"
       >
         Toggle theme
-      </button>
+      </Button>
     </nav>
   );
 }

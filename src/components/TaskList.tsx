@@ -4,6 +4,7 @@ import { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { format, parseISO } from 'date-fns';
 import type { Task } from '@/types/task';
+import { Button } from '@/components/ui/button';
 
 function playChime() {
   if (typeof window === 'undefined') return;
@@ -146,18 +147,16 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       <p className="font-medium animate-pulse-weight">{task.plantName}</p>
       <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
       <div className="mt-2 flex gap-3 sm:gap-4 md:gap-6">
-        <button
-          onClick={triggerComplete}
-          className="rounded-lg bg-primary px-4 py-2 text-xs text-primary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
-        >
+        <Button onClick={triggerComplete} className="text-xs">
           Done
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => onSnooze(task.id)}
-          className="rounded-lg bg-secondary px-4 py-2 text-xs text-secondary-foreground focus:ring-2 focus:ring-primary transition-colors duration-200"
+          variant="secondary"
+          className="text-xs"
         >
           Snooze
-        </button>
+        </Button>
       </div>
     </li>
   );
