@@ -1,16 +1,11 @@
-'use client';
-import * as React from 'react';
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+'use client'
+import * as React from 'react'
+import * as TooltipPrimitive from '@radix-ui/react-tooltip'
+import { cn } from '@/lib/utils'
 
-function cn(...inputs: Array<string | undefined | null | false>) {
-  return twMerge(clsx(inputs));
-}
-
-const TooltipProvider = TooltipPrimitive.Provider;
-const Tooltip = TooltipPrimitive.Root;
-const TooltipTrigger = TooltipPrimitive.Trigger;
+const TooltipProvider = TooltipPrimitive.Provider
+const Tooltip = TooltipPrimitive.Root
+const TooltipTrigger = TooltipPrimitive.Trigger
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
@@ -25,7 +20,7 @@ const TooltipContent = React.forwardRef<
     )}
     {...props}
   />
-));
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+))
+TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
