@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 import { z } from "zod";
+import { NextResponse } from "next/server";
 
 const schema = z.object({
   plant_id: z.string().uuid(),
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
-      return new Response("Invalid data", { status: 400 });
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
     const userId = getCurrentUserId();
     const { error: plantError } = await supabaseAdmin
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
       .eq("user_id", userId)
       .single();
     if (plantError) {
-      return new Response("Plant not found", { status: 404 });
+      return NextResponse.json({ error: "Plant not found" }, { status: 404 });
     }
     const { error } = await supabaseAdmin.from("events").insert({
       plant_id: parsed.data.plant_id,
@@ -31,11 +32,14 @@ export async function POST(req: Request) {
       note: parsed.data.feedback,
     });
     if (error) {
-      return new Response("Database error", { status: 500 });
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
-    return new Response(null, { status: 200 });
-  } catch {
-    return new Response("Server error", { status: 500 });
+    return NextResponse.json({}, { status: 200 });
+  } catch (err) {
+    if (err instanceof Error && err.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 

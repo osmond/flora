@@ -18,40 +18,54 @@ const plantSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
-  const data = Object.fromEntries(formData.entries());
-  const parsed = plantSchema.safeParse(data);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+  try {
+    const formData = await req.formData();
+    const data = Object.fromEntries(formData.entries());
+    const parsed = plantSchema.safeParse(data);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    }
+
+    const userId = getCurrentUserId();
+    const plantData = {
+      ...parsed.data,
+      species: parsed.data.species?.trim() || "Unknown",
+    };
+    const { error, data: inserted } = await supabaseAdmin
+      .from("plants")
+      .insert({ ...plantData, user_id: userId })
+      .select();
+
+    if (error) {
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
+    }
+
+    return NextResponse.json(inserted, { status: 200 });
+  } catch (err) {
+    if (err instanceof Error && err.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
-
-  const userId = getCurrentUserId();
-  const plantData = {
-    ...parsed.data,
-    species: parsed.data.species?.trim() || "Unknown",
-  };
-  const { error, data: inserted } = await supabaseAdmin
-    .from("plants")
-    .insert({ ...plantData, user_id: userId })
-    .select();
-
-  if (error) {
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
-  }
-
-  return NextResponse.json(inserted, { status: 200 });
 }
 
 export async function GET() {
-  const userId = getCurrentUserId();
-  const { data, error } = await supabaseAdmin
-    .from("plants")
-    .select("*")
-    .eq("user_id", userId);
+  try {
+    const userId = getCurrentUserId();
+    const { data, error } = await supabaseAdmin
+      .from("plants")
+      .select("*")
+      .eq("user_id", userId);
 
-  if (error) {
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
+    if (error) {
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
+    }
+
+    return NextResponse.json(data, { status: 200 });
+  } catch (err) {
+    if (err instanceof Error && err.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json(data, { status: 200 });
 }
