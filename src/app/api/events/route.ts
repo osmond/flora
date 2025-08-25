@@ -27,7 +27,7 @@ const formSchema = z.object({
 export async function POST(req: Request) {
   const contentType = req.headers.get("content-type") || "";
   try {
-    const userId = getCurrentUserId();
+    const userId = await getCurrentUserId();
     if (contentType.includes("application/json")) {
       const body = await req.json();
       const parsed = jsonSchema.safeParse(body);
