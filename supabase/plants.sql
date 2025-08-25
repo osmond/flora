@@ -21,6 +21,7 @@ create table if not exists public.plants (
   humidity text,
   image_url text,
   care_plan jsonb,
+  archived boolean default false,
   created_at timestamptz default now()
 );
 
@@ -37,6 +38,7 @@ alter table if exists public.plants add column if not exists light_level text;
 alter table if exists public.plants add column if not exists indoor text;
 alter table if exists public.plants add column if not exists humidity text;
 alter table if exists public.plants add column if not exists user_id text not null default 'flora-single-user';
+alter table if exists public.plants add column if not exists archived boolean default false;
 
 -- Species table
 create table if not exists public.species (
