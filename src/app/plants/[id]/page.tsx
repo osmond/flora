@@ -29,12 +29,16 @@ export default async function PlantDetailPage({
   }
 
   const userId = getCurrentUserId();
-  const { data: events } = await supabaseAdmin
-    .from("events")
-    .select("id, type, note, image_url, created_at")
-    .eq("plant_id", plant.id)
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+  const events = supabaseAdmin
+    ? (
+        await supabaseAdmin
+          .from("events")
+          .select("id, type, note, image_url, created_at")
+          .eq("plant_id", plant.id)
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+      ).data
+    : [];
 
   const timelineEvents = hydrateTimeline(events ?? [], {
     id: plant.id,
