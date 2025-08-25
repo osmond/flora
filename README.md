@@ -12,6 +12,7 @@ Flora creates personalized care plans and adapts them to your environment.
 
 - 🌱 **Add a Plant**
   - Smart species autosuggest (via OpenAI API)
+    - Falls back to empty results if `OPENAI_API_KEY` is missing
   - Auto-generated AI care plan
   - Room assignment & environment tagging
   - Persists new plants to Supabase via API
@@ -97,7 +98,7 @@ All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
 
 ## 📦 Setup
 
-Copy `.env.example` to `.env.local` and fill in your Supabase, OpenAI, Cloudinary, and optional auth credentials.
+Copy `.env.example` to `.env.local` and fill in your Supabase, OpenAI (optional), Cloudinary, and optional auth credentials. Without an `OPENAI_API_KEY`, species suggestions and other AI features are disabled.
 
 ```bash
 git clone https://github.com/osmond/flora.git
