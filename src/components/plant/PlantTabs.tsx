@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { CareEvent } from '@/types';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import CareTimeline from '@/components/CareTimeline';
@@ -15,6 +15,10 @@ interface PlantTabsProps {
 
 export default function PlantTabs({ plantId, initialEvents }: PlantTabsProps) {
   const [events, setEvents] = useState<CareEvent[]>(initialEvents);
+
+  useEffect(() => {
+    setEvents(initialEvents);
+  }, [initialEvents]);
 
   function addEvent(evt: CareEvent) {
     setEvents((prev) => [evt, ...prev]);
