@@ -2,7 +2,7 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 
 export async function getAiCareSuggestions(plantId: string) {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const today = new Date().toISOString().slice(0, 10);
 
   const { data: tasks } = await supabaseAdmin
