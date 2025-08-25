@@ -14,7 +14,7 @@ type RequestBody = CompleteAction | SnoozeAction;
 
 export async function PATCH(req: Request, { params }: Params) {
   try {
-    const userId = getCurrentUserId();
+    const userId = await getCurrentUserId();
     const { id } = params;
 
     let body: RequestBody;

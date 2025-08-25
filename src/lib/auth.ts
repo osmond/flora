@@ -7,8 +7,9 @@ import { headers } from "next/headers";
  * populated by upstream authentication middleware. An error is thrown when the
  * header is missing to signal unauthenticated access.
  */
-export function getCurrentUserId(): string {
-  const userId = headers().get("x-user-id");
+export async function getCurrentUserId(): Promise<string> {
+  const headerList = await headers();
+  const userId = headerList.get("x-user-id");
   if (!userId) {
     throw new Error("Unauthorized");
   }
