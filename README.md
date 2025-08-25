@@ -106,16 +106,21 @@ cd flora
 pnpm install
 
 cp .env.example .env.local  # Fill in your keys
-# apply schema (requires Supabase CLI)
-supabase db execute supabase/plants.sql
-supabase db execute supabase/tasks.sql
-supabase db execute supabase/migrations/20250825045101_rooms_events.sql
-supabase db execute supabase/analytics.sql
+
+# connect Supabase CLI (first time only)
+supabase login
+supabase link --project-ref gfboffhcujxrtxivovur
+
+# apply schema (requires Supabase CLI v2+)
+supabase db execute --file supabase/plants.sql
+supabase db execute --file supabase/tasks.sql
+supabase db execute --file supabase/migrations/20250825045101_rooms_events.sql
+supabase db execute --file supabase/analytics.sql
 
 # optional sample data
-supabase db execute supabase/sample_data.sql
+supabase db execute --file supabase/sample_data.sql
 
-# optional Prisma demo data
+# optional Prisma demo data (requires Prisma models matching Supabase)
 pnpm db:seed
 
 pnpm dev
