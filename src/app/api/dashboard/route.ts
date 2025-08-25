@@ -21,9 +21,28 @@ export async function GET() {
 
     if (evErr) throw evErr
 
-    const { data: plants, error: pErr } = await supabase.from("plants").select("id")
+    const { data: plants, error: pErr } = await supabase
+      .from("plants")
+      .select("id, name")
 
     if (pErr) throw pErr
+
+    const { data: overdue, error: tErr } = await supabase
+      .from("tasks")
+      .select("id, plant_id, type, due_date, completed_at")
+      .lte("due_date", new Date().toISOString().slice(0, 10))
+      .is("completed_at", null)
+      .order("due_date", { ascending: true })
+      .limit(5)
+
+    if (tErr) throw tErr
+
+    const attention = (overdue || []).map(t => ({
+      id: t.id,
+      plantName: (plants || []).find(p => p.id === t.plant_id)?.name || "Unknown",
+      type: t.type,
+      due: t.due_date,
+    }))
 
     const totalExpected = (plants?.length || 0) * 1 // naive: 1 action per plant per week
     const totalDone = events?.length || 0
@@ -47,7 +66,7 @@ export async function GET() {
     }).reverse()
 
     return NextResponse.json(
-      { completion, totalDone, totalExpected, hist, plants: plants?.length || 0 },
+      { completion, totalDone, totalExpected, hist, plants: plants?.length || 0, attention },
       { status: 200 }
     )
   } catch (e: unknown) {
