@@ -49,4 +49,30 @@ describe('EventQuickAdd', () => {
     });
     spy.mockRestore();
   });
+
+  it('disables buttons during submission to prevent duplicates', async () => {
+    let resolveFetch: (v: any) => void = () => {};
+    const fetchMock = vi
+      .fn()
+      .mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveFetch = resolve;
+          }),
+      );
+    const spy = vi.spyOn(global, 'fetch').mockImplementation(fetchMock as any);
+
+    render(<EventQuickAdd plantId="123" />);
+    const btn = screen.getByText('Watered');
+
+    fireEvent.click(btn);
+    expect(btn).toBeDisabled();
+    fireEvent.click(btn);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    resolveFetch({ ok: true });
+    await waitFor(() => expect(btn).not.toBeDisabled());
+
+    spy.mockRestore();
+  });
 });
