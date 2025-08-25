@@ -1,5 +1,6 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { format, addDays } from 'date-fns';
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getCurrentUserId } from "@/lib/auth";
+import { format, addDays } from "date-fns";
 
 interface Plant {
   id: string;
@@ -20,20 +21,23 @@ function parseInterval(value?: string | null) {
 }
 
 export default async function QuickStats({ plant }: QuickStatsProps) {
+  const userId = getCurrentUserId();
   const { data: waterEvents } = await supabaseAdmin
-    .from('events')
-    .select('created_at')
-    .eq('plant_id', plant.id)
-    .eq('type', 'water')
-    .order('created_at', { ascending: false })
+    .from("events")
+    .select("created_at")
+    .eq("plant_id", plant.id)
+    .eq("user_id", userId)
+    .eq("type", "water")
+    .order("created_at", { ascending: false })
     .limit(1);
 
   const { data: fertEvents } = await supabaseAdmin
-    .from('events')
-    .select('created_at')
-    .eq('plant_id', plant.id)
-    .eq('type', 'fertilize')
-    .order('created_at', { ascending: false })
+    .from("events")
+    .select("created_at")
+    .eq("plant_id", plant.id)
+    .eq("user_id", userId)
+    .eq("type", "fertilize")
+    .order("created_at", { ascending: false })
     .limit(1);
 
   const lastWaterDate = waterEvents?.[0]?.created_at
@@ -47,11 +51,13 @@ export default async function QuickStats({ plant }: QuickStatsProps) {
   const fertInterval = parseInterval(plant.fert_every || plant.fertEvery);
 
   const nextWaterDate =
-    lastWaterDate && waterInterval ? addDays(lastWaterDate, waterInterval) : null;
+    lastWaterDate && waterInterval
+      ? addDays(lastWaterDate, waterInterval)
+      : null;
   const nextFertDate =
     lastFertDate && fertInterval ? addDays(lastFertDate, fertInterval) : null;
 
-  const fmt = (d: Date | null) => (d ? format(d, 'PP') : '—');
+  const fmt = (d: Date | null) => (d ? format(d, "PP") : "—");
 
   return (
     <div className="mt-4 rounded border p-4">
@@ -59,7 +65,7 @@ export default async function QuickStats({ plant }: QuickStatsProps) {
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <p className="text-muted-foreground">Water every</p>
-          <p>{plant.water_every || plant.waterEvery || '—'}</p>
+          <p>{plant.water_every || plant.waterEvery || "—"}</p>
         </div>
         <div>
           <p className="text-muted-foreground">Last watered</p>
@@ -71,7 +77,7 @@ export default async function QuickStats({ plant }: QuickStatsProps) {
         </div>
         <div>
           <p className="text-muted-foreground">Fertilize every</p>
-          <p>{plant.fert_every || plant.fertEvery || '—'}</p>
+          <p>{plant.fert_every || plant.fertEvery || "—"}</p>
         </div>
         <div>
           <p className="text-muted-foreground">Last fertilized</p>
@@ -85,4 +91,3 @@ export default async function QuickStats({ plant }: QuickStatsProps) {
     </div>
   );
 }
-

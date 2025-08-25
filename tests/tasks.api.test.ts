@@ -100,7 +100,11 @@ describe("PATCH /api/tasks/[id]", () => {
     const res = await PATCH(req, { params: { id: "1" } });
     expect(res.status).toBe(200);
     expect(taskUpdates[0]).toHaveProperty("completed_at");
-    expect(eventInserts[0]).toEqual({ plant_id: "plant-1", type: "water" });
+    expect(eventInserts[0]).toEqual({
+      plant_id: "plant-1",
+      user_id: "user-123",
+      type: "water",
+    });
     expect(logEvent).toHaveBeenCalledWith("task_completed", { task_id: "1" });
   });
 

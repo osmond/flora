@@ -87,15 +87,15 @@ All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
 
 - `plants.sql` – plants and species tables with RLS policies
 - `tasks.sql` – care task table and policies
-- `events.sql` – user event log
+- `events.sql` – user event log with RLS policies
 - `analytics.sql` – analytics events table
 - `sample_data.sql` – optional seed data for plants and tasks
 
 ---
 
 ## 📦 Setup
-Copy `.env.example` to `.env.local` and fill in your Supabase, OpenAI, Cloudinary, and optional auth credentials.
 
+Copy `.env.example` to `.env.local` and fill in your Supabase, OpenAI, Cloudinary, and optional auth credentials.
 
 ```bash
 git clone https://github.com/osmond/flora.git
