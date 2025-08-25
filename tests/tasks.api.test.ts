@@ -9,7 +9,7 @@ let plantCarePlan: Record<string, unknown> | null = null;
 let eventInserts: Record<string, unknown>[] = [];
 
 vi.mock("@/lib/auth", () => ({
-  getCurrentUserId: () => "user-123",
+  getCurrentUserId: () => Promise.resolve("user-123"),
 }));
 
 vi.mock("@/lib/analytics", () => ({

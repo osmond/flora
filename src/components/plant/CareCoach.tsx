@@ -22,7 +22,7 @@ function parseInterval(value?: string | null) {
 }
 
 export default async function CareCoach({ plant }: CareCoachProps) {
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   const { data: waterEvents } = await supabaseAdmin
     .from("events")
     .select("created_at")
