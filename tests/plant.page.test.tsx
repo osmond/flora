@@ -66,8 +66,9 @@ vi.mock("@/lib/db", () => ({
         Promise.resolve({
           id: "plant-1",
           name: "My Plant",
-          species: null,
+          species: "Pothos",
           imageUrl: null,
+          room: { name: "Living Room" },
         }),
     },
     photo: {
@@ -85,6 +86,15 @@ describe("PlantDetailPage", () => {
     const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
     const html = renderToString(element);
     expect(html).toContain("https://example.com/latest.jpg");
+  });
+
+  it("shows plant name, species, and room", async () => {
+    const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
+    const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
+    const html = renderToString(element);
+    expect(html).toContain("My Plant");
+    expect(html).toContain("Pothos");
+    expect(html).toContain("Living Room");
   });
 });
 
