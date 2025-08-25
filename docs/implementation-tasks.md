@@ -56,7 +56,7 @@ export function EmptyToday() {
 - [x] Implement optional detail expanders (room, pot, light, notes, photo)
 - [x] Call AI preview endpoint after species selection
 - [x] Validate inputs and handle inline errors
-- [ ] Submit plant to backend and redirect to detail page
+ - [x] Submit plant to backend and redirect to detail page
 
 **Form Example:**
 ```tsx
