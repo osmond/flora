@@ -4,7 +4,7 @@ process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.com";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
 
 vi.mock("@/lib/auth", () => ({
-  getCurrentUserId: () => "user-123",
+  getCurrentUserId: () => Promise.resolve("user-123"),
 }));
 
 vi.mock("@/lib/db", () => ({ default: { photo: { create: vi.fn() } } }));
