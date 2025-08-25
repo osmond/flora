@@ -48,10 +48,14 @@ export default function NewPlantPage() {
 
   if (preview) {
     return (
-
       <div className="max-w-md p-4 md:p-6 mx-auto">
         <div className="space-y-6 rounded-xl border bg-card p-4 md:p-6 shadow-sm">
           <h2 className="text-lg font-semibold">Preview</h2>
+          {error && (
+            <p className="text-sm text-destructive" aria-live="polite">
+              {error}
+            </p>
+          )}
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">Nickname</p>
             <p className="font-medium">{name}</p>
@@ -63,15 +67,22 @@ export default function NewPlantPage() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => setPreview(false)}
+              onClick={() => {
+                setPreview(false);
+                setError(null);
+              }}
+              disabled={loading}
             >
               Edit
             </Button>
-            <Button type="button" onClick={createPlant}>
-              Create Plant
+            <Button
+              type="button"
+              onClick={createPlant}
+              disabled={loading}
+            >
+              {loading ? 'Creating...' : 'Create Plant'}
             </Button>
           </div>
-
         </div>
       </div>
     );
