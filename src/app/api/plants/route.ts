@@ -1,6 +1,7 @@
 import { getCurrentUserId } from "@/lib/auth";
 import { supabaseAdmin } from "../../../lib/supabaseAdmin";
 import { z } from "zod";
+import { NextResponse } from "next/server";
 
 const plantSchema = z.object({
   name: z.string().min(1),
@@ -38,10 +39,10 @@ export async function POST(req: Request) {
     return new Response("Database error", { status: 500 });
   }
 
-  return new Response(JSON.stringify(inserted), { status: 200 });
+  return NextResponse.json(inserted, { status: 200 });
 }
 
-export async function GET(_req: Request) {
+export async function GET() {
   const userId = getCurrentUserId();
   const { data, error } = await supabaseAdmin
     .from("plants")
@@ -52,5 +53,5 @@ export async function GET(_req: Request) {
     return new Response("Database error", { status: 500 });
   }
 
-  return new Response(JSON.stringify(data), { status: 200 });
+  return NextResponse.json(data, { status: 200 });
 }
