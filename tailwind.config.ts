@@ -1,14 +1,10 @@
-import type { Config } from "tailwindcss";
-import animate from "tailwindcss-animate";
+import { type Config } from "tailwindcss"
 
-export default {
+const config: Config = {
   darkMode: "class",
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        inter: ["var(--font-inter)", "sans-serif"],
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -53,9 +49,12 @@ export default {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        xl: "calc(var(--radius) + 4px)",
-        "2xl": "calc(var(--radius) + 8px)",
+        lg: "0.5rem",
+        md: "0.375rem",
+        sm: "0.25rem",
+      },
+      fontFamily: {
+        inter: ["var(--font-inter)", "sans-serif"],
       },
       boxShadow: {
         card: "0 4px 6px -1px rgba(0,0,0,0.05)",
@@ -71,5 +70,8 @@ export default {
       },
     },
   },
-  plugins: [animate],
-} satisfies Config;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require("tailwindcss-animate")],
+}
+
+export default config

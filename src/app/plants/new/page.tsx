@@ -1,3 +1,4 @@
+
 import AddPlantForm from '@/components/plant/AddPlantForm';
 
 export default function Page() {
@@ -6,4 +7,5 @@ export default function Page() {
       <AddPlantForm />
     </main>
   );
+
 }
