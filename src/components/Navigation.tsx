@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { Button } from '@/components/ui/button';
 
 // Ensure React is available when components are rendered in tests
@@ -47,31 +46,29 @@ export default function Navigation() {
       >
         Menu
       </Button>
-      <NavigationMenu.Root
+      <nav
         id="primary-navigation"
         aria-label="Main"
         className={`${open ? 'block' : 'hidden'} md:block`}
       >
-        <NavigationMenu.List className="flex flex-col gap-4 md:flex-row">
+        <ul className="flex flex-col gap-4 md:flex-row">
           {links.map(({ href, label }) => (
-            <NavigationMenu.Item key={href}>
-              <NavigationMenu.Link asChild>
-                <Link
-                  href={href}
-                  aria-current={
-                    href === '/'
-                      ? pathname === '/' ? 'page' : undefined
-                      : pathname.startsWith(href)
-                        ? 'page'
-                        : undefined
-                  }
-                >
-                  {label}
-                </Link>
-              </NavigationMenu.Link>
-            </NavigationMenu.Item>
+            <li key={href}>
+              <Link
+                href={href}
+                aria-current={
+                  href === '/'
+                    ? pathname === '/' ? 'page' : undefined
+                    : pathname.startsWith(href)
+                      ? 'page'
+                      : undefined
+                }
+              >
+                {label}
+              </Link>
+            </li>
           ))}
-          <NavigationMenu.Item>
+          <li>
             <Button
               type="button"
               aria-label="Toggle theme"
@@ -80,9 +77,9 @@ export default function Navigation() {
             >
               Toggle theme
             </Button>
-          </NavigationMenu.Item>
-        </NavigationMenu.List>
-      </NavigationMenu.Root>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 }
