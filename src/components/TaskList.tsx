@@ -14,7 +14,7 @@ import Link from 'next/link';
 import type { Task } from '@/types/task';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
-import EmptyPlantState from '@/components/EmptyPlantState';
+import EmptyTasksState from '@/components/EmptyTasksState';
 
 function playChime() {
   if (typeof window === 'undefined') return;
@@ -40,7 +40,7 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
   const [tasks, setTasks] = useState(initialTasks);
 
   if (!tasks || tasks.length === 0) {
-    return <EmptyPlantState />;
+    return <EmptyTasksState />;
   }
 
   const handleComplete = async (id: string) => {
