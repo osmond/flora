@@ -19,6 +19,12 @@
   --ring: 166 27% 43%;
   --destructive: 0 72% 50%;
   --destructive-foreground: 0 0% 98%;
+  --success: 142 72% 29%;
+  --success-foreground: 0 0% 98%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 98%;
+  --info: 201 96% 32%;
+  --info-foreground: 0 0% 98%;
 }
 
 .dark {
@@ -38,4 +44,10 @@
   --ring: 166 30% 51%;
   --destructive: 0 70% 58%;
   --destructive-foreground: 0 0% 98%;
+  --success: 142 70% 42%;
+  --success-foreground: 220 49% 8%;
+  --warning: 38 92% 60%;
+  --warning-foreground: 220 49% 8%;
+  --info: 201 96% 40%;
+  --info-foreground: 220 49% 8%;
 }
