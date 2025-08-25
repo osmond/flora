@@ -18,10 +18,12 @@ interface Props {
 
 export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
   const [file, setFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!file) return;
+    if (!file || saving) return;
+    setSaving(true);
     const tempId = `temp-${Date.now()}`;
     const optimistic: CareEvent = {
       id: tempId,
@@ -51,6 +53,8 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
       }
     } catch (err) {
       console.error('Failed to upload photo', err);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -59,12 +63,13 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
       <input
         type="file"
         accept="image/*"
+        disabled={saving}
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
       />
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button type="submit" className="p-4">
+            <Button type="submit" className="p-4" disabled={saving}>
               Upload Photo
             </Button>
           </TooltipTrigger>
