@@ -24,8 +24,12 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
-
-  const userId = getCurrentUserId();
+  let userId: string;
+  try {
+    userId = getCurrentUserId();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const plantData = {
     ...parsed.data,
     species: parsed.data.species?.trim() || "Unknown",
@@ -43,7 +47,12 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  const userId = getCurrentUserId();
+  let userId: string;
+  try {
+    userId = getCurrentUserId();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { data, error } = await supabaseAdmin
     .from("plants")
     .select("*")

@@ -93,7 +93,7 @@ describe("GET /api/plants/[id]", () => {
   it("returns a single plant", async () => {
     const { GET } = await import("../src/app/api/plants/[id]/route");
     const req = new Request("http://localhost", { method: "GET" });
-    const res = await GET(req, { params: Promise.resolve({ id: "1" }) });
+    const res = await GET(req, { params: { id: "1" } });
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data).toEqual({ id: "1" });
@@ -104,7 +104,7 @@ describe("DELETE /api/plants/[id]", () => {
   it("returns 200 when deleting a plant", async () => {
     const { DELETE } = await import("../src/app/api/plants/[id]/route");
     const req = new Request("http://localhost", { method: "DELETE" });
-    const res = await DELETE(req, { params: Promise.resolve({ id: "1" }) });
+    const res = await DELETE(req, { params: { id: "1" } });
     expect(res.status).toBe(200);
   });
 });

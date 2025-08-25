@@ -16,6 +16,19 @@ vi.mock("@/components/CareSuggestion", () => ({ default: () => null }));
 vi.mock("@/components/PhotoGallery", () => ({ default: () => null }));
 vi.mock("@/components/plant/QuickStats", () => ({ default: () => null }));
 vi.mock("@/components/plant/CareCoach", () => ({ default: () => null }));
+vi.mock("@/lib/supabaseAdmin", () => ({
+  supabaseAdmin: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          eq: () => ({
+            order: () => Promise.resolve({ data: [] }),
+          }),
+        }),
+      }),
+    }),
+  },
+}));
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) => (
     <a href={href}>{children}</a>
@@ -82,7 +95,7 @@ vi.mock("@/lib/db", () => ({
 describe("PlantDetailPage", () => {
   it("falls back to latest photo when plant has no main image", async () => {
     const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
-    const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
+    const element = await PlantDetailPage({ params: { id: "plant-1" } });
     const html = renderToString(element);
     expect(html).toContain("https://example.com/latest.jpg");
   });

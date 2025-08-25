@@ -2,24 +2,29 @@ import { getCurrentUserId } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { logEvent } from "@/lib/analytics";
 import { addDays, formatISO, parseISO } from "date-fns";
-
-interface Params {
-  params: { id: string };
-}
+import { NextResponse } from "next/server";
 
 type CompleteAction = { action: "complete" };
 type SnoozeAction = { action: "snooze"; days: number; reason?: string };
 type RequestBody = CompleteAction | SnoozeAction;
 
-export async function PATCH(req: Request, { params }: Params) {
-  const userId = getCurrentUserId();
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
+  let userId: string;
+  try {
+    userId = getCurrentUserId();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id } = params;
 
   let body: RequestBody;
   try {
     body = (await req.json()) as RequestBody;
   } catch {
-    return new Response("Invalid JSON", { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   if (body.action === "complete") {
@@ -30,7 +35,7 @@ export async function PATCH(req: Request, { params }: Params) {
       .eq("user_id", userId)
       .single();
     if (taskError || !task) {
-      return new Response("Task not found", { status: 404 });
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
     const { error } = await supabaseAdmin
@@ -39,7 +44,7 @@ export async function PATCH(req: Request, { params }: Params) {
       .eq("id", id)
       .eq("user_id", userId);
     if (error) {
-      return new Response("Database error", { status: 500 });
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
 
     const { error: eventError } = await supabaseAdmin.from("events").insert({
@@ -48,11 +53,11 @@ export async function PATCH(req: Request, { params }: Params) {
       type: task.type as string,
     });
     if (eventError) {
-      return new Response("Database error", { status: 500 });
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
 
     await logEvent("task_completed", { task_id: id });
-    return new Response(null, { status: 200 });
+    return NextResponse.json(null, { status: 200 });
   }
 
   if (body.action === "snooze") {
@@ -66,7 +71,7 @@ export async function PATCH(req: Request, { params }: Params) {
       .eq("user_id", userId)
       .single();
     if (taskError || !task) {
-      return new Response("Task not found", { status: 404 });
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
     const due = parseISO(task.due_date as string);
@@ -78,7 +83,7 @@ export async function PATCH(req: Request, { params }: Params) {
       .eq("id", id)
       .eq("user_id", userId);
     if (updateError) {
-      return new Response("Database error", { status: 500 });
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
 
     const { data: plant } = await supabaseAdmin
@@ -103,10 +108,10 @@ export async function PATCH(req: Request, { params }: Params) {
         .eq("user_id", userId);
     }
 
-    return new Response(null, { status: 200 });
+    return NextResponse.json(null, { status: 200 });
   }
 
-  return new Response("Invalid action", { status: 400 });
+  return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
 
 export const runtime = "edge";

@@ -1,9 +1,9 @@
-export function toCsv(rows: Record<string, any>[]): string {
+export function toCsv(rows: Record<string, unknown>[]): string {
   const headers = Array.from(new Set(rows.flatMap(r => Object.keys(r))));
-  const escape = (v: any) =>
+  const escape = (v: unknown) =>
     v === undefined || v === null
-      ? ''
+      ? ""
       : `"${String(v).replace(/"/g, '""')}"`;
-  const lines = rows.map(r => headers.map(h => escape(r[h])).join(","));
+  const lines = rows.map(r => headers.map(h => escape((r as Record<string, unknown>)[h])).join(","));
   return `${headers.join(",")}\n${lines.join("\n")}`;
 }
