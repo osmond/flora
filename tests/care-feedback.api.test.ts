@@ -43,6 +43,11 @@ describe("POST /api/care-feedback", () => {
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
-    expect(insertMock).toHaveBeenCalled();
+    expect(insertMock).toHaveBeenCalledWith({
+      plant_id: "4aa97bee-71f1-428e-843b-4c3c77493994",
+      user_id: "user-123",
+      type: "note",
+      note: "helpful",
+    });
   });
 });
