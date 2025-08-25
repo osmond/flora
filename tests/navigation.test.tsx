@@ -28,6 +28,7 @@ describe('Navigation', () => {
     const html = renderToString(<Navigation />);
     expect(html).toContain('href="/"');
     expect(html).toContain('href="/plants"');
+    expect(html).toContain('href="/dashboard"');
     expect(html).toContain('href="/add"');
   });
 

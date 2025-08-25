@@ -9,6 +9,7 @@ export default function NewPlantPage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [species, setSpecies] = useState('');
+  const [photo, setPhoto] = useState<File | null>(null);
   const [preview, setPreview] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +21,9 @@ export default function NewPlantPage() {
     formData.set('name', name);
     if (species) {
       formData.set('species', species);
+    }
+    if (photo) {
+      formData.set('photo', photo);
     }
     try {
       const res = await fetch('/api/plants', {
@@ -62,6 +66,7 @@ export default function NewPlantPage() {
             {species && (
               <p className="text-sm text-muted-foreground">{species}</p>
             )}
+            {photo && <p className="text-sm text-muted-foreground">Photo selected</p>}
           </div>
           <div className="flex gap-3">
             <Button
@@ -111,9 +116,13 @@ export default function NewPlantPage() {
           />
         </div>
         <SpeciesAutosuggest value={species} onSelect={setSpecies} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+        />
         <Button type="submit">Preview</Button>
       </form>
     </div>
   );
 }
-

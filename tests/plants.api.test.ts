@@ -7,6 +7,8 @@ vi.mock("@/lib/auth", () => ({
   getCurrentUserId: () => "user-123",
 }));
 
+vi.mock("@/lib/db", () => ({ default: { photo: { create: vi.fn() } } }));
+
 let inserted: Record<string, unknown> | null;
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
@@ -42,7 +44,8 @@ describe("POST /api/plants", () => {
     const form = new FormData();
     form.set("name", "Fern");
     form.set("species", "Pteridophyta");
-    const req = new Request("http://localhost", { method: "POST", body: form });
+    const req = new Request("http://localhost", { method: "POST" });
+    (req as any).formData = () => Promise.resolve(form);
     const res = await POST(req);
     expect(res.status).toBe(200);
   });
@@ -51,7 +54,8 @@ describe("POST /api/plants", () => {
     const { POST } = await import("../src/app/api/plants/route");
     const form = new FormData();
     form.set("species", "Pteridophyta");
-    const req = new Request("http://localhost", { method: "POST", body: form });
+    const req = new Request("http://localhost", { method: "POST" });
+    (req as any).formData = () => Promise.resolve(form);
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
@@ -60,7 +64,8 @@ describe("POST /api/plants", () => {
     const { POST } = await import("../src/app/api/plants/route");
     const form = new FormData();
     form.set("name", "Fern");
-    const req = new Request("http://localhost", { method: "POST", body: form });
+    const req = new Request("http://localhost", { method: "POST" });
+    (req as any).formData = () => Promise.resolve(form);
     const res = await POST(req);
     expect(res.status).toBe(200);
     expect(inserted.species).toBe("Unknown");
@@ -72,7 +77,8 @@ describe("POST /api/plants", () => {
     form.set("name", "Fern");
     form.set("species", "Pteridophyta");
     form.set("latitude", "not-a-number");
-    const req = new Request("http://localhost", { method: "POST", body: form });
+    const req = new Request("http://localhost", { method: "POST" });
+    (req as any).formData = () => Promise.resolve(form);
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
