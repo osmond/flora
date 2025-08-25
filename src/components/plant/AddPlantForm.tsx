@@ -34,6 +34,7 @@ export default function AddPlantForm(): JSX.Element {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [carePreview, setCarePreview] = useState<string | null>(null);
   const [_previewing, setPreviewing] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{ nickname?: string; species?: string }>({});
 
   async function fetchPreview(scientific: string, common?: string) {
     setCarePreview(null);
@@ -54,8 +55,19 @@ export default function AddPlantForm(): JSX.Element {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitting(true);
     setErrorMsg(null);
+
+    const newErrors: { nickname?: string; species?: string } = {};
+    if (!nickname.trim()) newErrors.nickname = "Please enter a nickname";
+    if (!speciesScientific && !speciesCommon)
+      newErrors.species = "Please select a species";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+
+    setSubmitting(true);
     try {
       const payload: CreatePayload = {
         nickname: nickname.trim(),
@@ -93,10 +105,15 @@ export default function AddPlantForm(): JSX.Element {
           id="nickname"
           placeholder="e.g. Kay"
           value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          required
+          onChange={(e) => {
+            setNickname(e.target.value);
+            setErrors((er) => ({ ...er, nickname: undefined }));
+          }}
           className="h-10"
         />
+        {errors.nickname && (
+          <p className="text-sm text-destructive">{errors.nickname}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -106,9 +123,13 @@ export default function AddPlantForm(): JSX.Element {
           onSelect={(scientific, common) => {
             setSpeciesScientific(scientific);
             setSpeciesCommon(common || "");
+            setErrors((er) => ({ ...er, species: undefined }));
             fetchPreview(scientific, common);
           }}
         />
+        {errors.species && (
+          <p className="text-sm text-destructive">{errors.species}</p>
+        )}
       </div>
 
       {carePreview && (
