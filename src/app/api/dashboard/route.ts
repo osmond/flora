@@ -27,22 +27,25 @@ export async function GET() {
 
     if (pErr) throw pErr
 
-    const { data: overdue, error: tErr } = await supabase
+    const todayStr = new Date().toISOString().slice(0, 10)
+
+    const { data: tasks, error: tErr } = await supabase
       .from("tasks")
       .select("id, plant_id, type, due_date, completed_at")
-      .lte("due_date", new Date().toISOString().slice(0, 10))
-      .is("completed_at", null)
+      .lte("due_date", todayStr)
       .order("due_date", { ascending: true })
-      .limit(5)
 
     if (tErr) throw tErr
 
-    const attention = (overdue || []).map(t => ({
-      id: t.id,
-      plantName: (plants || []).find(p => p.id === t.plant_id)?.name || "Unknown",
-      type: t.type,
-      due: t.due_date,
-    }))
+    const attention = (tasks || [])
+      .filter(t => !t.completed_at)
+      .slice(0, 5)
+      .map(t => ({
+        id: t.id,
+        plantName: (plants || []).find(p => p.id === t.plant_id)?.name || "Unknown",
+        type: t.type,
+        due: t.due_date,
+      }))
 
     const totalExpected = (plants?.length || 0) * 1 // naive: 1 action per plant per week
     const totalDone = events?.length || 0
@@ -51,7 +54,7 @@ export async function GET() {
         ? 0
         : Math.min(100, Math.round((totalDone / totalExpected) * 100))
 
-    // Overdue trend is placeholder (requires schedules); return last7 days histogram of events
+    // Activity histogram (events per day, last 7 days)
     const hist = Array.from({ length: 7 }, (_, i) => {
       const dayStart = new Date()
       dayStart.setHours(0, 0, 0, 0)
@@ -65,8 +68,48 @@ export async function GET() {
       return { day: dayStart.toISOString().slice(0, 10), count }
     }).reverse()
 
+    // Overdue trend: count overdue tasks for each of last 7 days
+    const overdueTrend = Array.from({ length: 7 }, (_, i) => {
+      const dayStart = new Date()
+      dayStart.setHours(0, 0, 0, 0)
+      dayStart.setDate(dayStart.getDate() - i)
+      const dayEnd = new Date(dayStart)
+      dayEnd.setDate(dayStart.getDate() + 1)
+      const count = (tasks || []).filter(t => {
+        const due = new Date(t.due_date).getTime()
+        const completed = t.completed_at ? new Date(t.completed_at).getTime() : null
+        return due < dayEnd.getTime() && (!completed || completed >= dayEnd.getTime())
+      }).length
+      return { day: dayStart.toISOString().slice(0, 10), count }
+    }).reverse()
+
+    // Streak: consecutive days with at least one event
+    let streak = 0
+    for (let i = 0; i < 30; i++) {
+      const dayStart = new Date()
+      dayStart.setHours(0, 0, 0, 0)
+      dayStart.setDate(dayStart.getDate() - i)
+      const dayEnd = new Date(dayStart)
+      dayEnd.setDate(dayStart.getDate() + 1)
+      const has = (events || []).some(e => {
+        const t = new Date(e.created_at).getTime()
+        return t >= dayStart.getTime() && t < dayEnd.getTime()
+      })
+      if (has) streak++
+      else break
+    }
+
     return NextResponse.json(
-      { completion, totalDone, totalExpected, hist, plants: plants?.length || 0, attention },
+      {
+        completion,
+        totalDone,
+        totalExpected,
+        hist,
+        overdueTrend,
+        streak,
+        plants: plants?.length || 0,
+        attention,
+      },
       { status: 200 }
     )
   } catch (e: unknown) {
