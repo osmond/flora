@@ -36,16 +36,22 @@ export function parseInterval(value?: string | null): number | null {
   }
 }
 
-export function generateTasks(plants: Plant[], today: Date = new Date()): Task[] {
+export function generateTasks(
+  plants: Plant[],
+  today: Date = new Date(),
+  futureDays = 7
+): Task[] {
   const tasks: Task[] = [];
+  const limit = addDays(today, futureDays);
 
   for (const plant of plants) {
     const waterInterval = parseInterval(plant.waterEvery);
     if (waterInterval !== null && plant.lastWateredAt) {
       const due = addDays(parseISO(plant.lastWateredAt), waterInterval);
-      if (due <= today) {
+      if (due <= limit) {
         tasks.push({
           id: `${plant.id}-water`,
+          plantId: plant.id,
           plantName: plant.name,
           type: 'water',
           due: formatISO(due),
@@ -56,9 +62,10 @@ export function generateTasks(plants: Plant[], today: Date = new Date()): Task[]
     const fertInterval = parseInterval(plant.fertEvery);
     if (fertInterval !== null && plant.lastFertilizedAt) {
       const due = addDays(parseISO(plant.lastFertilizedAt), fertInterval);
-      if (due <= today) {
+      if (due <= limit) {
         tasks.push({
           id: `${plant.id}-fertilize`,
+          plantId: plant.id,
           plantName: plant.name,
           type: 'fertilize',
           due: formatISO(due),

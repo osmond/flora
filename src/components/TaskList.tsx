@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { format, parseISO } from 'date-fns';
+import { isBefore, isSameDay, parseISO, startOfDay } from 'date-fns';
+import Link from 'next/link';
 import type { Task } from '@/types/task';
 import { Button } from '@/components/ui/button';
 
@@ -63,30 +64,44 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
     }
   };
 
-  const grouped = tasks.reduce<Record<string, Task[]>>((acc, task) => {
-    const day = format(parseISO(task.due), 'PPP');
-    if (!acc[day]) acc[day] = [];
-    acc[day].push(task);
-    return acc;
-  }, {});
+  const today = startOfDay(new Date());
+  const sections: Record<'overdue' | 'due' | 'upcoming', Task[]> = {
+    overdue: [],
+    due: [],
+    upcoming: [],
+  };
+  for (const task of tasks) {
+    const due = parseISO(task.due);
+    if (isBefore(due, today)) sections.overdue.push(task);
+    else if (isSameDay(due, today)) sections.due.push(task);
+    else sections.upcoming.push(task);
+  }
 
   return (
     <ul className="space-y-8">
-      {Object.entries(grouped).map(([day, dayTasks]) => (
-        <li key={day}>
-          <div className="mb-2 text-sm font-medium text-muted-foreground">{day}</div>
-          <ul className="space-y-4">
-            {dayTasks.map((task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onComplete={handleComplete}
-                onSnooze={handleSnooze}
-              />
-            ))}
-          </ul>
-        </li>
-      ))}
+      {(
+        [
+          ['overdue', 'Overdue'],
+          ['due', 'Due Today'],
+          ['upcoming', 'Upcoming'],
+        ] as const
+      ).map(([key, label]) =>
+        sections[key].length ? (
+          <li key={key}>
+            <div className="mb-2 text-sm font-medium text-muted-foreground">{label}</div>
+            <ul className="space-y-4">
+              {sections[key].map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onComplete={handleComplete}
+                  onSnooze={handleSnooze}
+                />
+              ))}
+            </ul>
+          </li>
+        ) : null
+      )}
     </ul>
   );
 }
@@ -156,6 +171,9 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
           className="text-xs"
         >
           Snooze
+        </Button>
+        <Button asChild variant="outline" className="text-xs">
+          <Link href={`/plants/${task.plantId}`}>View</Link>
         </Button>
       </div>
     </li>
