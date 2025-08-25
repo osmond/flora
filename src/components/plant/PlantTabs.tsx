@@ -7,6 +7,7 @@ import CareTimeline from '@/components/CareTimeline';
 import AddNoteForm from '@/components/AddNoteForm';
 import AddPhotoForm from '@/components/AddPhotoForm';
 import PhotoGalleryClient from './PhotoGalleryClient';
+import { EventQuickAdd } from './EventQuickAdd';
 
 interface PlantTabsProps {
   plantId: string;
@@ -43,7 +44,8 @@ export default function PlantTabs({
         <TabsTrigger value="photos">Photos</TabsTrigger>
         <TabsTrigger value="notes">Notes</TabsTrigger>
       </TabsList>
-      <TabsContent value="timeline" className="mt-6">
+      <TabsContent value="timeline" className="mt-6 space-y-4">
+        <EventQuickAdd plantId={plantId} />
         <CareTimeline events={events} error={timelineError} />
       </TabsContent>
       <TabsContent value="care" className="mt-6">
