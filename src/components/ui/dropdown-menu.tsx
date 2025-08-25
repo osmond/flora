@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 const DropdownMenu = DropdownMenuPrimitive.Root;
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
+
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
@@ -18,8 +19,8 @@ const DropdownMenuContent = React.forwardRef<
     )}
     {...props}
   />
-));
-DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
+))
+DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
 const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
@@ -33,7 +34,7 @@ const DropdownMenuItem = React.forwardRef<
     )}
     {...props}
   />
-));
-DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
+))
+DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
 
-export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem };
+export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem }
