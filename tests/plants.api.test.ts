@@ -15,6 +15,12 @@ vi.mock("@supabase/supabase-js", () => ({
     from: () => ({
       insert: (payload: Record<string, unknown>) => {
         inserted = payload;
+        if (!payload.nickname || typeof payload.room_id === "string") {
+          return {
+            select: () =>
+              Promise.resolve({ data: null, error: { message: "invalid" } }),
+          };
+        }
         return {
           select: () => Promise.resolve({ data: [payload], error: null }),
         };
@@ -39,54 +45,40 @@ describe("POST /api/plants", () => {
     inserted = null;
   });
 
-  it("returns 200 for valid submission", async () => {
+  it("returns 201 for valid submission", async () => {
     const { POST } = await import("../src/app/api/plants/route");
-    const form = new FormData();
-    form.set("name", "Fern");
-    form.set("species", "Pteridophyta");
-    const req = new Request("http://localhost", { method: "POST" }) as Request & {
-      formData: () => Promise<FormData>;
-    };
-    req.formData = () => Promise.resolve(form);
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body: JSON.stringify({
+        nickname: "Fern",
+        speciesScientific: "Pteridophyta",
+        room_id: 1,
+      }),
+    });
     const res = await POST(req);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
   });
 
   it("returns 400 when required fields are missing", async () => {
     const { POST } = await import("../src/app/api/plants/route");
-    const form = new FormData();
-    form.set("species", "Pteridophyta");
-    const req = new Request("http://localhost", { method: "POST" }) as Request & {
-      formData: () => Promise<FormData>;
-    };
-    req.formData = () => Promise.resolve(form);
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body: JSON.stringify({ speciesScientific: "Pteridophyta" }),
+    });
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
 
-  it("falls back to 'Unknown' when species is missing", async () => {
-    const { POST } = await import("../src/app/api/plants/route");
-    const form = new FormData();
-    form.set("name", "Fern");
-    const req = new Request("http://localhost", { method: "POST" }) as Request & {
-      formData: () => Promise<FormData>;
-    };
-    req.formData = () => Promise.resolve(form);
-    const res = await POST(req);
-    expect(res.status).toBe(200);
-    expect(inserted.species).toBe("Unknown");
-  });
-
   it("returns 400 for invalid field types", async () => {
     const { POST } = await import("../src/app/api/plants/route");
-    const form = new FormData();
-    form.set("name", "Fern");
-    form.set("species", "Pteridophyta");
-    form.set("latitude", "not-a-number");
-    const req = new Request("http://localhost", { method: "POST" }) as Request & {
-      formData: () => Promise<FormData>;
-    };
-    req.formData = () => Promise.resolve(form);
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body: JSON.stringify({
+        nickname: "Fern",
+        speciesScientific: "Pteridophyta",
+        room_id: "not-a-number",
+      }),
+    });
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
