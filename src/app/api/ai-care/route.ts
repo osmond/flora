@@ -1,3 +1,6 @@
+import { NextResponse } from "next/server";
+
+
 import { z } from "zod";
 import { NextResponse } from "next/server";
 
@@ -6,6 +9,7 @@ const bodySchema = z.object({
   potUnit: z.enum(["in", "cm"]),
   species: z.string().optional(),
 });
+
 
 export async function POST(req: Request) {
   const json = await req.json();
@@ -18,6 +22,7 @@ export async function POST(req: Request) {
   const { potSize, potUnit } = parsed.data;
   const size = potUnit === "in" ? Math.round(potSize / 2.54) : potSize;
   const rationale = `${size}${potUnit}`;
-  const confidence = "medium";
+  const confidence = 'medium';
+
   return NextResponse.json({ rationale, confidence });
 }

@@ -2,6 +2,7 @@ import cloudinary from "@/lib/cloudinary";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 import { z } from "zod";
+import { NextResponse } from "next/server";
 
 // JSON body can log a note or a simple care event (e.g. watering)
 const baseSchema = z.object({
@@ -24,13 +25,13 @@ const formSchema = z.object({
 
 export async function POST(req: Request) {
   const contentType = req.headers.get("content-type") || "";
-  const userId = getCurrentUserId();
   try {
+    const userId = getCurrentUserId();
     if (contentType.includes("application/json")) {
       const body = await req.json();
       const parsed = jsonSchema.safeParse(body);
       if (!parsed.success) {
-        return new Response("Invalid data", { status: 400 });
+        return NextResponse.json({ error: "Invalid data" }, { status: 400 });
       }
       const { data, error } = await supabaseAdmin
         .from("events")
@@ -42,9 +43,9 @@ export async function POST(req: Request) {
         })
         .select();
       if (error) {
-        return new Response("Database error", { status: 500 });
+        return NextResponse.json({ error: "Database error" }, { status: 500 });
       }
-      return new Response(JSON.stringify(data), { status: 200 });
+      return NextResponse.json(data, { status: 200 });
     }
 
     const formData = await req.formData();
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
     const file = formData.get("photo");
     const parsed = formSchema.safeParse({ plant_id, type });
     if (!parsed.success || !(file instanceof File)) {
-      return new Response("Invalid data", { status: 400 });
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
       })
       .select();
     if (insertError) {
-      return new Response("Database error", { status: 500 });
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
 
     await supabaseAdmin
@@ -90,8 +91,11 @@ export async function POST(req: Request) {
       .update({ image_url: upload.secure_url })
       .eq("id", parsed.data.plant_id);
 
-    return new Response(JSON.stringify(inserted), { status: 200 });
+    return NextResponse.json(inserted, { status: 200 });
   } catch (err) {
-    return new Response("Server error", { status: 500 });
+    if (err instanceof Error && err.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
