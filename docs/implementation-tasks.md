@@ -87,8 +87,8 @@ export function EmptyToday() {
 ---
 
 ## 2. Plant Detail (`/plants/[id]`)
-- [ ] Layout hero image, nickname, species, and room badge
-- [ ] Display quick stats for last/next watering and cadence
+- [x] Layout hero image, nickname, species, and room badge
+- [x] Display quick stats for last/next watering and cadence
 - [ ] Implement tabs for timeline, care plan, photos, notes
 - [ ] Add "Mark as watered" and event logging
 - [ ] Support schedule adjustments and AI suggestions

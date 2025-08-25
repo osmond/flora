@@ -13,7 +13,10 @@ export default async function PlantDetailPage({
 }: {
   params: { id: string };
 }) {
-  const plant = await db.plant.findUnique({ where: { id: params.id } });
+  const plant = await db.plant.findUnique({
+    where: { id: params.id },
+    include: { room: { select: { name: true } } },
+  });
   if (!plant) {
     return <div className="p-4 md:p-6 max-w-md mx-auto">Plant not found</div>;
   }
@@ -54,16 +57,25 @@ export default async function PlantDetailPage({
           alt={plant.name}
           width={800}
           height={400}
-          className="h-64 w-full object-cover md:h-80"
+          className="h-48 w-full rounded-xl object-cover md:h-64"
         />
       ) : (
-        <div className="h-64 w-full bg-muted md:h-80" />
+        <div className="h-48 w-full rounded-xl bg-muted md:h-64" />
       )}
       <div className="p-4 md:p-6 max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold">{plant.name}</h1>
-        {plant.species && (
-          <p className="text-muted-foreground">{plant.species}</p>
-        )}
+        <div className="mt-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">{plant.name}</h2>
+            {plant.species && (
+              <p className="text-sm text-muted-foreground">{plant.species}</p>
+            )}
+          </div>
+          {plant.room?.name && (
+            <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+              {plant.room.name}
+            </span>
+          )}
+        </div>
         <QuickStats plant={plant} />
         <CareCoach plant={plant} />
       </div>
