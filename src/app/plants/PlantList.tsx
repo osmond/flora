@@ -7,8 +7,9 @@ import Image from "next/image";
 
 interface Plant {
   id: string;
-  name: string;
-  species?: string | null;
+  nickname: string;
+  speciesScientific?: string | null;
+  speciesCommon?: string | null;
   imageUrl?: string | null;
   room?: { id: string; name: string } | null;
 }
@@ -74,10 +75,10 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                       <div className="h-12 w-12 rounded-lg bg-muted" />
                     )}
                     <div>
-                      <p className="font-medium">{plant.name}</p>
-                      {plant.species && (
+                      <p className="font-medium">{plant.nickname}</p>
+                      {(plant.speciesScientific || plant.speciesCommon) && (
                         <p className="text-sm text-muted-foreground">
-                          {plant.species}
+                          {plant.speciesScientific || plant.speciesCommon}
                         </p>
                       )}
                     </div>

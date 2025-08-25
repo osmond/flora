@@ -8,15 +8,15 @@ import { Button } from "@/components/ui/button";
 
 type Plant = {
   id: string;
-  name: string;
-  species: string | null;
+  nickname: string;
+  speciesScientific: string | null;
   imageUrl: string | null;
 };
 
 export default function EditPlantForm({ plant }: { plant: Plant }) {
   const router = useRouter();
-  const [name, setName] = useState(plant.name);
-  const [species, setSpecies] = useState(plant.species ?? "");
+  const [nickname, setNickname] = useState(plant.nickname);
+  const [speciesScientific, setSpeciesScientific] = useState(plant.speciesScientific ?? "");
   const [imageUrl, setImageUrl] = useState(plant.imageUrl ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -30,8 +30,8 @@ export default function EditPlantForm({ plant }: { plant: Plant }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name.trim(),
-          species: species.trim() || null,
+          nickname: nickname.trim(),
+          species_scientific: speciesScientific.trim() || null,
           image_url: imageUrl.trim() || null,
         }),
       });
@@ -84,20 +84,20 @@ export default function EditPlantForm({ plant }: { plant: Plant }) {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="name">Nickname</Label>
+        <Label htmlFor="nickname">Nickname</Label>
         <Input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          id="nickname"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
           className="h-10"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="species">Species</Label>
+        <Label htmlFor="speciesScientific">Species</Label>
         <Input
-          id="species"
-          value={species}
-          onChange={(e) => setSpecies(e.target.value)}
+          id="speciesScientific"
+          value={speciesScientific}
+          onChange={(e) => setSpeciesScientific(e.target.value)}
           className="h-10"
         />
       </div>
