@@ -4,7 +4,19 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import type { CareEvent } from '@/types';
 
-export default function CareTimeline({ events }: { events: CareEvent[] }) {
+export default function CareTimeline({
+  events,
+  error = false,
+}: {
+  events: CareEvent[];
+  error?: boolean;
+}) {
+  if (error) {
+    return (
+      <p className="text-sm text-destructive">Failed to load timeline.</p>
+    );
+  }
+
   if (!events || events.length === 0) {
     return <p className="text-sm text-muted-foreground">No care events yet.</p>;
   }
