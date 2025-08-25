@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import PlantList from './PlantList';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import EmptyPlantState from '@/components/EmptyPlantState';
 
 export default async function PlantsPage() {
   const { data: plants, error } = await supabaseAdmin
@@ -23,14 +23,7 @@ export default async function PlantsPage() {
     })) ?? [];
 
   if (mappedPlants.length === 0) {
-    return (
-      <div className="p-4 md:p-6 text-center max-w-md mx-auto">
-        <p className="mb-4">You haven&apos;t added any plants yet.</p>
-        <Link href="/plants/new" className="text-primary underline">
-          Add your first plant
-        </Link>
-      </div>
-    );
+    return <EmptyPlantState />;
   }
 
   return (
