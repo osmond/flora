@@ -32,14 +32,26 @@ export function Timeline({ plantId }: { plantId: number }) {
 
   React.useEffect(() => {
     load();
-    const handler = (e: Event | any) => load();
+    const handler = () => load();
     window.addEventListener("flora:events:changed", handler as any);
     return () => window.removeEventListener("flora:events:changed", handler as any);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plantId]);
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading timeline…</p>;
-  if (error) return <p className="text-sm text-destructive">{error}</p>;
+  if (error)
+    return (
+      <div className="flex items-center gap-2 text-sm text-destructive">
+        <span>{error}</span>
+        <button
+          type="button"
+          onClick={load}
+          className="rounded-md border px-2 py-1 text-xs"
+        >
+          Retry
+        </button>
+      </div>
+    );
   if (items.length === 0) return <p className="text-sm text-muted-foreground">No events yet.</p>;
 
   return (

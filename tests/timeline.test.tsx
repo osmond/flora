@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Timeline } from "@/components/plant/Timeline";
 
@@ -12,11 +12,23 @@ describe("Timeline", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
-  it("shows error message when fetch fails", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve({ ok: false, json: async () => ({}) })));
+  it("shows retry button when fetch fails and reloads after retry", async () => {
+    const event = {
+      id: 1,
+      type: "watered",
+      note: null,
+      created_at: new Date().toISOString(),
+    };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, json: async () => ({}) })
+      .mockResolvedValueOnce({ ok: true, json: async () => [event] });
+    vi.stubGlobal("fetch", fetchMock);
     render(<Timeline plantId={1} />);
-    const msg = await screen.findByText("Failed to load events");
-    expect(msg).toBeDefined();
+    const retry = await screen.findByRole("button", { name: /retry/i });
+    fireEvent.click(retry);
+    await screen.findByText(/watered/i);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
 
