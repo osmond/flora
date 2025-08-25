@@ -14,9 +14,13 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-semibold">Dashboard</h1>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card title="Weekly Completion" value={stats?.completion != null ? `${stats.completion}%` : "—"} subtitle={`${stats?.totalDone ?? 0} actions`} />
+          <Card
+            title="Weekly Completion"
+            value={stats?.completion != null ? `${stats.completion}%` : "—"}
+            subtitle={`${stats?.totalDone ?? 0} actions`}
+          />
+          <Card title="Current Streak" value={stats?.streak ?? 0} subtitle="days" />
           <Card title="Plants" value={stats?.plants ?? 0} subtitle="total" />
-          <Card title="Expected / wk" value={stats?.totalExpected ?? 0} subtitle="naive" />
           <Card title="Done / wk" value={stats?.totalDone ?? 0} subtitle="events" />
         </section>
 
@@ -40,6 +44,18 @@ export default async function DashboardPage() {
           ) : (
             <p className="text-sm text-muted-foreground">All plants are happy 🌿</p>
           )}
+        </section>
+
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Overdue Trend (7 days)</h2>
+          <div className="grid grid-cols-7 gap-2">
+            {(stats?.overdueTrend || []).map((d: any) => (
+              <div key={d.day} className="flex flex-col items-center gap-2">
+                <div className="w-8 rounded-md bg-destructive/20" style={{ height: 4 + d.count * 8 }} />
+                <div className="text-[10px] text-muted-foreground">{d.day.slice(5)}</div>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section className="rounded-2xl border bg-card text-card-foreground p-6">
