@@ -19,7 +19,7 @@ alter table public.tasks enable row level security;
 alter table if exists public.tasks add column if not exists user_id text not null default 'flora-single-user';
 alter table if exists public.tasks add column if not exists snooze_reason text;
 
--- Policies: user-specific access to tasks
+-- Policies: open access for single-user mode
 drop policy if exists "public read tasks" on public.tasks;
 drop policy if exists "public write tasks" on public.tasks;
 drop policy if exists "user read tasks" on public.tasks;
@@ -27,14 +27,14 @@ drop policy if exists "user insert tasks" on public.tasks;
 drop policy if exists "user update tasks" on public.tasks;
 drop policy if exists "user delete tasks" on public.tasks;
 
-create policy "user read tasks" on public.tasks
-  for select using (auth.uid()::text = user_id);
+create policy "read tasks" on public.tasks
+  for select using (true);
 
-create policy "user insert tasks" on public.tasks
-  for insert with check (auth.uid()::text = user_id);
+create policy "insert tasks" on public.tasks
+  for insert with check (true);
 
-create policy "user update tasks" on public.tasks
-  for update using (auth.uid()::text = user_id);
+create policy "update tasks" on public.tasks
+  for update using (true);
 
-create policy "user delete tasks" on public.tasks
-  for delete using (auth.uid()::text = user_id);
+create policy "delete tasks" on public.tasks
+  for delete using (true);
