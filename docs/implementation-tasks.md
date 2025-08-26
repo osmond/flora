@@ -34,21 +34,6 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 - [x] Fetch and cache weather data (30–60 min)
 - [x] Render empty state with CTA to add first plant
 
-**Empty State Example:**
-```tsx
-export function EmptyToday() {
-  return (
-    <div className="text-center py-20 space-y-4">
-      <p className="text-lg font-medium">No plants yet 🌱</p>
-      <p className="text-sm text-muted-foreground">Add your first plant to get started.</p>
-      <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium">
-        Add a Plant
-      </button>
-    </div>
-  );
-}
-```
-
 ---
 
 ## 1. Add a Plant (`/plants/new`)
@@ -56,81 +41,16 @@ export function EmptyToday() {
 - [x] Implement optional detail expanders (room, pot, light, notes, photo)
 - [x] Call AI preview endpoint after species selection
 - [x] Validate inputs and handle inline errors
- - [x] Submit plant to backend and redirect to detail page
-
-**Form Example:**
-```tsx
-<div className="max-w-lg mx-auto space-y-6">
-  <h1 className="text-2xl font-semibold">Add a Plant</h1>
-  <div className="space-y-2">
-    <Label htmlFor="nickname">Nickname</Label>
-    <Input id="nickname" placeholder="e.g. Kay" className="h-10" />
-  </div>
-  <div className="space-y-2">
-    <Label htmlFor="species">Species</Label>
-    <Input id="species" placeholder="Search species…" className="h-10" />
-  </div>
-  <Button className="w-full">Create Plant</Button>
-</div>
-```
-
-**AI Preview Box Example:**
-```tsx
-<div className="rounded-md border bg-secondary/30 p-4 text-sm">
-  <p className="font-medium">AI Care Preview</p>
-  <p className="text-muted-foreground">
-    Pothos prefers bright indirect light. Water every 5–7 days in summer, 10–14 days in winter.
-  </p>
-</div>
-```
+- [x] Submit plant to backend and redirect to detail page
 
 ---
 
 ## 2. Plant Detail (`/plants/[id]`)
 - [x] Layout hero image, nickname, species, and room badge
 - [x] Display quick stats for last/next watering and cadence
-    - [x] Implement tabs for timeline, care plan, photos, notes
+- [x] Implement tabs for timeline, care plan, photos, notes
 - [x] Add "Mark as watered" and event logging
- - [x] Support schedule adjustments and AI suggestions
-
-**Hero + Quick Stats Example:**
-```tsx
-<div>
-  <img src="/placeholder.png" className="w-full h-48 object-cover rounded-xl" />
-  <div className="mt-4 flex items-center justify-between">
-    <div>
-      <h2 className="text-xl font-semibold">Kay</h2>
-      <p className="text-sm text-muted-foreground">Epipremnum aureum (Pothos)</p>
-    </div>
-    <Button variant="outline" size="sm">Edit</Button>
-  </div>
-  <div className="grid grid-cols-3 gap-3 mt-6">
-    <StatPill icon="💧" label="Last watered" value="2d ago" />
-    <StatPill icon="⏭️" label="Next due" value="in 3d" />
-    <StatPill icon="🌞" label="Light" value="Bright indirect" />
-  </div>
-</div>
-```
-
-**Timeline Example:**
-```tsx
-<ul className="mt-6 space-y-4">
-  <li className="flex items-start gap-3">
-    <span>💧</span>
-    <div>
-      <p className="text-sm font-medium">Watered</p>
-      <p className="text-xs text-muted-foreground">Aug 22, 2025</p>
-    </div>
-  </li>
-  <li className="flex items-start gap-3">
-    <span>🖼️</span>
-    <div>
-      <p className="text-sm font-medium">Photo added</p>
-      <img src="/photo.jpg" className="w-24 h-24 rounded-md mt-1" />
-    </div>
-  </li>
-</ul>
-```
+- [x] Support schedule adjustments and AI suggestions
 
 ---
 
@@ -141,18 +61,6 @@ export function EmptyToday() {
 - [x] Animate task completion and movement between sections
 - [x] Show empty state with CTA when there are no tasks
 
-**Task Row Example:**
-```tsx
-<div className="flex items-center gap-3 rounded-xl border bg-card px-3 py-3">
-  <div className="h-10 w-10 grid place-items-center rounded-full bg-muted">🪴</div>
-  <div className="flex-1 min-w-0">
-    <div className="text-sm font-medium">Water Kay</div>
-    <div className="text-xs text-muted-foreground">Overdue by 2d</div>
-  </div>
-  <Button size="sm">Done</Button>
-</div>
-```
-
 ---
 
 ## 4. AI Care Coach
@@ -160,59 +68,46 @@ export function EmptyToday() {
 - [x] Surface AI nudges at key moments
 - [x] Allow apply/dismiss, record feedback
 
-**Nudge Example:**
-```tsx
-<div className="rounded-md border-l-4 border-emerald-500 bg-emerald-50 p-4 text-sm">
-  <p className="font-medium">AI Suggestion</p>
-  <p className="text-muted-foreground">Skip watering Kay today — humidity is high 🌧</p>
-  <div className="mt-2 flex gap-2">
-    <Button size="sm">Apply</Button>
-    <Button size="sm" variant="outline">Dismiss</Button>
-  </div>
-</div>
-```
-
 ---
 
 ## 5. Notifications & Reminders
-(Background jobs, emails, push — no direct UI snippet needed here.)
+- [ ] Background job to check due/overdue tasks
+- [ ] Email or push notifications with deep links
+- [ ] User controls for quiet hours and per-plant mute
 
 ---
 
 ## 6. Logging & Timeline
-Reuses Plant Detail timeline snippet above.
+- [ ] Define event types (watered, fertilized, notes, photos, etc.)
+- [ ] Entry points for logging from Today and plant detail views
+- [ ] Persist events and display them chronologically
 
 ---
 
 ## 7. Dashboard & Insights (`/dashboard`)
-- [x] Create widgets for completion rate, overdue trends, and streaks
-- [x] Highlight plants needing attention
-
-**Dashboard Card Example:**
-```tsx
-<div className="rounded-xl border bg-card p-6">
-  <p className="text-sm text-muted-foreground">Weekly Completion</p>
-  <p className="text-3xl font-bold">85%</p>
-</div>
-```
+- [ ] Create widgets for completion rate, overdue trends, and streaks
+- [ ] Highlight plants needing attention
+- [ ] (Optional) Graph ET₀/weather vs. watering patterns
 
 ---
 
 ## 8. Edit & Maintenance
-- [x] Edit metadata, replace photo
- - [x] Archive/delete flows
+- [ ] Edit metadata, replace photo
+- [ ] Archive/delete flows
 
 ---
 
 ## 9. Error & Empty-State Handling
-- [x] Display an error message when plant timeline fails to load
-See empty state example in section 0.
+- [ ] Free-text species when no match
+- [ ] Queue events offline and sync when back online
+- [ ] Graceful API error handling and missing permissions
 
 ---
 
 ## 10. Performance & UX Hygiene
-- [x] Disable quick-add buttons while posting to prevent duplicate events
-(General principles; no snippet)
+- [ ] SSR page shells with suspense for data
+- [ ] Cache weather and debounce species search
+- [ ] Apply optimistic updates and ensure accessibility standards
 
 ---
 
@@ -225,5 +120,44 @@ See empty state example in section 0.
 - **MVP:** plant creation with AI preview, Today tasks, basic timeline
 - **v0.2:** metadata, AI nudges, notifications
 - **v1:** insights dashboard, import/export, offline queueing
+
+---
+
+## 13. Next Round of Tasks (Beyond v1)
+
+### Import / Export
+- [ ] Export plants + events as JSON or CSV
+- [ ] Import plants from JSON (validate schema)
+- [ ] Add “Download Backup” & “Restore” buttons in `/dashboard`
+
+### Offline Queue & Sync
+- [ ] Add `offlineQueue.ts` util (queue failed POSTs to localStorage)
+- [ ] Retry queued events on reconnect
+- [ ] Add status badge for `Synced` vs `Pending`
+
+### Photo Gallery Polish
+- [ ] Add carousel with swipe
+- [ ] Support full-screen modal view
+- [ ] Tag photos by event type
+
+### Advanced AI Care Coach
+- [ ] Daily digest summarizing all tasks
+- [ ] Seasonal adjustments (light/humidity)
+- [ ] Natural-language queries (“How’s Kay doing?”)
+
+### Mobile Polish & PWA
+- [ ] Add manifest.json + icons
+- [ ] Configure Next.js PWA plugin
+- [ ] Test on iOS/Android as standalone app
+
+### CI / CD Automation
+- [ ] GitHub Actions: run `pnpm lint`, `pnpm test`, and `pnpm e2e`
+- [ ] Preview deployments on Vercel
+- [ ] Add coverage reports
+
+### Extended Insights
+- [ ] Chart watering vs weather (ET₀ correlation)
+- [ ] Show longest streaks per plant
+- [ ] Highlight neglected plants
 
 ---
