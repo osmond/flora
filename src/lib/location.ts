@@ -42,7 +42,15 @@ export async function getLocation(): Promise<UserLocation | null> {
     const location: UserLocation = { city, lat: latitude, lon: longitude };
     localStorage.setItem(LOCATION_KEY, JSON.stringify(location));
     return location;
-  } catch {
+  } catch (err: unknown) {
+    if (
+      typeof err === 'object' &&
+      err !== null &&
+      'code' in err &&
+      (err as GeolocationPositionError).code === 1
+    ) {
+      throw new Error('Location permission denied');
+    }
     return null;
   }
 }
