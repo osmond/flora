@@ -215,7 +215,7 @@ export function DashboardStat() {
         <CardTitle className="text-sm text-muted-foreground">Weekly Completion</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-3xl font-bold">85%</div>
+        <div className="text-2xl font-bold">85%</div>
       </CardContent>
     </Card>
   )
@@ -259,10 +259,10 @@ export function TaskSkeleton() {
 
 ## 9. Design QA Checklist
 
-- [ ] Typography hierarchy matches style guide
-- [ ] Colors consistent with tokens in both light/dark
-- [ ] shadcn/ui variants (default, outline, destructive) used consistently
-- [ ] Responsive layouts tested at `sm`, `md`, `lg`
-- [ ] Hover, focus, disabled states defined and visible
+- [x] Typography hierarchy matches style guide
+- [x] Colors consistent with tokens in both light/dark
+- [x] shadcn/ui variants (default, outline, destructive) used consistently
+- [x] Responsive layouts tested at `sm`, `md`, `lg`
+- [x] Hover, focus, disabled states defined and visible
 
 ---
