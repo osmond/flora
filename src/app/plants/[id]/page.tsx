@@ -17,22 +17,33 @@ export default async function PlantDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const plant = await db.plant.findFirst({
-    where: { id, archived: false },
-    include: { room: { select: { name: true } } },
-  });
+  let plant: any = null;
+  if (db?.plant) {
+    try {
+      plant = await db.plant.findFirst({
+        where: { id, archived: false },
+        include: { room: { select: { name: true } } },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
   if (!plant) {
     return <div className="p-4 md:p-6 max-w-md mx-auto">Plant not found</div>;
   }
 
   let heroUrl = plant.imageUrl;
-  if (!heroUrl) {
-    const photo = await db.photo.findFirst({
-      where: { plantId: plant.id },
-      orderBy: { createdAt: "desc" },
-      select: { url: true },
-    });
-    heroUrl = photo?.url ?? null;
+  if (!heroUrl && db?.photo) {
+    try {
+      const photo = await db.photo.findFirst({
+        where: { plantId: plant.id },
+        orderBy: { createdAt: "desc" },
+        select: { url: true },
+      });
+      heroUrl = photo?.url ?? null;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   const userId = await getCurrentUserId();
