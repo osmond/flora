@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderToString } from "react-dom/server";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AddNoteForm from "../src/components/AddNoteForm";
 
 (globalThis as unknown as { React: typeof React }).React = React;
@@ -23,7 +23,7 @@ describe("AddNoteForm", () => {
     expect(html).toContain("Add Note");
   });
 
-  it("disables submit while posting", () => {
+  it("disables submit while posting", async () => {
     let resolveFetch: (value: unknown) => void = () => undefined;
     vi.stubGlobal(
       "fetch",
@@ -41,7 +41,7 @@ describe("AddNoteForm", () => {
     fireEvent.click(button);
     expect(button).toBeDisabled();
     fireEvent.click(button);
-    expect((globalThis.fetch as any)).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect((globalThis.fetch as any)).toHaveBeenCalledTimes(1));
     resolveFetch({ ok: true, json: () => Promise.resolve({}) });
   });
 });
