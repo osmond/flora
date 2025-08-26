@@ -70,6 +70,37 @@ export default async function DashboardPage() {
             ))}
           </div>
         </section>
+
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Water vs ET₀ (7 days)</h2>
+          <div className="grid grid-cols-7 gap-2">
+            {(stats?.waterWeather || []).map((d: any) => (
+              <div key={d.day} className="flex flex-col items-center gap-2">
+                <div className="flex gap-1 items-end h-24">
+                  <div
+                    className="w-3 rounded-md bg-primary/20"
+                    style={{ height: 4 + d.water * 8 }}
+                    title={`${d.water} waterings`}
+                  />
+                  <div
+                    className="w-3 rounded-md bg-secondary/20"
+                    style={{ height: 4 + d.et0 * 8 }}
+                    title={`ET₀ ${d.et0}`}
+                  />
+                </div>
+                <div className="text-[10px] text-muted-foreground">{d.day.slice(5)}</div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center gap-4 mt-4 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-sm bg-primary/20" /> Waterings
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-sm bg-secondary/20" /> ET₀
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   )
