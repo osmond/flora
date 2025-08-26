@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface Props {
   plantId: string;
@@ -51,7 +52,7 @@ export default function ScheduleAdjuster({ plantId, waterEvery }: Props) {
     <div className="mt-6 space-y-3">
       <div className="flex items-end gap-2">
         <div className="flex-1 space-y-1">
-          <label className="text-sm font-medium" htmlFor="waterEvery">Water every</label>
+          <Label htmlFor="waterEvery">Water every</Label>
           <Input id="waterEvery" value={value} onChange={(e) => setValue(e.target.value)} placeholder="e.g. 7 days" />
         </div>
         <Button disabled={saving} onClick={onSave}>Save</Button>
