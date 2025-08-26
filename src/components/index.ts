@@ -8,3 +8,4 @@ export { default as EmptyPlantState } from './EmptyPlantState';
 export { default as EmptyTasksState } from './EmptyTasksState';
 export { default as TaskCard } from './TaskCard';
 export { default as TaskSkeleton } from './TaskSkeleton';
+export { default as SyncStatusBadge } from './SyncStatusBadge';
