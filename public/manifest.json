@@ -1,0 +1,11 @@
+{
+  "name": "Flora",
+  "short_name": "Flora",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "icons": [
+    { "src": "/globe.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
