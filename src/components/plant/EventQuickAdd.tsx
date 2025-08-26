@@ -34,7 +34,7 @@ export function EventQuickAdd({ plantId }: Props) {
   }
 
   return (
-    <div className="rounded-xl border bg-card p-4 space-y-3">
+    <div id="log-event" className="rounded-xl border bg-card p-4 space-y-3">
       <div className="flex gap-2">
         <button
           type="button"
