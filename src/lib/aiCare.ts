@@ -104,3 +104,23 @@ export async function getAiCareSuggestions(plantId: string) {
 
   return suggestions;
 }
+
+export async function getAiCareAnswer(
+  plantId: string,
+  question: string,
+) {
+  const suggestions = await getAiCareSuggestions(plantId);
+  if (suggestions.length === 0) {
+    return "No information available.";
+  }
+  const lower = question.toLowerCase();
+  if (lower.includes("how") && lower.includes("doing")) {
+    if (
+      suggestions.length === 1 &&
+      suggestions[0].toLowerCase().includes("all good")
+    ) {
+      return suggestions[0];
+    }
+  }
+  return suggestions.join(" ");
+}
