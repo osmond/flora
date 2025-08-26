@@ -118,7 +118,7 @@ supabase login
 # link to your own project or start a local instance
 
 # use psql to apply schema in order (safe to re-run)
-export DATABASE_URL="postgresql://postgres:<password>@db.<project_ref>.supabase.co:5432/postgres"  # use local string from `supabase start` if running locally
+export DATABASE_URL="postgresql://postgres:barry1973@db.suyojlyvriuqchonmpjt.supabase.co:5432/postgres"  
 psql "$DATABASE_URL" -f supabase/migrations/20250825045101_rooms_events.sql
 psql "$DATABASE_URL" -f supabase/plants.sql
 psql "$DATABASE_URL" -f supabase/tasks.sql
