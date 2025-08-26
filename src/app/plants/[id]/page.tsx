@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
 import db from "@/lib/db";
 import QuickStats from "@/components/plant/QuickStats";
 import ScheduleAdjuster from "@/components/plant/ScheduleAdjuster";
@@ -7,7 +5,7 @@ import CareCoach from "@/components/plant/CareCoach";
 import CareNudge from "@/components/CareNudge";
 import PlantTabs from "@/components/plant/PlantTabs";
 import WaterPlantButton from "@/components/plant/WaterPlantButton";
-import { Button } from "@/components/ui/button";
+import PlantHero from "@/components/plant/PlantHero";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { hydrateTimeline } from "@/lib/tasks";
 import { getCurrentUserId } from "@/lib/auth";
@@ -63,53 +61,21 @@ export default async function PlantDetailPage({
 
   return (
     <div>
-      {heroUrl ? (
-        <Image
-          src={heroUrl}
-          alt={plant.nickname}
-          width={800}
-          height={400}
-          className="h-48 w-full rounded-xl object-cover md:h-64"
-        />
-      ) : (
-        <div className="h-48 w-full rounded-xl bg-muted md:h-64" />
-      )}
+      <PlantHero plant={plant} heroUrl={heroUrl} />
       <div className="p-4 md:p-6 max-w-3xl mx-auto">
-        <div className="mt-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">{plant.nickname}</h2>
-            {(plant.speciesScientific || plant.speciesCommon) && (
-              <p className="text-sm text-muted-foreground">
-                {plant.speciesScientific || plant.speciesCommon}
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {plant.room?.name && (
-              <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium">
-                {plant.room.name}
-              </span>
-            )}
-            <Link href={`/plants/${plant.id}/edit`}>
-              <Button variant="outline" size="sm">
-                Edit
-              </Button>
-            </Link>
-          </div>
-        </div>
         <QuickStats plant={plant} />
         <ScheduleAdjuster plantId={plant.id} waterEvery={plant.waterEvery} />
         <WaterPlantButton plantId={plant.id} />
         <CareNudge plantId={plant.id} />
-          <CareCoach plant={plant} />
-          <PlantTabs
-            plantId={plant.id}
-            initialEvents={timelineEvents}
-            waterEvery={plant.waterEvery}
-            fertEvery={plant.fertEvery}
-            timelineError={timelineError}
-          />
-        </div>
+        <CareCoach plant={plant} />
+        <PlantTabs
+          plantId={plant.id}
+          initialEvents={timelineEvents}
+          waterEvery={plant.waterEvery}
+          fertEvery={plant.fertEvery}
+          timelineError={timelineError}
+        />
       </div>
-    );
-  }
+    </div>
+  );
+}
