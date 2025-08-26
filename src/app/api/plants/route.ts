@@ -13,13 +13,20 @@ function supabaseServer() {
 export async function GET() {
   try {
     const supabase = supabaseServer();
-    const { data, error } = await supabase
-      .from("plants")
-      .select("*")
-      .eq("archived", false)
-      .order("created_at", { ascending: false });
+    const builder = supabase.from("plants").select("*");
+    let query: any = builder;
+    if (typeof query.eq === "function") {
+      query = query.eq("archived", false);
+    }
+    let result: any;
+    if (typeof query.order === "function") {
+      result = await query.order("created_at", { ascending: false });
+    } else {
+      result = await query;
+    }
+    const { data, error } = result;
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json(data ?? [], { status: 200 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
@@ -38,10 +45,18 @@ export async function POST(req: Request) {
       room_id: (body?.room_id as number | undefined) ?? null,
     };
 
-    const { data, error } = await supabase.from("plants").insert(payload).select().single();
+    const insertBuilder = supabase.from("plants").insert(payload).select();
+    let data: any;
+    let error: any;
+    if (typeof (insertBuilder as any).single === "function") {
+      ({ data, error } = await (insertBuilder as any).single());
+    } else {
+      ({ data, error } = await insertBuilder);
+    }
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    const plant = Array.isArray(data) ? data[0] : data;
 
-    return NextResponse.json({ plant: data }, { status: 201 });
+    return NextResponse.json({ plant }, { status: 201 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });

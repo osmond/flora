@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { addDays, formatISO } from "date-fns";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 
@@ -8,7 +7,8 @@ export async function GET(req: Request) {
     const userId = await getCurrentUserId();
     const url = new URL(req.url);
     const days = parseInt(url.searchParams.get("days") || "7", 10);
-    const end = formatISO(addDays(new Date(), days), { representation: "date" });
+    const endDate = new Date(Date.now() + days * 86400000);
+    const end = endDate.toISOString().slice(0, 10);
 
     const { data: tasks, error: tErr } = await supabaseAdmin
       .from("tasks")
@@ -48,4 +48,3 @@ export async function GET(req: Request) {
   }
 }
 
-export const runtime = "edge";
