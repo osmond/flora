@@ -4,7 +4,7 @@
  */
 async function main() {
   const now = new Date().toISOString()
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+  const base = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
   let dueCount = 0
   try {
     const res = await fetch(`${base}/api/tasks?days=1`)
@@ -15,16 +15,20 @@ async function main() {
   } catch {
     // ignore errors and fall back to zero
   }
+  const deepLink = `${base}/today`
   const tasks = [
     {
       to: "test@example.com",
       subject: "Flora — Daily digest",
       body: `You have ${dueCount} task${dueCount === 1 ? "" : "s"} due today.`,
+      deepLink,
     },
   ]
   for (const t of tasks) {
     // eslint-disable-next-line no-console
-    console.log(`[${now}] Would send email to ${t.to}: ${t.subject} -> ${t.body}`)
+    console.log(
+      `[${now}] Would send email to ${t.to}: ${t.subject} -> ${t.body} (${t.deepLink})`
+    )
   }
 }
 main().catch((e) => {
