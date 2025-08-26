@@ -19,4 +19,5 @@ export interface CareEvent {
   note: string | null;
   image_url: string | null;
   created_at: string;
+  tag?: CareEventType | null;
 }

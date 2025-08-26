@@ -183,6 +183,22 @@ describe("POST /api/events", () => {
     expect(res.status).toBe(200);
     expect(updatedImageUrl).toBe("https://example.com/uploaded.jpg");
   });
+
+  it("persists tag for photo events", async () => {
+    const { POST } = await import("../src/app/api/events/route");
+    const form = new FormData();
+    form.set("plant_id", "4aa97bee-71f1-428e-843b-4c3c77493994");
+    form.set("type", "photo");
+    form.set("tag", "water");
+    const file = new File(["dummy"], "test.jpg", { type: "image/jpeg" });
+    form.set("photo", file);
+    const req = new Request("http://localhost", { method: "POST" }) as Request & {
+      formData: () => Promise<FormData>;
+    };
+    req.formData = () => Promise.resolve(form);
+    await POST(req);
+    expect(insertedValues).toMatchObject({ tag: "water" });
+  });
 });
 
 describe("DELETE /api/events/[id]", () => {
