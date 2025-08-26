@@ -28,7 +28,7 @@ export default function TaskCard({
   const icon = (task.type ?? "water") === "water" ? "💧" : "🌱";
 
   return (
-    <Card className="border-muted/40">
+    <Card>
       <CardContent className="p-3 flex items-center gap-3">
         <Avatar className="h-8 w-8">
           <AvatarFallback>{icon}</AvatarFallback>

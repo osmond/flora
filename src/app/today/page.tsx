@@ -56,7 +56,7 @@ async function getTasksFromSupabase(): Promise<Task[] | null> {
   const supabase = createClient(url, anon);
 
   // Prefer a view if you created one that already returns what's due/overdue/upcoming
-  let { data, error } = await supabase.from("tasks_today_view").select("*");
+  const { data, error } = await supabase.from("tasks_today_view").select("*");
 
   // If the view doesn't exist, fall back to a generic tasks query
   if (error || !data) {
