@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import type { CareEvent } from '@/types';
+import { Form, FormField, Textarea } from '@/components/ui';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { queueEvent } from '@/lib/offlineQueue';
@@ -13,14 +15,19 @@ interface Props {
   onReplace: (tempId: string, evt: CareEvent) => void;
 }
 
-export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
-  const [note, setNote] = useState('');
-  const [saving, setSaving] = useState(false);
+type FormValues = {
+  note: string;
+};
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
+  const [saving, setSaving] = useState(false);
+  const form = useForm<FormValues>({
+    defaultValues: { note: '' },
+  });
+
+  async function onSubmit(values: FormValues) {
     if (saving) return;
-    const trimmed = note.trim();
+    const trimmed = values.note.trim();
     if (!trimmed) return;
     setSaving(true);
     const tempId = `temp-${Date.now()}`;
@@ -32,7 +39,7 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
       created_at: new Date().toISOString(),
     };
     onAdd(optimistic);
-    setNote('');
+    form.reset({ note: '' });
     const payload = { plant_id: plantId, type: 'note', note: trimmed };
     try {
       const data = await apiFetch<any>('/api/events', {
@@ -54,20 +61,28 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="space-y-2">
-        <Label htmlFor="note">Note</Label>
-        <textarea
-          id="note"
-          className="w-full rounded-md border p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Write a note..."
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <FormField
+          control={form.control}
+          name="note"
+          render={({ field }) => (
+            <div className="space-y-2">
+              <Label htmlFor="note">Note</Label>
+              <Textarea
+                id="note"
+                placeholder="Write a note..."
+                className="p-4"
+                disabled={saving}
+                {...field}
+              />
+            </div>
+          )}
         />
-      </div>
-      <Button type="submit" className="p-4" disabled={saving}>
-        Add Note
-      </Button>
-    </form>
+        <Button type="submit" className="p-4" disabled={saving}>
+          Add Note
+        </Button>
+      </form>
+    </Form>
   );
 }
