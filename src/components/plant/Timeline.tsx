@@ -32,7 +32,7 @@ export function Timeline({ plantId }: { plantId: number }) {
 
   React.useEffect(() => {
     load();
-    const handler = (e: Event | any) => load();
+    const handler = (_e: Event | any) => load();
     window.addEventListener("flora:events:changed", handler as any);
     return () => window.removeEventListener("flora:events:changed", handler as any);
     // eslint-disable-next-line react-hooks/exhaustive-deps
