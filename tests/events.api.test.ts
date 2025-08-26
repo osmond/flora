@@ -168,7 +168,7 @@ describe("POST /api/events", () => {
     });
   });
 
-  it.skip("updates plant image_url when uploading a photo", async () => {
+  it("updates plant image_url when uploading a photo", async () => {
     const { POST } = await import("../src/app/api/events/route");
     const form = new FormData();
     form.set("plant_id", "4aa97bee-71f1-428e-843b-4c3c77493994");
