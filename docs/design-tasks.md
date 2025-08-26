@@ -173,7 +173,7 @@ export function TaskCard() {
 
 ## 5. AI Care Coach
 
-- [ ] **Nudge Card**
+- [x] **Nudge Card**
   - Use shadcn/ui `<Alert>` with accent border
   - Buttons inside → Apply/Dismiss
 
@@ -202,7 +202,7 @@ export function CareNudge() {
 
 ## 6. Dashboard & Insights
 
-- [ ] **Metrics Widgets**
+- [x] **Metrics Widgets**
   - Use shadcn/ui `<Card>` with large number + subtitle
 
 **Starter Code:**
