@@ -54,6 +54,8 @@ export async function PATCH(
     if (body.image_url !== undefined) updates.image_url = body.image_url;
     if (body.archived !== undefined) updates.archived = body.archived;
     if (body.waterEvery !== undefined) updates.water_every = body.waterEvery;
+    if (body.notificationsMuted !== undefined)
+      updates.notifications_muted = body.notificationsMuted;
     const updateBuilder = supabase
       .from("plants")
       .update(updates)
