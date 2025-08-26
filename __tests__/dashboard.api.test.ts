@@ -12,8 +12,9 @@ vi.mock("@supabase/supabase-js", () => {
     { id: 3, created_at: "2025-01-06T09:00:00Z", plant_id: 2, type: "fertilize" },
   ]
   const plants = [
-    { id: 1, name: "Aloe" },
-    { id: 2, name: "Fern" },
+    { id: 1, name: "Aloe", created_at: "2025-01-01" },
+    { id: 2, name: "Fern", created_at: "2025-01-05" },
+    { id: 3, name: "Cactus", created_at: "2024-01-01" },
   ]
   const tasks = [
     { id: 1, plant_id: 1, type: "water", due_date: "2025-01-07", completed_at: null },
@@ -93,7 +94,7 @@ describe("/api/dashboard", () => {
     expect(json).toMatchObject({
       completion: 100,
       totalDone: 3,
-      plants: 2,
+      plants: 3,
       streak: 3,
     })
     expect(json.attention).toHaveLength(1)
@@ -104,6 +105,9 @@ describe("/api/dashboard", () => {
     expect(json.overdueTrend).toHaveLength(7)
     expect(Array.isArray(json.waterWeather)).toBe(true)
     expect(json.waterWeather).toHaveLength(7)
+    expect(Array.isArray(json.neglected)).toBe(true)
+    expect(json.neglected[0].plantName).toBe("Cactus")
+    expect(json.neglected[0].days).toBeGreaterThan(300)
   })
 })
 
