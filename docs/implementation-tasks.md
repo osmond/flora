@@ -148,7 +148,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ### Mobile Polish & PWA
 - [x] Add manifest.json + icons
  - [x] Configure Next.js PWA plugin
-- [ ] Test on iOS/Android as standalone app
+- [x] Test on iOS/Android as standalone app
 
 ### CI / CD Automation
 - [x] GitHub Actions: run `pnpm lint`, `pnpm test`, and `pnpm e2e`
