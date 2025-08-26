@@ -1,18 +1,15 @@
 import { headers } from "next/headers";
 
 /**
- * Returns the identifier of the currently authenticated user.
+ * Returns the identifier of the current user.
  *
- * The ID is extracted from the `x-user-id` header which is expected to be
- * populated by upstream authentication middleware. An error is thrown when the
- * header is missing to signal unauthenticated access.
+ * In single-user mode, authentication is optional. If the `x-user-id` header
+ * is missing, a default value of `flora-single-user` is returned so that the
+ * app can operate without an auth provider.
  */
 export async function getCurrentUserId(): Promise<string> {
   const headerList = await headers();
   const userId = headerList.get("x-user-id");
-  if (!userId) {
-    throw new Error("Unauthorized");
-  }
-  return userId;
+  return userId ?? "flora-single-user";
 }
 

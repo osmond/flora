@@ -87,10 +87,13 @@ Flora creates personalized care plans and adapts them to your environment.
 ## 🗃️ Database
 
 All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
+The project is configured for **single-user** mode: every table defaults its
+`user_id` column to `flora-single-user`, and row‑level security policies allow
+open access. No authentication setup is required.
 
-- `supabase/migrations/20250825045101_rooms_events.sql` – rooms and events tables with RLS policies
-- `plants.sql` – plants and species tables with RLS policies
-- `tasks.sql` – care task table and policies
+- `supabase/migrations/20250825045101_rooms_events.sql` – rooms and events tables
+- `plants.sql` – plants and species tables
+- `tasks.sql` – care task table
 - `analytics.sql` – analytics events table
 - `sample_data.sql` – optional seed data for plants and tasks
 
@@ -98,7 +101,10 @@ All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
 
 ## 📦 Setup
 
-Copy `.env.example` to `.env.local` and fill in your Supabase, OpenAI (optional), Cloudinary, and optional auth credentials. Without an `OPENAI_API_KEY`, species suggestions and other AI features are disabled.
+Copy `.env.example` to `.env.local` and fill in your Supabase and optional API keys.
+This project runs in **single-user** mode—authentication is not required and the
+seed data is immediately visible. Without an `OPENAI_API_KEY`, species
+suggestions and other AI features are disabled.
 
 ```bash
 git clone https://github.com/osmond/flora.git
@@ -109,9 +115,11 @@ cp .env.example .env.local  # Fill in your keys
 
 # connect Supabase CLI (first time only)
 supabase login
-supabase link --project-ref suyojlyvriuqchonmpjt
+# link to your own project or start a local instance
+supabase link --project-ref <your_project_ref>  # or run `supabase start`
 
-# apply schema in order using psql
+# use psql to apply schema in order (safe to re-run)
+export DATABASE_URL="postgresql://postgres:<password>@db.<project_ref>.supabase.co:5432/postgres"  # use local string from `supabase start` if running locally
 psql "$DATABASE_URL" -f supabase/migrations/20250825045101_rooms_events.sql
 psql "$DATABASE_URL" -f supabase/plants.sql
 psql "$DATABASE_URL" -f supabase/tasks.sql

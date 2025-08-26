@@ -22,13 +22,15 @@ create extension if not exists pgcrypto;
 create table if not exists public.events (
   id uuid primary key default gen_random_uuid(),
   plant_id uuid references public.plants(id) on delete cascade,
-  user_id text not null,
+  user_id text not null default 'flora-single-user',
   type text not null,
   note text,
   image_url text,
   public_id text,
   created_at timestamptz default now()
 );
+
+alter table if exists public.events add column if not exists user_id text not null default 'flora-single-user';
 
 alter table public.events enable row level security;
 
@@ -39,17 +41,17 @@ drop policy if exists "user insert events" on public.events;
 drop policy if exists "user update events" on public.events;
 drop policy if exists "user delete events" on public.events;
 
-create policy "user read events" on public.events
-  for select using (auth.uid()::text = user_id);
+create policy "read events" on public.events
+  for select using (true);
 
-create policy "user insert events" on public.events
-  for insert with check (auth.uid()::text = user_id);
+create policy "insert events" on public.events
+  for insert with check (true);
 
-create policy "user update events" on public.events
-  for update using (auth.uid()::text = user_id);
+create policy "update events" on public.events
+  for update using (true);
 
-create policy "user delete events" on public.events
-  for delete using (auth.uid()::text = user_id);
+create policy "delete events" on public.events
+  for delete using (true);
 
 -- Helpful indexes
 create index if not exists idx_events_plant_created on public.events(plant_id, created_at desc);
