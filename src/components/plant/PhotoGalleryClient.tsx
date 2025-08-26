@@ -1,12 +1,18 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { CareEvent } from '@/types';
 
 export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState<{
+    id: string;
+    image_url: string | null;
+    note: string | null;
+  } | null>(null);
   const photos = events.filter((e) => e.type === 'photo' && e.image_url);
   if (photos.length === 0) {
     return <p className="text-sm text-muted-foreground">No photos yet.</p>;
@@ -28,7 +34,13 @@ export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) 
         className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth touch-pan-x"
       >
         {photos.map((photo) => (
-          <div key={photo.id} className="w-full flex-shrink-0 snap-center">
+          <button
+            key={photo.id}
+            type="button"
+            className="w-full flex-shrink-0 snap-center focus:outline-none"
+            onClick={() => setActive(photo)}
+            aria-label="View photo"
+          >
             <Image
               src={photo.image_url || ''}
               alt={photo.note ?? 'Photo of plant'}
@@ -36,7 +48,7 @@ export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) 
               height={300}
               className="h-48 w-full rounded-lg object-cover"
             />
-          </div>
+          </button>
         ))}
       </div>
       {photos.length > 1 && (
@@ -59,6 +71,33 @@ export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) 
           </button>
         </>
       )}
+
+      <Dialog.Root open={!!active} onOpenChange={(o) => !o && setActive(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/80" />
+          <Dialog.Content
+            className="fixed inset-0 flex items-center justify-center p-4"
+          >
+            <Dialog.Title className="sr-only">Full size photo</Dialog.Title>
+            <Dialog.Description className="sr-only">
+              Enlarged view of the selected plant photo
+            </Dialog.Description>
+            {active && (
+              <Image
+                src={active.image_url || ''}
+                alt={active.note ?? 'Photo of plant'}
+                width={1000}
+                height={1000}
+                className="max-h-full w-auto object-contain"
+              />
+            )}
+            <Dialog.Close className="absolute right-4 top-4 text-white">
+              <X className="h-6 w-6" />
+              <span className="sr-only">Close</span>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }

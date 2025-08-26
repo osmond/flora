@@ -137,7 +137,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 
 ### Photo Gallery Polish
 - [x] Add carousel with swipe
-- [ ] Support full-screen modal view
+ - [x] Support full-screen modal view
 - [ ] Tag photos by event type
 
 ### Advanced AI Care Coach
