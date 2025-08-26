@@ -14,7 +14,7 @@ export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) 
         <Image
           key={photo.id}
           src={photo.image_url || ''}
-          alt={photo.note ?? 'Plant photo'}
+          alt={photo.note ?? 'Photo of plant'}
           width={300}
           height={300}
           className="h-32 w-full rounded-lg object-cover"

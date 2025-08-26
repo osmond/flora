@@ -19,7 +19,12 @@ export default function PlantHero({ plant, heroUrl }: PlantHeroProps) {
   return (
     <div className="relative w-full overflow-hidden rounded-xl aspect-video">
       {heroUrl ? (
-        <Image src={heroUrl} alt={plant.nickname} fill className="object-cover" />
+        <Image
+          src={heroUrl}
+          alt={`Photo of ${plant.nickname}`}
+          fill
+          className="object-cover"
+        />
       ) : (
         <div className="absolute inset-0 bg-muted" />
       )}
