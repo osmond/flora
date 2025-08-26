@@ -146,7 +146,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 - [ ] Natural-language queries (“How’s Kay doing?”)
 
 ### Mobile Polish & PWA
-- [ ] Add manifest.json + icons
+- [x] Add manifest.json + icons
 - [ ] Configure Next.js PWA plugin
 - [ ] Test on iOS/Android as standalone app
 

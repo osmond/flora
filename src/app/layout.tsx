@@ -14,6 +14,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
         />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="flex min-h-screen flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
