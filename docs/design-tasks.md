@@ -227,8 +227,8 @@ export function DashboardStat() {
 
 ## 7. Motion & Microinteractions
 
-- [ ] Use **framer-motion** with shadcn/ui
-- [ ] Loading skeletons → shadcn/ui `<Skeleton>`
+- [x] Use **framer-motion** with shadcn/ui
+- [x] Loading skeletons → shadcn/ui `<Skeleton>`
 
 **Starter Code:**
 ```tsx
