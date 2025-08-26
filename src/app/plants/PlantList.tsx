@@ -65,7 +65,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
                       <div className="relative w-full h-48 rounded-xl overflow-hidden">
                         <Image
                           src={plant.imageUrl}
-                          alt="Plant photo"
+                          alt={`Photo of ${plant.nickname}`}
                           fill
                           className="h-12 w-12 rounded-lg object-cover"
                           sizes="(min-width: 768px) 768px, 100vw"
