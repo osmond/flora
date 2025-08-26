@@ -25,6 +25,7 @@ export default function AddPlantForm(): JSX.Element {
   const [nickname, setNickname] = useState<string>("");
   const [speciesScientific, setSpeciesScientific] = useState<string>("");
   const [speciesCommon, setSpeciesCommon] = useState<string>("");
+  const [speciesInput, setSpeciesInput] = useState<string>("");
   const [roomId, setRoomId] = useState<number | null>(null);
   const [pot, setPot] = useState<string>("");
   const [light, setLight] = useState<string>("");
@@ -60,8 +61,8 @@ export default function AddPlantForm(): JSX.Element {
 
     const newErrors: { nickname?: string; species?: string } = {};
     if (!nickname.trim()) newErrors.nickname = "Please enter a nickname";
-    if (!speciesScientific && !speciesCommon)
-      newErrors.species = "Please select a species";
+    if (!speciesScientific && !speciesCommon && !speciesInput.trim())
+      newErrors.species = "Please enter a species";
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -73,7 +74,7 @@ export default function AddPlantForm(): JSX.Element {
       const payload: CreatePayload = {
         nickname: nickname.trim(),
         speciesScientific: speciesScientific || null,
-        speciesCommon: speciesCommon || null,
+        speciesCommon: speciesCommon || speciesInput || null,
         room_id: roomId,
         pot: pot.trim() || null,
         light: light.trim() || null,
@@ -120,12 +121,19 @@ export default function AddPlantForm(): JSX.Element {
       <div className="space-y-2">
         <Label>Species</Label>
         <SpeciesAutosuggest
-          value={speciesCommon || speciesScientific}
+          value={speciesCommon || speciesScientific || speciesInput}
           onSelect={(scientific, common) => {
             setSpeciesScientific(scientific);
             setSpeciesCommon(common || "");
+            setSpeciesInput(common || scientific);
             setErrors((er) => ({ ...er, species: undefined }));
             fetchPreview(scientific, common);
+          }}
+          onInputChange={(val) => {
+            setSpeciesInput(val);
+            setSpeciesScientific("");
+            setSpeciesCommon("");
+            setErrors((er) => ({ ...er, species: undefined }));
           }}
         />
         {errors.species && (
