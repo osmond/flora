@@ -72,7 +72,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 
 ## 5. Notifications & Reminders
 - [x] Background job to check due/overdue tasks
-- [ ] Email or push notifications with deep links
+- [x] Email or push notifications with deep links
 - [ ] User controls for quiet hours and per-plant mute
 
 ---
