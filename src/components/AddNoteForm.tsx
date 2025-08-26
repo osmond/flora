@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { CareEvent } from '@/types';
 import { Button } from '@/components/ui/button';
+import { queueEvent } from '@/lib/offlineQueue';
 
 interface Props {
   plantId: string;
@@ -30,11 +31,12 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
     };
     onAdd(optimistic);
     setNote('');
+    const payload = { plant_id: plantId, type: 'note', note: trimmed };
     try {
       const res = await fetch('/api/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plant_id: plantId, type: 'note', note: trimmed }),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         const data = await res.json();
@@ -42,9 +44,12 @@ export default function AddNoteForm({ plantId, onAdd, onReplace }: Props) {
         if (real) {
           onReplace(tempId, real);
         }
+      } else if (!navigator.onLine) {
+        queueEvent(payload);
       }
     } catch (err) {
       console.error('Failed to add note', err);
+      queueEvent(payload);
     } finally {
       setSaving(false);
     }
