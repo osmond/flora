@@ -1,18 +1,23 @@
 "use client";
 
 import * as React from "react";
+import { useForm } from "react-hook-form";
+import { Button, Input, Form, FormField } from "@/components/ui";
 import { queueEvent, type EventPayload } from "@/lib/offlineQueue";
 import { Button } from "@/components/ui/button";
 
 type Props = { plantId: string };
 
 export function EventQuickAdd({ plantId }: Props) {
-  const [note, setNote] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const form = useForm<{ note: string }>({
+    defaultValues: { note: "" },
+  });
 
   async function add(type: "water" | "fertilize" | "note") {
     if (loading) return; // prevent duplicate submissions
 
+    const note = form.getValues("note");
     const payload: EventPayload = { plant_id: plantId, type } as EventPayload;
     if (type === "note" && note.trim()) payload.note = note.trim();
 
@@ -24,7 +29,7 @@ export function EventQuickAdd({ plantId }: Props) {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        setNote("");
+        form.reset({ note: "" });
         // Consumers should refetch timeline; emit custom event
         window.dispatchEvent(
           new CustomEvent("flora:events:changed", { detail: { plantId } }),
@@ -78,5 +83,6 @@ export function EventQuickAdd({ plantId }: Props) {
         </Button>
       </div>
     </div>
+
   );
 }
