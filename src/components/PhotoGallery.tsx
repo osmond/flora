@@ -18,7 +18,7 @@ export default async function PhotoGallery({ plantId }: { plantId: string }) {
         <Image
           key={photo.id}
           src={photo.url ?? ''}
-          alt="Plant photo"
+          alt="Photo of plant"
           width={300}
           height={300}
           className="h-32 w-full rounded-lg object-cover"

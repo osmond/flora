@@ -18,7 +18,7 @@ export default function PlantCard({ plant }: { plant: Plant }) {
       {plant.imageUrl ? (
         <Image
           src={plant.imageUrl}
-          alt={plant.nickname}
+          alt={`Photo of ${plant.nickname}`}
           width={400}
           height={300}
           className="h-40 w-full object-cover"
