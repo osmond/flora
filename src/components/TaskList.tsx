@@ -10,15 +10,8 @@ import {
   parseISO,
   startOfDay,
 } from 'date-fns';
-import Link from 'next/link';
 import type { Task } from '@/types/task';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+import TaskCard from '@/components/TaskCard';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import EmptyTasksState from '@/components/EmptyTasksState';
 
@@ -191,7 +184,6 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 100 }}
       transition={{ duration: 0.2 }}
-      className="rounded-xl border py-4 px-4 sm:px-6 md:px-8"
       style={{
         transform: `translateX(${offsetX}px)`,
         touchAction: 'pan-y',
@@ -202,34 +194,12 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       onPointerLeave={startX !== null ? handlePointerEnd : undefined}
       onPointerCancel={handlePointerEnd}
     >
-      <p className="font-medium animate-pulse-weight">{task.plantName}</p>
-      <p className="text-sm text-muted-foreground capitalize">{task.type}</p>
-      <div className="mt-2 flex gap-3 sm:gap-4 md:gap-6">
-        <Button onClick={triggerComplete} className="text-xs" disabled={pending}>
-          Done
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="text-xs" disabled={pending}>
-              Snooze
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {[1, 3, 7].map((days) => (
-              <DropdownMenuItem
-                key={days}
-                onSelect={() => handleSnoozeSelect(days)}
-                className="text-xs"
-              >
-                Snooze {days}d
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button asChild variant="outline" className="text-xs">
-          <Link href={`/plants/${task.plantId}`}>View</Link>
-        </Button>
-      </div>
+      <TaskCard
+        task={task}
+        onComplete={triggerComplete}
+        onSnooze={handleSnoozeSelect}
+        pending={pending}
+      />
     </motion.li>
   );
 }
