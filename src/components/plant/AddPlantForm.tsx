@@ -160,13 +160,13 @@ export default function AddPlantForm(): JSX.Element {
         )}
 
         <div>
-          <button
+          <Button
+            variant="outline"
             type="button"
             onClick={() => setShowDetails((s) => !s)}
-            className="text-sm text-muted-foreground underline"
           >
             {showDetails ? "Hide details" : "Add details"}
-          </button>
+          </Button>
         </div>
 
         {showDetails && (
