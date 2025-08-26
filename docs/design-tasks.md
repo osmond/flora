@@ -8,17 +8,17 @@ Includes **starter code snippets** to guide developers.
 
 ## 0. Foundations
 
-- [ ] **Color System**
+- [x] **Color System**
   - Audit and finalize HSL tokens in `globals.css`
   - Verify contrast ratios (WCAG AA) in both dark/light
   - Tokens map directly into shadcn/ui `theme.config.json`
 
-- [ ] **Typography**
+- [x] **Typography**
   - Confirm `Inter` as base font (UI + body)
   - Use shadcn/ui **`<Label>`** for all field labels
   - Size scale: `text-xs → text-2xl` with shadcn/ui variants
 
-- [ ] **Spacing & Layout**
+- [x] **Spacing & Layout**
   - Global rhythm = 4/8/16px increments
   - Cards → `rounded-2xl` via shadcn/ui `<Card>`
   - Inputs/Buttons → `rounded-md`, use shadcn/ui `<Input>` + `<Button>`
