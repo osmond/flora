@@ -34,8 +34,13 @@ export default function SpeciesAutosuggest(props: {
         return;
       }
       const res = await fetch(`/api/species?q=${encodeURIComponent(debounced)}`);
-      const json = await res.json().catch(() => ({ results: [] }));
-      if (!cancelled) setItems(Array.isArray(json?.results) ? json.results : []);
+      const json = await res.json().catch(() => []);
+      const items = Array.isArray(json)
+        ? json
+        : Array.isArray((json as any)?.results)
+          ? (json as any).results
+          : [];
+      if (!cancelled) setItems(items);
     }
     go();
     return () => {
