@@ -57,14 +57,14 @@ describe("AddPlantForm optional details", () => {
 });
 
 describe("AddPlantForm validation", () => {
-  it("shows errors when required fields are missing", () => {
+  it("shows errors when required fields are missing", async () => {
     render(<AddPlantForm />);
     fireEvent.click(screen.getByRole("button", { name: /create plant/i }));
     expect(
-      screen.getByText(/please enter a nickname/i),
+      await screen.findByText(/please enter a nickname/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/please enter a species/i),
+      await screen.findByText(/please enter a species/i),
     ).toBeInTheDocument();
     expect(global.fetch).not.toHaveBeenCalled();
   });
