@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { CareEvent } from '@/types';
-import { Form, FormField, Textarea } from '@/components/ui';
+import { Form, FormField } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { queueEvent } from '@/lib/offlineQueue';
