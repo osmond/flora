@@ -52,7 +52,7 @@ export default function CareNudge({ plantId }: CareNudgeProps) {
   if (!suggestion || hidden) return null
 
   return (
-    <Alert className="border-l-4 border-emerald-500 bg-emerald-50">
+    <Alert className="border-l-4 border-primary bg-primary/10">
       <AlertTitle>AI Suggestion</AlertTitle>
       <AlertDescription className="text-muted-foreground">
         {suggestion}
