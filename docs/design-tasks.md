@@ -58,7 +58,7 @@ export function SiteNav() {
 ---
 ## 2. Add a Plant Flow
 
-- [ ] **Form Styling**
+- [x] **Form Styling**
   - Use shadcn/ui `<Form>`, `<FormField>`, `<Input>`, `<Label>`
   - Primary button = `<Button>` default variant
   - Secondary/expanders = `<Button variant="outline">`
