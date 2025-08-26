@@ -27,7 +27,7 @@ Includes **starter code snippets** to guide developers.
 
 ## 1. Navigation & App Shell
 
-- [ ] **App Shell**
+- [x] **App Shell**
   - Use shadcn/ui `<NavigationMenu>` for top nav (desktop)
   - Mobile → bottom nav with icons, highlight active tab
   - Add consistent padding (`px-4 md:px-6`)
@@ -56,7 +56,6 @@ export function SiteNav() {
 ```
 
 ---
-
 ## 2. Add a Plant Flow
 
 - [ ] **Form Styling**
@@ -88,7 +87,7 @@ export function AddPlantForm() {
 }
 ```
 
-- [ ] **Species Autosuggest**
+- [x] **Species Autosuggest**
   - Wrap in shadcn/ui `<Command>` component
   - Each suggestion = `<CommandItem>` with optional image on left
 
