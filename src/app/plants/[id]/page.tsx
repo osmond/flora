@@ -63,19 +63,19 @@ export default async function PlantDetailPage({
 
   return (
     <div>
-      {heroUrl ? (
-        <Image
-          src={heroUrl}
-          alt={plant.nickname}
-          width={800}
-          height={400}
-          className="h-48 w-full rounded-xl object-cover md:h-64"
-        />
-      ) : (
-        <div className="h-48 w-full rounded-xl bg-muted md:h-64" />
-      )}
-      <div className="p-4 md:p-6 max-w-3xl mx-auto">
-        <div className="mt-4 flex items-center justify-between">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+        {heroUrl ? (
+          <Image
+            src={heroUrl}
+            alt={plant.nickname}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-muted" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
           <div>
             <h2 className="text-xl font-semibold">{plant.nickname}</h2>
             {(plant.speciesScientific || plant.speciesCommon) && (
@@ -86,7 +86,7 @@ export default async function PlantDetailPage({
           </div>
           <div className="flex items-center gap-2">
             {plant.room?.name && (
-              <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium">
                 {plant.room.name}
               </span>
             )}
@@ -97,17 +97,19 @@ export default async function PlantDetailPage({
             </Link>
           </div>
         </div>
+      </div>
+      <div className="p-4 md:p-6 max-w-3xl mx-auto">
         <QuickStats plant={plant} />
         <ScheduleAdjuster plantId={plant.id} waterEvery={plant.waterEvery} />
         <WaterPlantButton plantId={plant.id} />
         <CareNudge plantId={plant.id} />
-          <CareCoach plant={plant} />
-          <PlantTabs
-            plantId={plant.id}
-            initialEvents={timelineEvents}
-            timelineError={timelineError}
-          />
-        </div>
+        <CareCoach plant={plant} />
+        <PlantTabs
+          plantId={plant.id}
+          initialEvents={timelineEvents}
+          timelineError={timelineError}
+        />
       </div>
-    );
-  }
+    </div>
+  );
+}

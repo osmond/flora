@@ -1,12 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
-import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { flushSync } from "react-dom";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import SpeciesAutosuggest from "./SpeciesAutosuggest";
 import { RoomSelect } from "./RoomSelect";
 
@@ -20,22 +28,37 @@ type CreatePayload = {
   notes?: string | null;
 };
 
+type FormValues = {
+  nickname: string;
+  speciesScientific: string;
+  speciesCommon: string;
+  room_id: number | null;
+  pot: string;
+  light: string;
+  notes: string;
+  photo: FileList | null;
+};
+
 export default function AddPlantForm(): JSX.Element {
   const router = useRouter();
-  const [nickname, setNickname] = useState<string>("");
-  const [speciesScientific, setSpeciesScientific] = useState<string>("");
-  const [speciesCommon, setSpeciesCommon] = useState<string>("");
-  const [roomId, setRoomId] = useState<number | null>(null);
-  const [pot, setPot] = useState<string>("");
-  const [light, setLight] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
-  const [_photoFile, setPhotoFile] = useState<File | null>(null);
-  const [showDetails, setShowDetails] = useState<boolean>(false);
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [carePreview, setCarePreview] = useState<string | null>(null);
-  const [_previewing, setPreviewing] = useState<boolean>(false);
-  const [errors, setErrors] = useState<{ nickname?: string; species?: string }>({});
+  const form = useForm<FormValues>({
+    defaultValues: {
+      nickname: "",
+      speciesScientific: "",
+      speciesCommon: "",
+      room_id: null,
+      pot: "",
+      light: "",
+      notes: "",
+      photo: null,
+    },
+  });
+  const [showDetails, setShowDetails] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+  const [carePreview, setCarePreview] = React.useState<string | null>(null);
+  const [_previewing, setPreviewing] = React.useState(false);
+  const [errors, setErrors] = React.useState<{ nickname?: string; species?: string }>({});
 
   async function fetchPreview(scientific: string, common?: string) {
     setCarePreview(null);
@@ -54,30 +77,17 @@ export default function AddPlantForm(): JSX.Element {
     }
   }
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setErrorMsg(null);
-
-    const newErrors: { nickname?: string; species?: string } = {};
-    if (!nickname.trim()) newErrors.nickname = "Please enter a nickname";
-    if (!speciesScientific && !speciesCommon)
-      newErrors.species = "Please select a species";
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    setErrors({});
-
+  async function submitPlant(data: FormValues) {
     setSubmitting(true);
     try {
       const payload: CreatePayload = {
-        nickname: nickname.trim(),
-        speciesScientific: speciesScientific || null,
-        speciesCommon: speciesCommon || null,
-        room_id: roomId,
-        pot: pot.trim() || null,
-        light: light.trim() || null,
-        notes: notes.trim() || null,
+        nickname: data.nickname.trim(),
+        speciesScientific: data.speciesScientific || null,
+        speciesCommon: data.speciesCommon || null,
+        room_id: data.room_id,
+        pot: data.pot.trim() || null,
+        light: data.light.trim() || null,
+        notes: data.notes.trim() || null,
       };
 
       const res = await fetch("/api/plants", {
@@ -98,114 +108,181 @@ export default function AddPlantForm(): JSX.Element {
     }
   }
 
+  function handleSubmitData(data: FormValues) {
+    setErrorMsg(null);
+    const newErrors: { nickname?: string; species?: string } = {};
+    if (!data.nickname.trim()) newErrors.nickname = "Please enter a nickname";
+    if (!data.speciesScientific && !data.speciesCommon)
+      newErrors.species = "Please select a species";
+    if (Object.keys(newErrors).length > 0) {
+      flushSync(() => setErrors(newErrors));
+      return;
+    }
+    flushSync(() => setErrors({}));
+    void submitPlant(data);
+  }
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    handleSubmitData(form.getValues());
+  }
+
   return (
-    <form className="space-y-6" onSubmit={onSubmit}>
-      <div className="space-y-2">
-        <Label htmlFor="nickname">Nickname</Label>
-        <Input
-          id="nickname"
-          placeholder="e.g. Kay"
-          value={nickname}
-          onChange={(e) => {
-            setNickname(e.target.value);
-            setErrors((er) => ({ ...er, nickname: undefined }));
-          }}
-          className="h-10"
+    <Form {...form}>
+      <form className="space-y-6" onSubmit={onSubmit}>
+        <FormField
+          control={form.control}
+          name="nickname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nickname</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g. Kay"
+                  className="h-10"
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setErrors((er) => ({ ...er, nickname: undefined }));
+                  }}
+                />
+              </FormControl>
+              {errors.nickname && (
+                <p className="text-sm text-destructive">{errors.nickname}</p>
+              )}
+            </FormItem>
+          )}
         />
-        {errors.nickname && (
-          <p className="text-sm text-destructive">{errors.nickname}</p>
-        )}
-      </div>
 
-      <div className="space-y-2">
-        <Label>Species</Label>
-        <SpeciesAutosuggest
-          value={speciesCommon || speciesScientific}
-          onSelect={(scientific, common) => {
-            setSpeciesScientific(scientific);
-            setSpeciesCommon(common || "");
-            setErrors((er) => ({ ...er, species: undefined }));
-            fetchPreview(scientific, common);
-          }}
+        <FormField
+          control={form.control}
+          name="speciesScientific"
+          render={() => (
+            <FormItem>
+              <FormLabel>Species</FormLabel>
+              <FormControl>
+                <SpeciesAutosuggest
+                  value={
+                    form.watch("speciesCommon") || form.watch("speciesScientific")
+                  }
+                  onSelect={(scientific, common) => {
+                    form.setValue("speciesScientific", scientific);
+                    form.setValue("speciesCommon", common || "");
+                    setErrors((er) => ({ ...er, species: undefined }));
+                    fetchPreview(scientific, common);
+                  }}
+                />
+              </FormControl>
+              {errors.species && (
+                <p className="text-sm text-destructive">{errors.species}</p>
+              )}
+            </FormItem>
+          )}
         />
-        {errors.species && (
-          <p className="text-sm text-destructive">{errors.species}</p>
+
+        {carePreview && (
+          <div className="rounded-md border bg-secondary/30 p-4 text-sm">
+            <p className="font-medium">AI Care Preview</p>
+            <p className="text-muted-foreground">{carePreview}</p>
+          </div>
         )}
-      </div>
 
-      {carePreview && (
-        <div className="rounded-md border bg-secondary/30 p-4 text-sm">
-          <p className="font-medium">AI Care Preview</p>
-          <p className="text-muted-foreground">{carePreview}</p>
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowDetails((s) => !s)}
+            className="text-sm text-muted-foreground underline"
+          >
+            {showDetails ? "Hide details" : "Add details"}
+          </button>
         </div>
-      )}
 
-      <div>
-        <button
-          type="button"
-          onClick={() => setShowDetails((s) => !s)}
-          className="text-sm text-muted-foreground underline"
-        >
-          {showDetails ? "Hide details" : "Add details"}
-        </button>
-      </div>
-
-      {showDetails && (
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="room">Room</Label>
-            <RoomSelect id="room" value={roomId ?? null} onChange={setRoomId} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="pot">Pot</Label>
-            <Input
-              id="pot"
-              placeholder='e.g. 4" terracotta'
-              value={pot}
-              onChange={(e) => setPot(e.target.value)}
-              className="h-10"
+        {showDetails && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="room">Room</Label>
+              <RoomSelect
+                id="room"
+                value={form.watch("room_id")}
+                onChange={(val) => form.setValue("room_id", val)}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="pot"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pot</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='e.g. 4" terracotta'
+                      className="h-10"
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="light"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Light</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. Bright indirect"
+                      className="h-10"
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <textarea
+                      placeholder="Add notes…"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="photo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Photo</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      className="h-10"
+                      onChange={(e) => field.onChange(e.target.files)}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="light">Light</Label>
-            <Input
-              id="light"
-              placeholder="e.g. Bright indirect"
-              value={light}
-              onChange={(e) => setLight(e.target.value)}
-              className="h-10"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <textarea
-              id="notes"
-              placeholder="Add notes…"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="photo">Photo</Label>
-            <Input
-              id="photo"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
-              className="h-10"
-            />
-          </div>
-        </div>
-      )}
+        )}
 
-      {errorMsg ? (
-        <p className="text-sm text-destructive">{errorMsg}</p>
-      ) : null}
+        {errorMsg ? (
+          <p className="text-sm text-destructive">{errorMsg}</p>
+        ) : null}
 
-      <Button type="submit" className="w-full h-10" disabled={submitting}>
-        {submitting ? "Creating…" : "Create Plant"}
-      </Button>
-    </form>
+        <Button type="submit" className="w-full h-10" disabled={submitting}>
+          {submitting ? "Creating…" : "Create Plant"}
+        </Button>
+      </form>
+    </Form>
   );
 }
