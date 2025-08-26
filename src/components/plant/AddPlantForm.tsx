@@ -11,6 +11,7 @@ import { Form, FormField } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import SpeciesAutosuggest from "./SpeciesAutosuggest";
 import { RoomSelect } from "./RoomSelect";
 
@@ -217,7 +218,7 @@ export default function AddPlantForm(): JSX.Element {
               render={({ field }) => (
                 <div className="space-y-2">
                   <Label htmlFor="notes">Notes</Label>
-                  <textarea
+                  <Textarea
                     id="notes"
                     placeholder="Add notes…"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
