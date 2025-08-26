@@ -85,8 +85,8 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ---
 
 ## 7. Dashboard & Insights (`/dashboard`)
-- [ ] Create widgets for completion rate, overdue trends, and streaks
-- [ ] Highlight plants needing attention
+- [x] Create widgets for completion rate, overdue trends, and streaks
+- [x] Highlight plants needing attention
 - [ ] (Optional) Graph ET₀/weather vs. watering patterns
 
 ---
