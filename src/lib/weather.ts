@@ -1,4 +1,5 @@
 import type { WeatherDay } from '@/types/forecast';
+import { apiFetch } from '@/lib/api';
 
 const WEATHER_KEY = 'flora.weather';
 const WEATHER_TTL = 30 * 60 * 1000; // 30 minutes
@@ -29,12 +30,12 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherDay[]
       localStorage.removeItem(WEATHER_KEY);
     }
   }
-  const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
-  if (!res.ok) {
+  try {
+    const data = await apiFetch<WeatherDay[]>(`/api/weather?lat=${lat}&lon=${lon}`);
+    const cache: WeatherCache = { lat, lon, timestamp: Date.now(), data };
+    localStorage.setItem(WEATHER_KEY, JSON.stringify(cache));
+    return data;
+  } catch {
     return [];
   }
-  const data: WeatherDay[] = await res.json();
-  const cache: WeatherCache = { lat, lon, timestamp: Date.now(), data };
-  localStorage.setItem(WEATHER_KEY, JSON.stringify(cache));
-  return data;
 }
