@@ -110,6 +110,7 @@ cp .env.example .env.local  # Fill in your keys
 # connect Supabase CLI (first time only)
 supabase login
 # link to your own project or start a local instance
+
 supabase link --project-ref <your_project_ref>  # or run `supabase start`
 
 # use psql to apply schema in order (safe to re-run)
@@ -119,11 +120,12 @@ psql "$DATABASE_URL" -f supabase/plants.sql
 psql "$DATABASE_URL" -f supabase/tasks.sql
 psql "$DATABASE_URL" -f supabase/analytics.sql
 
+
 # optional sample data
-psql "$DATABASE_URL" -f supabase/sample_data.sql
+supabase db query --file supabase/sample_data.sql
 
 # refresh schema cache after schema changes
-psql "$DATABASE_URL" -c "select pg_notify('pgrst','reload schema');"
+supabase db query "select pg_notify('pgrst','reload schema');"
 
 # optional Prisma demo data (requires Prisma models matching Supabase)
 pnpm db:seed
