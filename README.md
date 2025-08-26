@@ -109,7 +109,7 @@ cp .env.example .env.local  # Fill in your keys
 
 # connect Supabase CLI (first time only)
 supabase login
-supabase link --project-ref <YOUR_PROJECT_REF>  # replace with your project reference
+supabase link --project-ref suyojlyvriuqchonmpjt
 
 # apply schema in order using psql
 psql "$DATABASE_URL" -f supabase/migrations/20250825045101_rooms_events.sql
