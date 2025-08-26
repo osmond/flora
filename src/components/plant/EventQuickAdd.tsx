@@ -2,9 +2,8 @@
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, Form, FormField } from "@/components/ui";
+import { Form, FormField, Input, Button } from "@/components/ui";
 import { queueEvent, type EventPayload } from "@/lib/offlineQueue";
-import { Button } from "@/components/ui/button";
 
 type Props = { plantId: string };
 
@@ -45,44 +44,51 @@ export function EventQuickAdd({ plantId }: Props) {
   }
 
   return (
-    <div id="log-event" className="rounded-xl border bg-card p-4 space-y-3">
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          onClick={() => add("water")}
-          disabled={loading}
-          size="sm"
-        >
-          Watered
-        </Button>
-        <Button
-          type="button"
-          onClick={() => add("fertilize")}
-          disabled={loading}
-          variant="outline"
-          size="sm"
-        >
-          Fertilized
-        </Button>
+    <Form {...form}>
+      <div id="log-event" className="rounded-xl border bg-card p-4 space-y-3">
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            onClick={() => add("water")}
+            disabled={loading}
+            variant="default"
+            size="sm"
+          >
+            Watered
+          </Button>
+          <Button
+            type="button"
+            onClick={() => add("fertilize")}
+            disabled={loading}
+            variant="outline"
+            size="sm"
+          >
+            Fertilized
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <FormField
+            control={form.control}
+            name="note"
+            render={({ field }) => (
+              <Input
+                placeholder="Quick note…"
+                className="flex-1"
+                {...field}
+              />
+            )}
+          />
+          <Button
+            type="button"
+            onClick={() => add("note")}
+            disabled={loading}
+            variant="outline"
+            size="sm"
+          >
+            Add note
+          </Button>
+        </div>
       </div>
-      <div className="flex gap-2">
-        <input
-          className="h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-          placeholder="Quick note…"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-        <Button
-          type="button"
-          onClick={() => add("note")}
-          disabled={loading}
-          variant="outline"
-          size="sm"
-        >
-          Add note
-        </Button>
-      </div>
-    </div>
-
+    </Form>
   );
 }
