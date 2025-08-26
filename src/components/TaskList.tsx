@@ -17,7 +17,7 @@ import EmptyTasksState from "@/components/EmptyTasksState";
 import { apiFetch } from "@/lib/api";
 
 // shadcn/ui
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
@@ -36,7 +36,7 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
       });
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
     } catch {
-      setTasks(previous);
+      setTasks(previous); // toast handled in apiFetch
     }
   };
 
@@ -112,16 +112,16 @@ function TaskSection({
   onSnooze: (id: string, days?: number) => void | Promise<void>;
 }) {
   return (
-    <Card className="border-muted/40">
-      <CardHeader className="flex-row items-center justify-between">
-        <h2 className="text-lg font-semibold">{label}</h2>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-lg">{label}</CardTitle>
         <Badge variant="secondary">{items.length}</Badge>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-4">
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nothing here 🎉</p>
         ) : (
-          <motion.ul layout className="space-y-4 list-none pl-0">
+          <motion.ul layout className="list-none space-y-4 pl-0">
             <AnimatePresence>
               {items.map((task) => (
                 <TaskItem
@@ -148,9 +148,9 @@ function TaskItem({
   onComplete: (id: string) => void | Promise<void>;
   onSnooze: (id: string, days?: number) => void | Promise<void>;
 }) {
-  const [startX, setStartX] = React.useState<number | null>(null);
-  const [offsetX, setOffsetX] = React.useState(0);
-  const [pending, setPending] = React.useState(false);
+  const [startX, setStartX] = useState<number | null>(null);
+  const [offsetX, setOffsetX] = useState(0);
+  const [pending, setPending] = useState(false);
 
   const complete = () => {
     if (pending) return;
@@ -179,11 +179,15 @@ function TaskItem({
         else setOffsetX(0);
         setStartX(null);
       }}
-      onPointerLeave={startX !== null ? () => {
-        if (offsetX > 100 && !pending) complete();
-        else setOffsetX(0);
-        setStartX(null);
-      } : undefined}
+      onPointerLeave={
+        startX !== null
+          ? () => {
+              if (offsetX > 100 && !pending) complete();
+              else setOffsetX(0);
+              setStartX(null);
+            }
+          : undefined
+      }
       onPointerCancel={() => {
         setOffsetX(0);
         setStartX(null);
@@ -206,3 +210,4 @@ function TaskItem({
     </motion.li>
   );
 }
+
