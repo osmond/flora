@@ -58,11 +58,10 @@ create table if not exists public.species (
   created_at timestamptz default now()
 );
 
--- Row Level Security
 alter table public.plants enable row level security;
 alter table public.species enable row level security;
 
--- Policies: user-specific access to plants
+-- Policies: open access for single-user mode
 drop policy if exists "public read plants" on public.plants;
 drop policy if exists "public write plants" on public.plants;
 drop policy if exists "user read plants" on public.plants;
@@ -70,17 +69,17 @@ drop policy if exists "user insert plants" on public.plants;
 drop policy if exists "user update plants" on public.plants;
 drop policy if exists "user delete plants" on public.plants;
 
-create policy "user read plants" on public.plants
-  for select using (auth.uid()::text = user_id);
+create policy "read plants" on public.plants
+  for select using (true);
 
-create policy "user insert plants" on public.plants
-  for insert with check (auth.uid()::text = user_id);
+create policy "insert plants" on public.plants
+  for insert with check (true);
 
-create policy "user update plants" on public.plants
-  for update using (auth.uid()::text = user_id);
+create policy "update plants" on public.plants
+  for update using (true);
 
-create policy "user delete plants" on public.plants
-  for delete using (auth.uid()::text = user_id);
+create policy "delete plants" on public.plants
+  for delete using (true);
 
 -- Species remain open for reads/writes
 drop policy if exists "public read species" on public.species;
