@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "e2e": "vitest run tests",
     "db:seed": "prisma db seed",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
