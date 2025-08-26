@@ -68,7 +68,7 @@ describe("TaskList snooze menu", () => {
     expect(body).toEqual({ action: "snooze", days: 3 });
   });
 
-  it("prevents duplicate completion requests", () => {
+  it("prevents duplicate completion requests", async () => {
     let resolveFetch: (value: unknown) => void = () => undefined;
     const fetchMock = vi.fn(
       () =>
@@ -89,7 +89,8 @@ describe("TaskList snooze menu", () => {
     render(<TaskList tasks={tasks} />);
     const doneBtn = screen.getByText("Done");
     fireEvent.click(doneBtn);
-    expect(doneBtn).toBeDisabled();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(screen.queryByText("Done")).not.toBeInTheDocument();
     fireEvent.click(doneBtn);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     resolveFetch({ ok: true, json: () => Promise.resolve({}) });

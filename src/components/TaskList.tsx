@@ -44,22 +44,32 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
   }
 
   const handleComplete = async (id: string) => {
+    const previous = tasks;
+    setTasks((prev) => prev.filter((t) => t.id !== id));
     try {
       await apiFetch(`/api/tasks/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'complete' }),
       });
-    } catch {
-      // errors handled by apiFetch toast
-    } finally {
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       playChime();
-      setTasks((prev) => prev.filter((t) => t.id !== id));
+    } catch {
+      // errors handled by apiFetch toast
+      setTasks(previous);
     }
   };
 
   const handleSnooze = async (id: string, days = 1) => {
+    const previous = tasks;
+    const updated = previous
+      .map((t) =>
+        t.id === id
+          ? { ...t, due: formatISO(addDays(parseISO(t.due), days)) }
+          : t
+      )
+      .sort((a, b) => a.due.localeCompare(b.due));
+    setTasks(updated);
     try {
       await apiFetch(`/api/tasks/${id}`, {
         method: 'PATCH',
@@ -68,19 +78,7 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
       });
     } catch {
       // errors handled by apiFetch toast
-    } finally {
-      setTasks((prev) =>
-        prev
-          .map((t) =>
-            t.id === id
-              ? {
-                  ...t,
-                  due: formatISO(addDays(parseISO(t.due), days)),
-                }
-              : t
-          )
-          .sort((a, b) => a.due.localeCompare(b.due))
-      );
+      setTasks(previous);
     }
   };
 
