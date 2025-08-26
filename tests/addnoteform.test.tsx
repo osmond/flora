@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderToString } from "react-dom/server";
+
 import { render, screen, fireEvent, act } from "@testing-library/react";
 vi.mock("@/lib/supabase/client", () => ({
   supabaseClient: {
@@ -9,6 +10,7 @@ vi.mock("@/lib/supabase/client", () => ({
     },
   },
 }));
+
 
 import AddNoteForm from "../src/components/AddNoteForm";
 
@@ -50,12 +52,14 @@ describe("AddNoteForm", () => {
       fireEvent.click(button);
     });
     expect(button).toBeDisabled();
+
     await act(async () => {
       fireEvent.click(button);
     });
     await vi.waitFor(() =>
       expect((globalThis.fetch as any)).toHaveBeenCalledTimes(1),
     );
+
     resolveFetch({ ok: true, json: () => Promise.resolve({}) });
   });
 });
