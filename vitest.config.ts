@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config"
+import { defineConfig, coverageConfigDefaults } from "vitest/config"
 import path from "path"
 
 export default defineConfig({
@@ -7,6 +7,12 @@ export default defineConfig({
     setupFiles: ["./test/setup.ts"],
     globals: true,
     include: ["__tests__/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      reportsDirectory: "./coverage",
+      exclude: [...coverageConfigDefaults.exclude, "test/setup.ts"],
+    },
   },
   resolve: {
     alias: {
