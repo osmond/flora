@@ -99,7 +99,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 
 ## 9. Error & Empty-State Handling
 - [x] Free-text species when no match
-- [ ] Queue events offline and sync when back online
+- [x] Queue events offline and sync when back online
 - [ ] Graceful API error handling and missing permissions
 
 ---

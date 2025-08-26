@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
 import SiteNav from '@/components/SiteNav';
 import LocationProvider from '@/components/LocationProvider';
+import OfflineQueueProvider from '@/components/OfflineQueueProvider';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="flex min-h-screen flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LocationProvider />
+          <OfflineQueueProvider />
           <SiteNav />
           <main className="flex-1">{children}</main>
           <Toaster richColors />
