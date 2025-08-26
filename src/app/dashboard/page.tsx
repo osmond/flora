@@ -1,4 +1,5 @@
 import DashboardStat from "@/components/DashboardStat"
+import BackupControls from "@/components/BackupControls"
 
 export const dynamic = "force-dynamic"
 
@@ -100,6 +101,11 @@ export default async function DashboardPage() {
               <div className="w-3 h-3 rounded-sm bg-secondary/20" /> ET₀
             </div>
           </div>
+        </section>
+
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Backup</h2>
+          <BackupControls />
         </section>
       </div>
     </main>
