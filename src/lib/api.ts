@@ -1,9 +1,16 @@
 'use client';
 
 import { toast } from 'sonner';
+import { supabaseClient } from '@/lib/supabase/client';
 
 export async function apiFetch<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-  const res = await fetch(input, init);
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  const userId = session?.user?.id;
+  const headers = new Headers(init?.headers);
+  if (userId) {
+    headers.set('x-user-id', userId);
+  }
+  const res = await fetch(input, { ...init, headers });
   if (!res.ok) {
     let message = 'Request failed';
     try {
