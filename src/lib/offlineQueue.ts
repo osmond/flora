@@ -21,9 +21,18 @@ function saveQueue(queue: EventPayload[]) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    window.dispatchEvent(
+      new CustomEvent('flora:queue:changed', {
+        detail: { length: queue.length },
+      }),
+    );
   } catch {
     // ignore
   }
+}
+
+export function getQueueLength() {
+  return getQueue().length;
 }
 
 export async function flushQueue() {
