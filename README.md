@@ -110,7 +110,8 @@ cp .env.example .env.local  # Fill in your keys
 # connect Supabase CLI (first time only)
 supabase login
 # link to your own project or start a local instance
-supabase link --project-ref <your_project_ref>  # or run `supabase start`
+
+supabase link --project-ref suyojlyvriuqchonmpjt
 
 # apply schema in order (safe to re-run)
 supabase db query --file supabase/migrations/20250825045101_rooms_events.sql
