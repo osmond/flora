@@ -1,7 +1,15 @@
 import React from "react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderToString } from "react-dom/server";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
+vi.mock("@/lib/supabase/client", () => ({
+  supabaseClient: {
+    auth: {
+      getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
+    },
+  },
+}));
+
 import AddNoteForm from "../src/components/AddNoteForm";
 
 (globalThis as unknown as { React: typeof React }).React = React;
@@ -23,7 +31,7 @@ describe("AddNoteForm", () => {
     expect(html).toContain("Add Note");
   });
 
-  it("disables submit while posting", () => {
+  it("disables submit while posting", async () => {
     let resolveFetch: (value: unknown) => void = () => undefined;
     vi.stubGlobal(
       "fetch",
@@ -38,10 +46,16 @@ describe("AddNoteForm", () => {
     const textarea = screen.getByPlaceholderText("Write a note...");
     fireEvent.change(textarea, { target: { value: "hello" } });
     const button = screen.getByRole("button", { name: /add note/i });
-    fireEvent.click(button);
+    await act(async () => {
+      fireEvent.click(button);
+    });
     expect(button).toBeDisabled();
-    fireEvent.click(button);
-    expect((globalThis.fetch as any)).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      fireEvent.click(button);
+    });
+    await vi.waitFor(() =>
+      expect((globalThis.fetch as any)).toHaveBeenCalledTimes(1),
+    );
     resolveFetch({ ok: true, json: () => Promise.resolve({}) });
   });
 });
