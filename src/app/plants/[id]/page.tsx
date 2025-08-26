@@ -1,92 +1,97 @@
-import db from "@/lib/db";
-import QuickStats from "@/components/plant/QuickStats";
-import ScheduleAdjuster from "@/components/plant/ScheduleAdjuster";
-import CareCoach from "@/components/plant/CareCoach";
-import CareNudge from "@/components/CareNudge";
-import PlantTabs from "@/components/plant/PlantTabs";
-import WaterPlantButton from "@/components/plant/WaterPlantButton";
-import PlantHero from "@/components/plant/PlantHero";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { hydrateTimeline } from "@/lib/tasks";
-import { getCurrentUserId } from "@/lib/auth";
-import type { CareEvent } from "@/types";
+import { notFound } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-export default async function PlantDetailPage({
+type PlantRow = {
+  id: string;
+  nickname: string;
+  species?: string | null;
+  water_every?: string | null;
+  fert_every?: string | null;
+  last_watered_at?: string | null;
+  last_fertilized_at?: string | null;
+};
+
+async function getPlant(id: string): Promise<PlantRow | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) return null;
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(url, anon);
+    const { data, error } = await supabase
+      .from("plants")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) return null;
+    return data as PlantRow;
+  } catch {
+    return null;
+  }
+}
+
+export default async function PlantDetail({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
-  let plant: any = null;
-  if (db?.plant) {
-    try {
-      plant = await db.plant.findFirst({
-        where: { id, archived: false },
-        include: { room: { select: { name: true } } },
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  if (!plant) {
-    return <div className="p-4 md:p-6 max-w-md mx-auto">Plant not found</div>;
-  }
-
-  let heroUrl = plant.imageUrl;
-  if (!heroUrl && db?.photo) {
-    try {
-      const photo = await db.photo.findFirst({
-        where: { plantId: plant.id },
-        orderBy: { createdAt: "desc" },
-        select: { url: true },
-      });
-      heroUrl = photo?.url ?? null;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  const userId = await getCurrentUserId();
-  let events: CareEvent[] = [];
-  let timelineError = false;
-  if (supabaseAdmin) {
-    const { data, error } = await supabaseAdmin
-      .from("events")
-      .select("id, type, note, image_url, created_at")
-      .eq("plant_id", plant.id)
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-    if (error) {
-      timelineError = true;
-    }
-    events = data ?? [];
-  } else {
-    timelineError = true;
-  }
-
-  const timelineEvents = hydrateTimeline(events, {
-    id: plant.id,
-    waterEvery: plant.waterEvery,
-    fertEvery: plant.fertEvery,
-  });
+  const plant = await getPlant(params.id);
+  if (!plant) notFound();
 
   return (
-    <div>
-      <PlantHero plant={plant} heroUrl={heroUrl} />
-      <div className="p-4 md:p-6 max-w-3xl mx-auto">
-        <QuickStats plant={plant} />
-        <ScheduleAdjuster plantId={plant.id} waterEvery={plant.waterEvery} />
-        <WaterPlantButton plantId={plant.id} />
-        <CareNudge plantId={plant.id} />
-        <CareCoach plant={plant} />
-        <PlantTabs
-          plantId={plant.id}
-          initialEvents={timelineEvents}
-          waterEvery={plant.waterEvery}
-          fertEvery={plant.fertEvery}
-          timelineError={timelineError}
-        />
+    <section className="space-y-6 px-4 py-6 md:px-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">{plant.nickname}</h1>
+        <div className="flex gap-2">
+          <Button id="log-event" size="sm">
+            Log
+          </Button>
+          <Button size="sm" variant="secondary">
+            Edit
+          </Button>
+        </div>
       </div>
-    </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Care schedule</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div>
+              <span className="text-muted-foreground">Water every: </span>
+              <Badge variant="secondary">{plant.water_every ?? "—"}</Badge>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Fertilize every: </span>
+              <Badge variant="secondary">{plant.fert_every ?? "—"}</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Last events</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div>
+              <span className="text-muted-foreground">Last watered: </span>
+              {plant.last_watered_at
+                ? new Date(plant.last_watered_at).toLocaleDateString()
+                : "—"}
+            </div>
+            <div>
+              <span className="text-muted-foreground">Last fertilized: </span>
+              {plant.last_fertilized_at
+                ? new Date(plant.last_fertilized_at).toLocaleDateString()
+                : "—"}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
   );
 }
+
