@@ -12,6 +12,7 @@
     "db:seed": "prisma db seed",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
     "reminders:send": "ts-node scripts/send-reminders.ts"
   },
   "dependencies": {
