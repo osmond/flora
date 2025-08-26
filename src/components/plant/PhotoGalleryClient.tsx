@@ -2,8 +2,9 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import * as Dialog from '@radix-ui/react-dialog';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import type { CareEvent } from '@/types';
 
 export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) {
@@ -34,10 +35,11 @@ export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) 
         className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth touch-pan-x"
       >
         {photos.map((photo) => (
-          <button
+          <Button
             key={photo.id}
             type="button"
-            className="w-full flex-shrink-0 snap-center focus:outline-none"
+            variant="ghost"
+            className="h-auto w-full flex-shrink-0 snap-center p-0"
             onClick={() => setActive(photo)}
             aria-label="View photo"
           >
@@ -55,56 +57,55 @@ export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) 
                 </span>
               )}
             </div>
-          </button>
+          </Button>
         ))}
       </div>
       {photos.length > 1 && (
         <>
-          <button
+          <Button
             type="button"
             aria-label="Previous"
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 p-1 shadow"
+            variant="ghost"
+            size="icon"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 shadow"
             onClick={() => scrollByDir(-1)}
           >
             <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             aria-label="Next"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 p-1 shadow"
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 shadow"
             onClick={() => scrollByDir(1)}
           >
             <ChevronRight className="h-4 w-4" />
-          </button>
+          </Button>
         </>
       )}
 
-      <Dialog.Root open={!!active} onOpenChange={(o) => !o && setActive(null)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/80" />
-          <Dialog.Content
-            className="fixed inset-0 flex items-center justify-center p-4"
-          >
-            <Dialog.Title className="sr-only">Full size photo</Dialog.Title>
-            <Dialog.Description className="sr-only">
-              Enlarged view of the selected plant photo
-            </Dialog.Description>
-            {active && (
-              <Image
-                src={active.image_url || ''}
-                alt={active.note ?? 'Photo of plant'}
-                width={1000}
-                height={1000}
-                className="max-h-full w-auto object-contain"
-              />
-            )}
-            <Dialog.Close className="absolute right-4 top-4 text-white">
-              <X className="h-6 w-6" />
-              <span className="sr-only">Close</span>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
+        <DialogContent className="h-full w-full max-w-full flex items-center justify-center p-4 bg-transparent border-0 shadow-none">
+          <DialogTitle className="sr-only">Full size photo</DialogTitle>
+          <DialogDescription className="sr-only">
+            Enlarged view of the selected plant photo
+          </DialogDescription>
+          {active && (
+            <Image
+              src={active.image_url || ''}
+              alt={active.note ?? 'Photo of plant'}
+              width={1000}
+              height={1000}
+              className="max-h-full w-auto object-contain"
+            />
+          )}
+          <DialogClose className="absolute right-4 top-4 text-white">
+            <X className="h-6 w-6" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

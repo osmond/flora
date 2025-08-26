@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PlantCard } from '@/components';
-import Image from "next/image";
+import { Button } from '@/components/ui/button';
 
 interface Plant {
   id: string;
@@ -29,20 +30,22 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
   return (
     <div>
       <div className="mb-4 flex justify-end gap-3">
-        <button
+        <Button
           aria-label="Grid view"
           onClick={() => setView('grid')}
-          className={`rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'grid' ? 'bg-muted' : ''}`}
+          variant={view === 'grid' ? 'secondary' : 'outline'}
+          size="sm"
         >
           Grid
-        </button>
-        <button
+        </Button>
+        <Button
           aria-label="List view"
           onClick={() => setView('list')}
-          className={`rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary ${view === 'list' ? 'bg-muted' : ''}`}
+          variant={view === 'list' ? 'secondary' : 'outline'}
+          size="sm"
         >
           List
-        </button>
+        </Button>
       </div>
       {Object.entries(grouped).map(([roomName, roomPlants]) => (
         <section key={roomName} className="mb-8">
