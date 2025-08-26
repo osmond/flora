@@ -35,9 +35,10 @@ async function getPlant(id: string): Promise<PlantRow | null> {
 export default async function PlantDetail({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const plant = await getPlant(params.id);
+  const { id } = await params;
+  const plant = await getPlant(id);
   if (!plant) notFound();
 
   return (
