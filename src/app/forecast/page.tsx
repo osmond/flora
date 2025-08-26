@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { generateWeeklyCareForecast } from '@/lib/forecast';
 import type { DayForecast } from '@/types/forecast';
 import type { Plant } from '@/lib/tasks';
+import { apiFetch } from '@/lib/api';
 
 const samplePlants: Plant[] = [
   {
@@ -25,10 +26,13 @@ export default function ForecastPage() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch('/api/weather');
-      const weather = await res.json();
-      const data = generateWeeklyCareForecast(samplePlants, weather);
-      setForecast(data);
+      try {
+        const weather = await apiFetch<any>('/api/weather');
+        const data = generateWeeklyCareForecast(samplePlants, weather);
+        setForecast(data);
+      } catch {
+        // errors handled by apiFetch
+      }
     }
     load();
   }, []);
