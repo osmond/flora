@@ -83,6 +83,30 @@ export async function GET() {
       return { day: dayStart.toISOString().slice(0, 10), count }
     }).reverse()
 
+    // Weather vs watering: ET₀ vs daily water events
+    const lat = process.env.WEATHER_LAT || "40.71"
+    const lon = process.env.WEATHER_LON || "-74.01"
+    let waterWeather: { day: string; et0: number; water: number }[] = []
+    try {
+      const weatherRes = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=et0_fao_evapotranspiration&past_days=7&timezone=auto`
+      )
+      if (weatherRes.ok) {
+        const w = await weatherRes.json()
+        const times: string[] = w.daily?.time || []
+        const et0: number[] = w.daily?.et0_fao_evapotranspiration || []
+        waterWeather = times.map((day: string, idx: number) => ({
+          day,
+          et0: et0[idx] ?? 0,
+          water: (events || []).filter(
+            e => e.type === "water" && e.created_at.slice(0, 10) === day
+          ).length,
+        }))
+      }
+    } catch {
+      // ignore weather fetch errors
+    }
+
     // Streak: consecutive days with at least one event
     let streak = 0
     for (let i = 0; i < 30; i++) {
@@ -106,6 +130,7 @@ export async function GET() {
         totalExpected,
         hist,
         overdueTrend,
+        waterWeather,
         streak,
         plants: plants?.length || 0,
         attention,

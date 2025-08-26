@@ -66,6 +66,23 @@ vi.mock("@supabase/supabase-js", () => {
 beforeEach(() => {
   process.env.NEXT_PUBLIC_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost"
   process.env.SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "test_key"
+  global.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      daily: {
+        time: [
+          "2025-01-02",
+          "2025-01-03",
+          "2025-01-04",
+          "2025-01-05",
+          "2025-01-06",
+          "2025-01-07",
+          "2025-01-08",
+        ],
+        et0_fao_evapotranspiration: [1, 1, 1, 1, 1, 1, 1],
+      },
+    }),
+  })
 })
 
 describe("/api/dashboard", () => {
@@ -85,6 +102,8 @@ describe("/api/dashboard", () => {
     expect(json.hist).toHaveLength(7)
     expect(Array.isArray(json.overdueTrend)).toBe(true)
     expect(json.overdueTrend).toHaveLength(7)
+    expect(Array.isArray(json.waterWeather)).toBe(true)
+    expect(json.waterWeather).toHaveLength(7)
   })
 })
 
