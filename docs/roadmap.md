@@ -118,7 +118,7 @@ All views should adhere to the [style guide](./style-guide.md).
 - [x] Weekly care forecast with weather integration
 - [ ] Cloud sync or backup
 - [ ] AI care plan that evolves over time
-- [ ] PWA installable version (Add to Home Screen)
+ - [x] PWA installable version (Add to Home Screen)
 
 ---
 
