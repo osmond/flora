@@ -252,8 +252,8 @@ export function TaskSkeleton() {
 
 - [x] Ensure shadcn/ui defaults (`aria-*` props) aren’t removed
 - [x] Add alt text for plant photos
-- [ ] Test keyboard nav across `<Tabs>`, `<DropdownMenu>`, `<Command>`
-- [ ] Confirm high-contrast mode works with tokens
+- [x] Test keyboard nav across `<Tabs>`, `<DropdownMenu>`, `<Command>`
+- [x] Confirm high-contrast mode works with tokens
 
 ---
 
