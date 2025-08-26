@@ -88,9 +88,9 @@ Flora creates personalized care plans and adapts them to your environment.
 
 All schema, policies, and seed data live as SQL in [`/supabase`](./supabase).
 
+- `supabase/migrations/20250825045101_rooms_events.sql` – rooms and events tables with RLS policies
 - `plants.sql` – plants and species tables with RLS policies
 - `tasks.sql` – care task table and policies
-- `supabase/migrations/20250825045101_rooms_events.sql` – rooms and events tables with RLS policies
 - `analytics.sql` – analytics events table
 - `sample_data.sql` – optional seed data for plants and tasks
 
@@ -109,16 +109,19 @@ cp .env.example .env.local  # Fill in your keys
 
 # connect Supabase CLI (first time only)
 supabase login
-supabase link --project-ref gfboffhcujxrtxivovur
+supabase link --project-ref <YOUR_PROJECT_REF>  # replace with your project reference
 
-# apply schema (requires Supabase CLI v2+)
-supabase db execute --file supabase/plants.sql
-supabase db execute --file supabase/tasks.sql
-supabase db execute --file supabase/migrations/20250825045101_rooms_events.sql
-supabase db execute --file supabase/analytics.sql
+# apply schema in order using psql
+psql "$DATABASE_URL" -f supabase/migrations/20250825045101_rooms_events.sql
+psql "$DATABASE_URL" -f supabase/plants.sql
+psql "$DATABASE_URL" -f supabase/tasks.sql
+psql "$DATABASE_URL" -f supabase/analytics.sql
 
 # optional sample data
-supabase db execute --file supabase/sample_data.sql
+psql "$DATABASE_URL" -f supabase/sample_data.sql
+
+# refresh schema cache after schema changes
+psql "$DATABASE_URL" -c "select pg_notify('pgrst','reload schema');"
 
 # optional Prisma demo data (requires Prisma models matching Supabase)
 pnpm db:seed
@@ -126,7 +129,7 @@ pnpm db:seed
 pnpm dev
 ```
 
-`supabase/plants.sql` can be re-run safely to add or rename columns. After executing any SQL files, Supabase's schema cache must be refreshed with `select pg_notify('pgrst','reload schema');` or by restarting the API.
+All SQL files can be re-run safely. After executing them, refresh Supabase's schema cache with `select pg_notify('pgrst','reload schema');` or restart the API.
 
 See `/docs/deployment.md` for full production deployment steps.
 
