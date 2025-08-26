@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from 'sonner';
-import Navigation from '@/components/Navigation';
+import SiteNav from '@/components/SiteNav';
 import LocationProvider from '@/components/LocationProvider';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="flex min-h-screen flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LocationProvider />
-          <Navigation />
+          <SiteNav />
           <main className="flex-1">{children}</main>
           <Toaster richColors />
         </ThemeProvider>
