@@ -158,6 +158,6 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ### Extended Insights
 - [ ] Chart watering vs weather (ET₀ correlation)
 - [ ] Show longest streaks per plant
-- [ ] Highlight neglected plants
+ - [x] Highlight neglected plants
 
 ---

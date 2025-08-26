@@ -47,6 +47,21 @@ export default async function DashboardPage() {
             <p className="text-sm text-muted-foreground">All plants are happy 🌿</p>
           )}
         </section>
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Neglected Plants</h2>
+          {stats?.neglected?.length ? (
+            <ul className="space-y-3">
+              {stats.neglected.map((p: any) => (
+                <li key={p.id} className="flex items-center justify-between">
+                  <div className="font-medium">{p.plantName}</div>
+                  <div className="text-sm text-muted-foreground">{p.days}d</div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">No neglected plants 🎉</p>
+          )}
+        </section>
 
         <section className="rounded-2xl border bg-card text-card-foreground p-6">
           <h2 className="text-lg font-medium mb-4">Overdue Trend (7 days)</h2>
