@@ -16,10 +16,11 @@ type Item = { scientific: string; common?: string };
 export default function SpeciesAutosuggest(props: {
   value?: string;
   onSelect: (scientific: string, common?: string) => void;
+  onInputChange?: (val: string) => void;
   placeholder?: string;
   className?: string;
 }) {
-  const { value = "", onSelect, placeholder = "Search species…", className } = props;
+  const { value = "", onSelect, onInputChange, placeholder = "Search species…", className } = props;
   const [query, setQuery] = React.useState(value);
   const debounced = useDebounce(query, 350);
   const [items, setItems] = React.useState<Item[]>([]);
@@ -59,6 +60,7 @@ export default function SpeciesAutosuggest(props: {
         onValueChange={(val) => {
           setQuery(val);
           setOpen(true);
+          onInputChange?.(val);
         }}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
