@@ -107,7 +107,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ## 10. Performance & UX Hygiene
 - [x] SSR page shells with suspense for data
 - [x] Cache weather and debounce species search
-- [ ] Apply optimistic updates and ensure accessibility standards
+ - [x] Apply optimistic updates and ensure accessibility standards
 
 ---
 
