@@ -141,9 +141,9 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
  - [x] Tag photos by event type
 
 ### Advanced AI Care Coach
-- [ ] Daily digest summarizing all tasks
-- [ ] Seasonal adjustments (light/humidity)
-- [ ] Natural-language queries (“How’s Kay doing?”)
+ - [x] Daily digest summarizing all tasks
+  - [ ] Seasonal adjustments (light/humidity)
+  - [ ] Natural-language queries (“How’s Kay doing?”)
 
 ### Mobile Polish & PWA
 - [x] Add manifest.json + icons
