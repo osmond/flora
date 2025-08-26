@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getCurrentUserId } from "@/lib/auth";
 
 function supabaseServer() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -12,13 +13,18 @@ export async function GET(req: Request) {
   try {
     const supabase = supabaseServer();
     const { searchParams } = new URL(req.url);
-    const plantId = searchParams.get("plantId");
-    if (!plantId) return NextResponse.json({ error: "plantId is required" }, { status: 400 });
+    const plantId =
+      searchParams.get("plant_id") ?? searchParams.get("plantId");
+    if (!plantId)
+      return NextResponse.json(
+        { error: "plant_id is required" },
+        { status: 400 },
+      );
 
     const { data, error } = await supabase
       .from("events")
       .select("*")
-      .eq("plant_id", Number(plantId))
+      .eq("plant_id", plantId)
       .order("created_at", { ascending: false });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -32,22 +38,31 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const supabase = supabaseServer();
-    const payload = {
-      plant_id: Number(body?.plantId),
-      type: body?.type as string,
-      amount: body?.amount ?? null,
-      note: (body?.note as string | undefined) ?? null,
-      photo_url: (body?.photoUrl as string | undefined) ?? null,
-    };
-
-    if (!payload.plant_id || !payload.type) {
-      return NextResponse.json({ error: "plantId and type are required" }, { status: 400 });
+    const plantId = body?.plant_id as string;
+    const type = body?.type as string;
+    if (!plantId || !type || typeof plantId !== "string" || typeof type !== "string") {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    }
+    const uuidRegex = /^[0-9a-fA-F-]{36}$/;
+    if (!uuidRegex.test(plantId)) {
+      return NextResponse.json({ error: "Invalid plant_id" }, { status: 400 });
     }
 
-    const { data, error } = await supabase.from("events").insert(payload).select().single();
+    const userId = await getCurrentUserId();
+    const supabase = supabaseServer();
+    const payload = {
+      plant_id: plantId,
+      type,
+      note: typeof body?.note === "string" ? body.note : null,
+      amount: body?.amount ?? null,
+      photo_url: typeof body?.photoUrl === "string" ? body.photoUrl : null,
+      user_id: userId,
+    };
+
+    const { data, error } = await supabase.from("events").insert(payload).select();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-    return NextResponse.json({ event: data }, { status: 201 });
+    const event = data?.[0] ?? null;
+    return NextResponse.json({ event }, { status: 200 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
