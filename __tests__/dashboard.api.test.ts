@@ -27,11 +27,7 @@ vi.mock("@supabase/supabase-js", () => {
         if (table === "events") {
           return {
             select() {
-              return {
-                gte() {
-                  return { data: events, error: null }
-                },
-              }
+              return { data: events, error: null }
             },
           }
         }
@@ -108,6 +104,8 @@ describe("/api/dashboard", () => {
     expect(Array.isArray(json.neglected)).toBe(true)
     expect(json.neglected[0].plantName).toBe("Cactus")
     expect(json.neglected[0].days).toBeGreaterThan(300)
+    expect(Array.isArray(json.longestStreaks)).toBe(true)
+    expect(json.longestStreaks[0]).toMatchObject({ plantName: "Aloe", streak: 2 })
   })
 })
 

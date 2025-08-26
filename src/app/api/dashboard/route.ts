@@ -17,9 +17,9 @@ export async function GET() {
     const { data: events, error: evErr } = await supabase
       .from("events")
       .select("id, created_at, plant_id, type")
-      .gte("created_at", since)
 
     if (evErr) throw evErr
+    const recentEvents = (events || []).filter(e => e.created_at >= since)
 
     const { data: plants, error: pErr } = await supabase
       .from("plants")
@@ -64,7 +64,7 @@ export async function GET() {
       .slice(0, 5)
 
     const totalExpected = (plants?.length || 0) * 1 // naive: 1 action per plant per week
-    const totalDone = events?.length || 0
+    const totalDone = recentEvents.length
     const completion =
       totalExpected === 0
         ? 0
@@ -77,7 +77,7 @@ export async function GET() {
       dayStart.setDate(dayStart.getDate() - i)
       const dayEnd = new Date(dayStart)
       dayEnd.setDate(dayStart.getDate() + 1)
-      const count = (events || []).filter(e => {
+      const count = recentEvents.filter(e => {
         const t = new Date(e.created_at).getTime()
         return t >= dayStart.getTime() && t < dayEnd.getTime()
       }).length
@@ -114,7 +114,7 @@ export async function GET() {
         waterWeather = times.map((day: string, idx: number) => ({
           day,
           et0: et0[idx] ?? 0,
-          water: (events || []).filter(
+          water: recentEvents.filter(
             e => e.type === "water" && e.created_at.slice(0, 10) === day
           ).length,
         }))
@@ -139,6 +139,34 @@ export async function GET() {
       else break
     }
 
+    // Longest streak per plant
+    const longestStreaks = (plants || [])
+      .map(p => {
+        const days = Array.from(
+          new Set(
+            (events || [])
+              .filter(e => e.plant_id === p.id)
+              .map(e => e.created_at.slice(0, 10))
+          )
+        ).sort()
+        let max = 0
+        let current = 0
+        let prev: string | null = null
+        for (const day of days) {
+          if (prev && new Date(day).getTime() === new Date(prev).getTime() + 86400000) {
+            current++
+          } else {
+            current = 1
+          }
+          if (current > max) max = current
+          prev = day
+        }
+        return { id: p.id, plantName: p.name, streak: max }
+      })
+      .filter(s => s.streak > 0)
+      .sort((a, b) => b.streak - a.streak)
+      .slice(0, 5)
+
     return NextResponse.json(
       {
         completion,
@@ -148,6 +176,7 @@ export async function GET() {
         overdueTrend,
         waterWeather,
         streak,
+        longestStreaks,
         plants: plants?.length || 0,
         attention,
         neglected,
