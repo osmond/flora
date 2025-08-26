@@ -1,8 +1,9 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
+import type { CareEventType } from "@/types";
 
 export interface CareContext {
-  events: { type: string; note: string | null; created_at: string }[];
+  events: { type: CareEventType; note: string | null; created_at: string }[];
   weather: {
     tempMax?: number;
     tempMin?: number;
