@@ -23,7 +23,7 @@ export async function GET() {
 
     const { data: plants, error: pErr } = await supabase
       .from("plants")
-      .select("id, name")
+      .select("id, name, created_at")
 
     if (pErr) throw pErr
 
@@ -46,6 +46,22 @@ export async function GET() {
         type: t.type,
         due: t.due_date,
       }))
+
+    // Neglected plants: longest time since last event (or creation)
+    const now = Date.now()
+    const neglected = (plants || [])
+      .map(p => {
+        const lastEvent = (events || [])
+          .filter(e => e.plant_id === p.id)
+          .map(e => new Date(e.created_at).getTime())
+          .reduce((max, t) => (t > max ? t : max), 0)
+        const baseline = lastEvent || new Date(p.created_at).getTime()
+        const days = Math.floor((now - baseline) / (1000 * 60 * 60 * 24))
+        return { id: p.id, plantName: p.name, days }
+      })
+      .filter(p => p.days >= 14)
+      .sort((a, b) => b.days - a.days)
+      .slice(0, 5)
 
     const totalExpected = (plants?.length || 0) * 1 // naive: 1 action per plant per week
     const totalDone = events?.length || 0
@@ -134,6 +150,7 @@ export async function GET() {
         streak,
         plants: plants?.length || 0,
         attention,
+        neglected,
       },
       { status: 200 }
     )
