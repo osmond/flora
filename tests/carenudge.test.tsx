@@ -1,12 +1,12 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CareSuggestion from '../src/components/CareSuggestion';
+import CareNudge from '../src/components/CareNudge';
 
 (globalThis as unknown as { React: typeof React }).React = React;
 
 
-describe('CareSuggestion', () => {
+describe('CareNudge', () => {
   it('posts feedback when applying suggestion', async () => {
     const fetchMock = vi
       .fn()
@@ -14,7 +14,7 @@ describe('CareSuggestion', () => {
       .mockResolvedValue({ ok: true, json: async () => ({}) });
     global.fetch = fetchMock as unknown as typeof fetch;
 
-    render(<CareSuggestion plantId="plant-1" />);
+    render(<CareNudge plantId="plant-1" />);
 
     await screen.findByText('Test nudge');
 
@@ -38,7 +38,7 @@ describe('CareSuggestion', () => {
       .mockResolvedValue({ ok: true, json: async () => ({}) });
     global.fetch = fetchMock as unknown as typeof fetch;
 
-    render(<CareSuggestion plantId="plant-2" />);
+    render(<CareNudge plantId="plant-2" />);
 
     await screen.findByText('Another nudge');
 
