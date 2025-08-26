@@ -128,7 +128,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ### Import / Export
 - [x] Export plants + events as JSON or CSV
 - [x] Import plants from JSON (validate schema)
-- [ ] Add “Download Backup” & “Restore” buttons in `/dashboard`
+- [x] Add “Download Backup” & “Restore” buttons in `/dashboard`
 
 ### Offline Queue & Sync
 - [ ] Add `offlineQueue.ts` util (queue failed POSTs to localStorage)
