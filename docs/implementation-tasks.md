@@ -79,7 +79,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 
 ## 6. Logging & Timeline
 - [x] Define event types (watered, fertilized, notes, photos, etc.)
-- [ ] Entry points for logging from Today and plant detail views
+- [x] Entry points for logging from Today and plant detail views
 - [ ] Persist events and display them chronologically
 
 ---
