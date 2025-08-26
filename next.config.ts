@@ -6,10 +6,7 @@ import type { NextConfig } from "next";
 import "./src/lib/config";
 
 const nextConfig: NextConfig = {
-  // Ensure native modules from lightningcss are resolved at runtime
-  // by externalizing it and its wrapper package
-  serverExternalPackages: ["lightningcss", "@tailwindcss/node"],
-  /* config options here */
+  serverExternalPackages: ["@tailwindcss/node"],
 };
 
 export default nextConfig;
