@@ -13,7 +13,7 @@ export default function DashboardStat({ title, value, subtitle }: DashboardStatP
         <CardTitle className="text-sm text-muted-foreground">{title}</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="text-3xl font-bold">{value}</div>
+        <div className="text-2xl font-bold">{value}</div>
         {subtitle ? (
           <div className="mt-1 text-xs text-muted-foreground">{subtitle}</div>
         ) : null}
