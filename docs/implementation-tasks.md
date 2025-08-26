@@ -152,7 +152,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 
 ### CI / CD Automation
 - [x] GitHub Actions: run `pnpm lint`, `pnpm test`, and `pnpm e2e`
-- [ ] Preview deployments on Vercel
+- [x] Preview deployments on Vercel
 - [x] Add coverage reports
 
 ### Extended Insights
