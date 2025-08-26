@@ -151,7 +151,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 - [ ] Test on iOS/Android as standalone app
 
 ### CI / CD Automation
-- [ ] GitHub Actions: run `pnpm lint`, `pnpm test`, and `pnpm e2e`
+- [x] GitHub Actions: run `pnpm lint`, `pnpm test`, and `pnpm e2e`
 - [ ] Preview deployments on Vercel
 - [ ] Add coverage reports
 
