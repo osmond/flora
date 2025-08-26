@@ -136,7 +136,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 - [x] Add status badge for `Synced` vs `Pending`
 
 ### Photo Gallery Polish
-- [ ] Add carousel with swipe
+- [x] Add carousel with swipe
 - [ ] Support full-screen modal view
 - [ ] Tag photos by event type
 
