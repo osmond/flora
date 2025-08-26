@@ -1,3 +1,5 @@
+import DashboardStat from "@/components/DashboardStat"
+
 export const dynamic = "force-dynamic"
 
 async function fetchStats() {
@@ -14,16 +16,15 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-semibold">Dashboard</h1>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card
+          <DashboardStat
             title="Weekly Completion"
             value={stats?.completion != null ? `${stats.completion}%` : "—"}
             subtitle={`${stats?.totalDone ?? 0} actions`}
           />
-          <Card title="Current Streak" value={stats?.streak ?? 0} subtitle="days" />
-          <Card title="Plants" value={stats?.plants ?? 0} subtitle="total" />
-          <Card title="Done / wk" value={stats?.totalDone ?? 0} subtitle="events" />
+          <DashboardStat title="Current Streak" value={stats?.streak ?? 0} subtitle="days" />
+          <DashboardStat title="Plants" value={stats?.plants ?? 0} subtitle="total" />
+          <DashboardStat title="Done / wk" value={stats?.totalDone ?? 0} subtitle="events" />
         </section>
-
         <section className="rounded-2xl border bg-card text-card-foreground p-6">
           <h2 className="text-lg font-medium mb-4">Needs Attention</h2>
           {stats?.attention?.length ? (
@@ -71,16 +72,6 @@ export default async function DashboardPage() {
         </section>
       </div>
     </main>
-  )
-}
-
-function Card({ title, value, subtitle }: { title: string; value: string | number; subtitle?: string }) {
-  return (
-    <div className="rounded-2xl border bg-card text-card-foreground p-5">
-      <div className="text-sm text-muted-foreground">{title}</div>
-      <div className="text-3xl font-bold">{value}</div>
-      {subtitle ? <div className="text-xs text-muted-foreground mt-1">{subtitle}</div> : null}
-    </div>
   )
 }
 
