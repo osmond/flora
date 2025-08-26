@@ -126,7 +126,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ## 13. Next Round of Tasks (Beyond v1)
 
 ### Import / Export
-- [ ] Export plants + events as JSON or CSV
+- [x] Export plants + events as JSON or CSV
 - [ ] Import plants from JSON (validate schema)
 - [ ] Add “Download Backup” & “Restore” buttons in `/dashboard`
 
