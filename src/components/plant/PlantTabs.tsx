@@ -8,16 +8,21 @@ import AddNoteForm from '@/components/AddNoteForm';
 import AddPhotoForm from '@/components/AddPhotoForm';
 import PhotoGalleryClient from './PhotoGalleryClient';
 import { EventQuickAdd } from './EventQuickAdd';
+import { hydrateTimeline } from '@/lib/tasks';
 
 interface PlantTabsProps {
   plantId: string;
   initialEvents: CareEvent[];
+  waterEvery?: string | null;
+  fertEvery?: string | null;
   timelineError?: boolean;
 }
 
 export default function PlantTabs({
   plantId,
   initialEvents,
+  waterEvery,
+  fertEvery,
   timelineError = false,
 }: PlantTabsProps) {
   const [events, setEvents] = useState<CareEvent[]>(initialEvents);
@@ -25,6 +30,28 @@ export default function PlantTabs({
   useEffect(() => {
     setEvents(initialEvents);
   }, [initialEvents]);
+
+  useEffect(() => {
+    function handler(e: Event) {
+      const detail = (e as CustomEvent).detail as { plantId?: string };
+      if (detail?.plantId !== plantId) return;
+      refresh();
+    }
+    window.addEventListener('flora:events:changed', handler as EventListener);
+    return () => window.removeEventListener('flora:events:changed', handler as EventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plantId, waterEvery, fertEvery]);
+
+  async function refresh() {
+    try {
+      const res = await fetch(`/api/events?plantId=${plantId}`);
+      if (!res.ok) throw new Error('Failed to fetch events');
+      const data: CareEvent[] = await res.json();
+      setEvents(hydrateTimeline(data, { id: plantId, waterEvery, fertEvery }));
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   function addEvent(evt: CareEvent) {
     setEvents((prev) => [evt, ...prev]);

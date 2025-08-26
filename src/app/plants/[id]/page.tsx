@@ -105,6 +105,8 @@ export default async function PlantDetailPage({
           <PlantTabs
             plantId={plant.id}
             initialEvents={timelineEvents}
+            waterEvery={plant.waterEvery}
+            fertEvery={plant.fertEvery}
             timelineError={timelineError}
           />
         </div>
