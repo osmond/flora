@@ -12,11 +12,19 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/components/plant/SpeciesAutosuggest", () => ({
   __esModule: true,
-  default: ({ value = "", onSelect }: { value?: string; onSelect: (s: string, c?: string) => void }) => (
+  default: ({
+    value = "",
+    onSelect,
+    onInputChange,
+  }: {
+    value?: string;
+    onSelect: (s: string, c?: string) => void;
+    onInputChange?: (v: string) => void;
+  }) => (
     <input
       aria-label="species"
       value={value}
-      onChange={(e) => onSelect(e.target.value, e.target.value)}
+      onChange={(e) => onInputChange?.(e.target.value)}
     />
   ),
 }));
@@ -56,7 +64,7 @@ describe("AddPlantForm validation", () => {
       screen.getByText(/please enter a nickname/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/please select a species/i),
+      screen.getByText(/please enter a species/i),
     ).toBeInTheDocument();
     expect(global.fetch).not.toHaveBeenCalled();
   });
@@ -88,7 +96,10 @@ describe("AddPlantForm submission", () => {
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         "/api/plants",
-        expect.objectContaining({ method: "POST" })
+        expect.objectContaining({
+          method: "POST",
+          body: expect.stringContaining('"speciesCommon":"Pothos"'),
+        })
       );
       expect(push).toHaveBeenCalledWith("/plants/42");
     });
