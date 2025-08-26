@@ -92,8 +92,8 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ---
 
 ## 8. Edit & Maintenance
-- [ ] Edit metadata, replace photo
-- [ ] Archive/delete flows
+- [x] Edit metadata, replace photo
+- [x] Archive/delete flows
 
 ---
 
