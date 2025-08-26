@@ -2,7 +2,6 @@ import { getCurrentUserId } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { logEvent } from "@/lib/analytics";
 import { addDays, formatISO, parseISO } from "date-fns";
-import { parseInterval } from "@/lib/tasks";
 import { NextResponse } from "next/server";
 
 interface Params {
@@ -52,35 +51,6 @@ export async function PATCH(req: Request, { params }: Params) {
       });
       if (eventError) {
         return NextResponse.json({ error: "Database error" }, { status: 500 });
-      }
-
-      const { data: plant } = await supabaseAdmin
-        .from("plants")
-        .select("care_plan")
-        .eq("id", task.plant_id as string)
-        .eq("user_id", userId)
-        .single();
-
-      const plan = plant?.care_plan as
-        | { waterEvery?: string; fertEvery?: string }
-        | null;
-      const intervalStr =
-        task.type === "water"
-          ? plan?.waterEvery
-          : task.type === "fertilize"
-          ? plan?.fertEvery
-          : undefined;
-      const interval = parseInterval(intervalStr);
-      if (interval) {
-        const nextDue = formatISO(addDays(new Date(), interval), {
-          representation: "date",
-        });
-        await supabaseAdmin.from("tasks").insert({
-          plant_id: task.plant_id as string,
-          user_id: userId,
-          type: task.type as string,
-          due_date: nextDue,
-        });
       }
 
       await logEvent("task_completed", { task_id: id });
@@ -147,4 +117,3 @@ export async function PATCH(req: Request, { params }: Params) {
   }
 }
 
-export const runtime = "edge";
