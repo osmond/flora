@@ -30,11 +30,34 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+vi.mock("@/components/ui/avatar", () => ({
+  __esModule: true,
+  Avatar: ({ children }: any) => <div>{children}</div>,
+  AvatarFallback: ({ children }: any) => <div>{children}</div>,
+}));
+
 describe("TaskList empty state", () => {
   it("shows call to add a plant when no tasks", () => {
     render(<TaskList tasks={[]} />);
     expect(screen.getByText(/all caught up/i)).toBeInTheDocument();
     const link = screen.getByRole("link", { name: /Add a Plant/i });
     expect(link).toHaveAttribute("href", "/plants/new");
+  });
+});
+
+describe("TaskList task actions", () => {
+  it("links to event logging from each task", () => {
+    const tasks = [
+      {
+        id: "1",
+        plantId: "abc",
+        plantName: "Fern",
+        type: "water" as const,
+        due: new Date().toISOString(),
+      },
+    ];
+    render(<TaskList tasks={tasks} />);
+    const logLink = screen.getByRole("link", { name: /log/i });
+    expect(logLink).toHaveAttribute("href", "/plants/abc#log-event");
   });
 });

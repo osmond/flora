@@ -57,6 +57,9 @@ export default function TaskCard({
           </DropdownMenuContent>
         </DropdownMenu>
         <Button asChild variant="outline" size="sm">
+          <Link href={`/plants/${task.plantId}#log-event`}>Log</Link>
+        </Button>
+        <Button asChild variant="outline" size="sm">
           <Link href={`/plants/${task.plantId}`}>View</Link>
         </Button>
       </div>
