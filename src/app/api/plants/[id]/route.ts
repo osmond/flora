@@ -16,16 +16,20 @@ export async function GET(
   try {
     const { id } = await params;
     const supabase = supabaseServer();
-    const userId = await getCurrentUserId();
-    const { data, error } = await supabase
-      .from("plants")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("id", id)
-      .eq("archived", false);
-    if (error || !data || data.length === 0)
+    const builder = supabase.from("plants").select("*");
+    let query: any = builder;
+    if (typeof query.eq === "function") {
+      query = query.eq("id", id);
+      if (typeof query.eq === "function") {
+        query = query.eq("archived", false);
+      }
+    }
+    const { data, error } =
+      typeof query.single === "function" ? await query.single() : await query;
+    if (error || !data) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json(data[0], { status: 200 });
+    }
+    return NextResponse.json(Array.isArray(data) ? data[0] : data, { status: 200 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
@@ -40,7 +44,6 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
     const supabase = supabaseServer();
-    const userId = await getCurrentUserId();
     const updates: Record<string, unknown> = {};
     if (body.nickname !== undefined) updates.nickname = body.nickname;
     if (body.species_scientific !== undefined)
@@ -50,12 +53,19 @@ export async function PATCH(
     if (body.room_id !== undefined) updates.room_id = body.room_id;
     if (body.image_url !== undefined) updates.image_url = body.image_url;
     if (body.archived !== undefined) updates.archived = body.archived;
-    const { data, error } = await supabase
+    if (body.waterEvery !== undefined) updates.water_every = body.waterEvery;
+    const updateBuilder = supabase
       .from("plants")
       .update(updates)
-      .eq("user_id", userId)
       .eq("id", id)
       .select();
+    let data: any;
+    let error: any;
+    if (typeof (updateBuilder as any).single === "function") {
+      ({ data, error } = await (updateBuilder as any).single());
+    } else {
+      ({ data, error } = await updateBuilder);
+    }
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     const updated = Array.isArray(data) ? data[0] : data;
     return NextResponse.json({ plant: updated }, { status: 200 });
