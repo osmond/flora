@@ -1,7 +1,8 @@
+// src/components/TaskList.tsx
 "use client";
 
-import { useState } from 'react';
-import confetti from 'canvas-confetti';
+import { useState } from "react";
+import confetti from "canvas-confetti";
 import {
   addDays,
   formatISO,
@@ -9,15 +10,19 @@ import {
   isSameDay,
   parseISO,
   startOfDay,
-} from 'date-fns';
-import type { Task } from '@/types/task';
-import TaskCard from '@/components/TaskCard';
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
-import EmptyTasksState from '@/components/EmptyTasksState';
-import { apiFetch } from '@/lib/api';
+} from "date-fns";
+import type { Task } from "@/types/task";
+import TaskCard from "@/components/TaskCard";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import EmptyTasksState from "@/components/EmptyTasksState";
+import { apiFetch } from "@/lib/api";
+
+// shadcn/ui
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 function playChime() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   const AudioCtx =
     window.AudioContext ||
     (window as unknown as { webkitAudioContext: typeof AudioContext })
@@ -25,7 +30,7 @@ function playChime() {
   const ctx = new AudioCtx();
   const oscillator = ctx.createOscillator();
   const gain = ctx.createGain();
-  oscillator.type = 'sine';
+  oscillator.type = "sine";
   oscillator.frequency.setValueAtTime(660, ctx.currentTime);
   gain.gain.setValueAtTime(0.1, ctx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1);
@@ -48,15 +53,14 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
     setTasks((prev) => prev.filter((t) => t.id !== id));
     try {
       await apiFetch(`/api/tasks/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'complete' }),
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "complete" }),
       });
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       playChime();
     } catch {
-      // errors handled by apiFetch toast
-      setTasks(previous);
+      setTasks(previous); // toast happens in apiFetch
     }
   };
 
@@ -72,18 +76,17 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
     setTasks(updated);
     try {
       await apiFetch(`/api/tasks/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'snooze', days }),
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "snooze", days }),
       });
     } catch {
-      // errors handled by apiFetch toast
-      setTasks(previous);
+      setTasks(previous); // toast happens in apiFetch
     }
   };
 
   const today = startOfDay(new Date());
-  const sections: Record<'overdue' | 'due' | 'upcoming', Task[]> = {
+  const sections: Record<"overdue" | "due" | "upcoming", Task[]> = {
     overdue: [],
     due: [],
     upcoming: [],
@@ -97,34 +100,66 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
 
   return (
     <LayoutGroup>
-      <ul className="space-y-8">
-        {(
-          [
-            ['overdue', 'Overdue'],
-            ['due', 'Due Today'],
-            ['upcoming', 'Upcoming'],
-          ] as const
-        ).map(([key, label]) =>
-          sections[key].length ? (
-            <li key={key}>
-              <div className="mb-2 text-sm font-medium text-muted-foreground">{label}</div>
-              <motion.ul layout className="space-y-4">
-                <AnimatePresence>
-                  {sections[key].map((task) => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onComplete={handleComplete}
-                      onSnooze={handleSnooze}
-                    />
-                  ))}
-                </AnimatePresence>
-              </motion.ul>
-            </li>
-          ) : null
-        )}
-      </ul>
+      <div className="space-y-6">
+        <TaskSection
+          label="Overdue"
+          items={sections.overdue}
+          onComplete={handleComplete}
+          onSnooze={handleSnooze}
+        />
+        <TaskSection
+          label="Due Today"
+          items={sections.due}
+          onComplete={handleComplete}
+          onSnooze={handleSnooze}
+        />
+        <TaskSection
+          label="Upcoming"
+          items={sections.upcoming}
+          onComplete={handleComplete}
+          onSnooze={handleSnooze}
+        />
+      </div>
     </LayoutGroup>
+  );
+}
+
+function TaskSection({
+  label,
+  items,
+  onComplete,
+  onSnooze,
+}: {
+  label: string;
+  items: Task[];
+  onComplete: (id: string) => Promise<void> | void;
+  onSnooze: (id: string, days?: number) => Promise<void> | void;
+}) {
+  return (
+    <Card className="border-muted/40">
+      <CardHeader className="flex-row items-center justify-between">
+        <h2 className="text-lg font-semibold">{label}</h2>
+        <Badge variant="secondary">{items.length}</Badge>
+      </CardHeader>
+      <CardContent>
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Nothing here 🎉</p>
+        ) : (
+          <motion.ul layout className="space-y-4">
+            <AnimatePresence>
+              {items.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onComplete={onComplete}
+                  onSnooze={onSnooze}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.ul>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -142,12 +177,19 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
   const handlePointerDown = (e: React.PointerEvent<HTMLLIElement>) => {
     setStartX(e.clientX);
   };
-
   const handlePointerMove = (e: React.PointerEvent<HTMLLIElement>) => {
     if (startX !== null) {
       const delta = e.clientX - startX;
       if (delta > 0) setOffsetX(delta);
     }
+  };
+  const handlePointerEnd = () => {
+    if (offsetX > 100 && !pending) {
+      triggerComplete();
+    } else {
+      setOffsetX(0);
+    }
+    setStartX(null);
   };
 
   const triggerComplete = () => {
@@ -166,15 +208,6 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
     }
   };
 
-  const handlePointerEnd = () => {
-    if (offsetX > 100 && !pending) {
-      triggerComplete();
-    } else {
-      setOffsetX(0);
-    }
-    setStartX(null);
-  };
-
   return (
     <motion.li
       layout
@@ -183,16 +216,14 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 100 }}
       transition={{ duration: 0.2 }}
-      style={{
-        transform: `translateX(${offsetX}px)`,
-        touchAction: 'pan-y',
-      }}
+      style={{ transform: `translateX(${offsetX}px)`, touchAction: "pan-y" }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}
       onPointerLeave={startX !== null ? handlePointerEnd : undefined}
       onPointerCancel={handlePointerEnd}
     >
+      {/* TaskCard already uses your design; keep it */}
       <TaskCard
         task={task}
         onComplete={triggerComplete}
@@ -202,4 +233,3 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
     </motion.li>
   );
 }
-
