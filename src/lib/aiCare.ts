@@ -11,6 +11,14 @@ export interface CareContext {
   } | null;
 }
 
+function getSeason(date: Date): "winter" | "spring" | "summer" | "fall" {
+  const month = date.getMonth();
+  if (month < 2 || month === 11) return "winter";
+  if (month < 5) return "spring";
+  if (month < 8) return "summer";
+  return "fall";
+}
+
 export async function getAiCareContext(plantId: string): Promise<CareContext> {
   const userId = await getCurrentUserId();
   const { data: events } = await supabaseAdmin
@@ -76,6 +84,17 @@ export async function getAiCareSuggestions(plantId: string) {
   if (events.length === 0) {
     suggestions.push(
       "No care history yet. Start logging events to get better suggestions.",
+    );
+  }
+
+  const season = getSeason(new Date());
+  if (season === "winter") {
+    suggestions.push(
+      "Winter conditions can be dry and low-light; consider supplementing humidity and light.",
+    );
+  } else if (season === "summer") {
+    suggestions.push(
+      "Summer sun is strong—watch for leaf scorch and ensure adequate humidity.",
     );
   }
 
