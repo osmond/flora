@@ -64,6 +64,22 @@ export default async function DashboardPage() {
         </section>
 
         <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Longest Streaks</h2>
+          {stats?.longestStreaks?.length ? (
+            <ul className="space-y-3">
+              {stats.longestStreaks.map((s: any) => (
+                <li key={s.id} className="flex items-center justify-between">
+                  <div className="font-medium">{s.plantName}</div>
+                  <div className="text-sm text-muted-foreground">{s.streak}d</div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">No streaks yet</p>
+          )}
+        </section>
+
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
           <h2 className="text-lg font-medium mb-4">Overdue Trend (7 days)</h2>
           <div className="grid grid-cols-7 gap-2">
             {(stats?.overdueTrend || []).map((d: any) => (
