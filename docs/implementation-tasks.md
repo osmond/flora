@@ -143,7 +143,7 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 ### Advanced AI Care Coach
  - [x] Daily digest summarizing all tasks
   - [x] Seasonal adjustments (light/humidity)
-  - [ ] Natural-language queries (“How’s Kay doing?”)
+  - [x] Natural-language queries (“How’s Kay doing?”)
 
 ### Mobile Polish & PWA
 - [x] Add manifest.json + icons
