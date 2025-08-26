@@ -21,6 +21,11 @@ function saveQueue(queue: EventPayload[]) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    window.dispatchEvent(
+      new CustomEvent('flora:queue:updated', {
+        detail: { length: queue.length },
+      })
+    );
   } catch {
     // ignore
   }
@@ -68,6 +73,10 @@ export function queueEvent(payload: EventPayload) {
   queue.push(payload);
   saveQueue(queue);
   startQueue();
+}
+
+export function getQueueLength() {
+  return getQueue().length;
 }
 
 export { QUEUE_KEY };

@@ -11,6 +11,7 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import SyncStatusBadge from "./SyncStatusBadge";
 
 (globalThis as unknown as { React?: typeof React }).React ??= React;
 
@@ -27,7 +28,7 @@ export default function SiteNav() {
 
   return (
     <>
-      <div className="hidden md:block px-4 md:px-6">
+      <div className="hidden md:flex items-center justify-between px-4 md:px-6">
         <NavigationMenu>
           <NavigationMenuList>
             {links.map(({ href, label }) => (
@@ -48,6 +49,7 @@ export default function SiteNav() {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
+        <SyncStatusBadge />
       </div>
       <nav className="fixed bottom-0 left-0 right-0 z-20 flex justify-around border-t bg-background py-2 md:hidden">
         {links.map(({ href, label, icon: Icon }) => (
@@ -67,6 +69,9 @@ export default function SiteNav() {
           </Link>
         ))}
       </nav>
+      <div className="fixed bottom-14 right-4 md:hidden">
+        <SyncStatusBadge />
+      </div>
     </>
   );
 }
