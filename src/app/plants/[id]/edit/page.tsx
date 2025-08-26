@@ -4,10 +4,11 @@ import db from "@/lib/db";
 export default async function EditPlantPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const plant = await db.plant.findFirst({
-    where: { id: params.id, archived: false },
+    where: { id, archived: false },
     select: { id: true, nickname: true, speciesScientific: true, imageUrl: true },
   });
   if (!plant) {
