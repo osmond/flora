@@ -1,44 +1,99 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 entry + plugins */
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
 
+/* Map Tailwind color tokens to your shadcn CSS variables */
+@theme {
+  /* semantic colors Tailwind will generate utilities for */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  /* radii */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* Your shadcn tokens (unchanged, just make sure popover vars exist) */
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
+
+    /* needed for dropdowns/menus */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
     --primary: 166 30% 51%;
     --primary-foreground: 210 20% 98%;
+
     --secondary: 170 42% 86%;
     --secondary-foreground: 163 93% 14%;
+
     --muted: 218 11% 65%;
     --muted-foreground: 215 20% 50%;
+
     --accent: 170 42% 86%;
     --accent-foreground: 163 93% 14%;
+
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 20% 98%;
+
     --border: 220 13% 91%;
     --input: 220 13% 91%;
     --ring: 166 30% 51%;
+
     --radius: 0.75rem;
   }
 
   .dark {
     --background: 220 49% 8%;
     --foreground: 210 13% 91%;
+
     --card: 220 46% 10%;
     --card-foreground: 210 13% 91%;
+
+    --popover: 220 46% 10%;
+    --popover-foreground: 210 13% 91%;
+
     --primary: 166 30% 51%;
     --primary-foreground: 220 49% 98%;
+
     --secondary: 170 42% 16%;
     --secondary-foreground: 163 93% 91%;
+
     --muted: 218 11% 41%;
     --muted-foreground: 215 20% 65%;
+
     --accent: 170 42% 16%;
     --accent-foreground: 163 93% 91%;
+
     --destructive: 0 62% 30%;
     --destructive-foreground: 210 13% 91%;
+
     --border: 220 7% 18%;
     --input: 220 7% 18%;
     --ring: 166 30% 51%;
@@ -48,18 +103,28 @@
     :root {
       --background: 0 0% 100%;
       --foreground: 0 0% 0%;
+
       --card: 0 0% 100%;
       --card-foreground: 0 0% 0%;
+
+      --popover: 0 0% 100%;
+      --popover-foreground: 0 0% 0%;
+
       --primary: 166 60% 30%;
       --primary-foreground: 0 0% 100%;
+
       --secondary: 170 60% 40%;
       --secondary-foreground: 0 0% 100%;
+
       --muted: 0 0% 60%;
       --muted-foreground: 0 0% 0%;
+
       --accent: 170 60% 40%;
       --accent-foreground: 0 0% 100%;
+
       --destructive: 0 100% 30%;
       --destructive-foreground: 0 0% 100%;
+
       --border: 0 0% 0%;
       --input: 0 0% 0%;
       --ring: 166 60% 30%;
@@ -68,30 +133,38 @@
     .dark {
       --background: 0 0% 0%;
       --foreground: 0 0% 100%;
+
       --card: 0 0% 0%;
       --card-foreground: 0 0% 100%;
+
+      --popover: 0 0% 0%;
+      --popover-foreground: 0 0% 100%;
+
       --primary: 166 60% 40%;
       --primary-foreground: 0 0% 0%;
+
       --secondary: 170 60% 60%;
       --secondary-foreground: 0 0% 0%;
+
       --muted: 0 0% 40%;
       --muted-foreground: 0 0% 100%;
+
       --accent: 170 60% 60%;
       --accent-foreground: 0 0% 0%;
+
       --destructive: 0 100% 60%;
       --destructive-foreground: 0 0% 0%;
+
       --border: 0 0% 100%;
       --input: 0 0% 100%;
       --ring: 166 60% 40%;
     }
   }
 
-  * {
-    border-color: hsl(var(--border));
-  }
+  /* Apply semantic colors globally */
+  * { @apply border-border; }
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react';
-import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from 'sonner';
-import SiteNav from '@/components/SiteNav';
-import LocationProvider from '@/components/LocationProvider';
-import OfflineQueueProvider from '@/components/OfflineQueueProvider';
+import type { ReactNode } from "react";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
+import SiteNav from "@/components/SiteNav";
+import LocationProvider from "@/components/LocationProvider";
+import OfflineQueueProvider from "@/components/OfflineQueueProvider";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -16,12 +16,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="flex min-h-screen flex-col bg-background text-foreground">
+      <body className="min-h-screen bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LocationProvider />
           <OfflineQueueProvider />
           <SiteNav />
-          <main className="flex-1">{children}</main>
+          {/* Full-width flow again (keep some padding) */}
+          <main className="flex-1 px-4 py-6 md:px-6">{children}</main>
           <Toaster richColors />
         </ThemeProvider>
       </body>

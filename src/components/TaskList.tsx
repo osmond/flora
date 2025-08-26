@@ -1,4 +1,3 @@
-// src/components/TaskList.tsx
 "use client";
 
 import { useState } from "react";
@@ -21,32 +20,10 @@ import { apiFetch } from "@/lib/api";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-function playChime() {
-  if (typeof window === "undefined") return;
-  const AudioCtx =
-    window.AudioContext ||
-    (window as unknown as { webkitAudioContext: typeof AudioContext })
-      .webkitAudioContext;
-  const ctx = new AudioCtx();
-  const oscillator = ctx.createOscillator();
-  const gain = ctx.createGain();
-  oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(660, ctx.currentTime);
-  gain.gain.setValueAtTime(0.1, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1);
-  oscillator.connect(gain);
-  gain.connect(ctx.destination);
-  oscillator.start();
-  oscillator.stop(ctx.currentTime + 1);
-  oscillator.onended = () => ctx.close();
-}
-
 export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
   const [tasks, setTasks] = useState(initialTasks);
 
-  if (!tasks || tasks.length === 0) {
-    return <EmptyTasksState />;
-  }
+  if (!tasks || tasks.length === 0) return <EmptyTasksState />;
 
   const handleComplete = async (id: string) => {
     const previous = tasks;
@@ -58,9 +35,8 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
         body: JSON.stringify({ action: "complete" }),
       });
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-      playChime();
     } catch {
-      setTasks(previous); // toast happens in apiFetch
+      setTasks(previous);
     }
   };
 
@@ -81,7 +57,7 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
         body: JSON.stringify({ action: "snooze", days }),
       });
     } catch {
-      setTasks(previous); // toast happens in apiFetch
+      setTasks(previous);
     }
   };
 
@@ -132,8 +108,8 @@ function TaskSection({
 }: {
   label: string;
   items: Task[];
-  onComplete: (id: string) => Promise<void> | void;
-  onSnooze: (id: string, days?: number) => Promise<void> | void;
+  onComplete: (id: string) => void | Promise<void>;
+  onSnooze: (id: string, days?: number) => void | Promise<void>;
 }) {
   return (
     <Card className="border-muted/40">
@@ -145,7 +121,7 @@ function TaskSection({
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nothing here 🎉</p>
         ) : (
-          <motion.ul layout className="space-y-4">
+          <motion.ul layout className="space-y-4 list-none pl-0">
             <AnimatePresence>
               {items.map((task) => (
                 <TaskItem
@@ -163,49 +139,23 @@ function TaskSection({
   );
 }
 
-type TaskItemProps = {
+function TaskItem({
+  task,
+  onComplete,
+  onSnooze,
+}: {
   task: Task;
-  onComplete: (id: string) => Promise<void> | void;
-  onSnooze: (id: string, days?: number) => Promise<void> | void;
-};
+  onComplete: (id: string) => void | Promise<void>;
+  onSnooze: (id: string, days?: number) => void | Promise<void>;
+}) {
+  const [startX, setStartX] = React.useState<number | null>(null);
+  const [offsetX, setOffsetX] = React.useState(0);
+  const [pending, setPending] = React.useState(false);
 
-function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
-  const [startX, setStartX] = useState<number | null>(null);
-  const [offsetX, setOffsetX] = useState(0);
-  const [pending, setPending] = useState(false);
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLLIElement>) => {
-    setStartX(e.clientX);
-  };
-  const handlePointerMove = (e: React.PointerEvent<HTMLLIElement>) => {
-    if (startX !== null) {
-      const delta = e.clientX - startX;
-      if (delta > 0) setOffsetX(delta);
-    }
-  };
-  const handlePointerEnd = () => {
-    if (offsetX > 100 && !pending) {
-      triggerComplete();
-    } else {
-      setOffsetX(0);
-    }
-    setStartX(null);
-  };
-
-  const triggerComplete = () => {
+  const complete = () => {
     if (pending) return;
     setPending(true);
     void onComplete(task.id);
-  };
-
-  const handleSnoozeSelect = async (days: number) => {
-    if (pending) return;
-    setPending(true);
-    try {
-      await onSnooze(task.id, days);
-    } finally {
-      setPending(false);
-    }
   };
 
   return (
@@ -217,17 +167,40 @@ function TaskItem({ task, onComplete, onSnooze }: TaskItemProps) {
       exit={{ opacity: 0, x: 100 }}
       transition={{ duration: 0.2 }}
       style={{ transform: `translateX(${offsetX}px)`, touchAction: "pan-y" }}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerEnd}
-      onPointerLeave={startX !== null ? handlePointerEnd : undefined}
-      onPointerCancel={handlePointerEnd}
+      onPointerDown={(e) => setStartX(e.clientX)}
+      onPointerMove={(e) => {
+        if (startX !== null) {
+          const delta = e.clientX - startX;
+          if (delta > 0) setOffsetX(delta);
+        }
+      }}
+      onPointerUp={() => {
+        if (offsetX > 100 && !pending) complete();
+        else setOffsetX(0);
+        setStartX(null);
+      }}
+      onPointerLeave={startX !== null ? () => {
+        if (offsetX > 100 && !pending) complete();
+        else setOffsetX(0);
+        setStartX(null);
+      } : undefined}
+      onPointerCancel={() => {
+        setOffsetX(0);
+        setStartX(null);
+      }}
     >
-      {/* TaskCard already uses your design; keep it */}
       <TaskCard
         task={task}
-        onComplete={triggerComplete}
-        onSnooze={handleSnoozeSelect}
+        onComplete={complete}
+        onSnooze={async (days = 1) => {
+          if (pending) return;
+          setPending(true);
+          try {
+            await onSnooze(task.id, days);
+          } finally {
+            setPending(false);
+          }
+        }}
         pending={pending}
       />
     </motion.li>
