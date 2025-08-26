@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { queueEvent, type EventPayload } from "@/lib/offlineQueue";
+import { Button } from "@/components/ui/button";
 
 type Props = { plantId: string };
 
@@ -41,22 +42,23 @@ export function EventQuickAdd({ plantId }: Props) {
   return (
     <div id="log-event" className="rounded-xl border bg-card p-4 space-y-3">
       <div className="flex gap-2">
-        <button
+        <Button
           type="button"
           onClick={() => add("water")}
           disabled={loading}
-          className="h-9 rounded-md bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50"
+          size="sm"
         >
           Watered
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={() => add("fertilize")}
           disabled={loading}
-          className="h-9 rounded-md border px-3 text-sm disabled:opacity-50"
+          variant="outline"
+          size="sm"
         >
           Fertilized
-        </button>
+        </Button>
       </div>
       <div className="flex gap-2">
         <input
@@ -65,14 +67,15 @@ export function EventQuickAdd({ plantId }: Props) {
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
-        <button
+        <Button
           type="button"
           onClick={() => add("note")}
           disabled={loading}
-          className="h-9 rounded-md border px-3 text-sm disabled:opacity-50"
+          variant="outline"
+          size="sm"
         >
           Add note
-        </button>
+        </Button>
       </div>
     </div>
   );
