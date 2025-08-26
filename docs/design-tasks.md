@@ -112,7 +112,7 @@ export function SpeciesAutosuggest() {
 
 ## 3. Plant Detail Page
 
-- [ ] **Hero Section**
+- [x] **Hero Section**
   - Crop hero photo consistently (16:9)
   - Overlay gradient for text legibility
   - Room badge = pill style
