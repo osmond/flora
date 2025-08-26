@@ -14,6 +14,7 @@ import type { Task } from '@/types/task';
 import TaskCard from '@/components/TaskCard';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import EmptyTasksState from '@/components/EmptyTasksState';
+import { apiFetch } from '@/lib/api';
 
 function playChime() {
   if (typeof window === 'undefined') return;
@@ -44,13 +45,13 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
 
   const handleComplete = async (id: string) => {
     try {
-      await fetch(`/api/tasks/${id}`, {
+      await apiFetch(`/api/tasks/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'complete' }),
       });
-    } catch (err) {
-      console.error('Failed to complete task', err);
+    } catch {
+      // errors handled by apiFetch toast
     } finally {
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       playChime();
@@ -60,13 +61,13 @@ export default function TaskList({ tasks: initialTasks }: { tasks: Task[] }) {
 
   const handleSnooze = async (id: string, days = 1) => {
     try {
-      await fetch(`/api/tasks/${id}`, {
+      await apiFetch(`/api/tasks/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'snooze', days }),
       });
-    } catch (err) {
-      console.error('Failed to snooze task', err);
+    } catch {
+      // errors handled by apiFetch toast
     } finally {
       setTasks((prev) =>
         prev

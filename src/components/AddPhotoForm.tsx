@@ -9,6 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from '@/components/ui/tooltip';
+import { apiFetch } from '@/lib/api';
 
 interface Props {
   plantId: string;
@@ -40,19 +41,16 @@ export default function AddPhotoForm({ plantId, onAdd, onReplace }: Props) {
     setFile(null);
     (e.target as HTMLFormElement).reset();
     try {
-      const res = await fetch('/api/events', {
+      const data = await apiFetch<any>('/api/events', {
         method: 'POST',
         body: formData,
       });
-      if (res.ok) {
-        const data = await res.json();
-        const real = Array.isArray(data) ? data[0] : data;
-        if (real) {
-          onReplace(tempId, real);
-        }
+      const real = Array.isArray(data) ? data[0] : data;
+      if (real) {
+        onReplace(tempId, real);
       }
-    } catch (err) {
-      console.error('Failed to upload photo', err);
+    } catch {
+      // error handled by apiFetch toast
     } finally {
       setSaving(false);
     }
