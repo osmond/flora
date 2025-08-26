@@ -131,9 +131,9 @@ Use these snippets directly when building — they are Tailwind v4 + shadcn/ui c
 - [x] Add “Download Backup” & “Restore” buttons in `/dashboard`
 
 ### Offline Queue & Sync
-- [ ] Add `offlineQueue.ts` util (queue failed POSTs to localStorage)
-- [ ] Retry queued events on reconnect
-- [ ] Add status badge for `Synced` vs `Pending`
+- [x] Add `offlineQueue.ts` util (queue failed POSTs to localStorage)
+- [x] Retry queued events on reconnect
+- [x] Add status badge for `Synced` vs `Pending`
 
 ### Photo Gallery Polish
 - [ ] Add carousel with swipe
