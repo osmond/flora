@@ -1,6 +1,16 @@
 "use client";
 
 import * as React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 type Room = { id: number; name: string }
 
@@ -41,35 +51,34 @@ export function RoomSelect(props: {
 
   return (
     <div className="space-y-2">
-      <select
-        id={id}
-        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-        value={value ?? ""}
-        onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)}
+      <Label htmlFor={id}>Room</Label>
+      <Select
+        value={value !== null ? String(value) : "0"}
+        onValueChange={(v) => onChange(v === "0" ? null : Number(v))}
       >
-        <option value="">No room</option>
-        {rooms.map((r) => (
-          <option key={r.id} value={r.id}>
-            {r.name}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger id={id}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="0">No room</SelectItem>
+          {rooms.map((r) => (
+            <SelectItem key={r.id} value={String(r.id)}>
+              {r.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <div className="flex items-center gap-2">
-        <input
-          className="h-10 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+        <Input
+          className="flex-1"
           placeholder="Quick add room…"
           value={newRoom}
           onChange={(e) => setNewRoom(e.target.value)}
         />
-        <button
-          type="button"
-          onClick={createRoom}
-          disabled={creating}
-          className="h-10 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground disabled:opacity-50"
-        >
+        <Button type="button" onClick={createRoom} disabled={creating}>
           {creating ? "Adding…" : "Add"}
-        </button>
+        </Button>
       </div>
     </div>
   );
