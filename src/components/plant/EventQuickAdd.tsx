@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { queueEvent, type EventPayload } from "@/lib/offlineQueue";
 
 type Props = { plantId: string };
 
@@ -11,7 +12,7 @@ export function EventQuickAdd({ plantId }: Props) {
   async function add(type: "water" | "fertilize" | "note") {
     if (loading) return; // prevent duplicate submissions
 
-    const payload: Record<string, unknown> = { plant_id: plantId, type };
+    const payload: EventPayload = { plant_id: plantId, type } as EventPayload;
     if (type === "note" && note.trim()) payload.note = note.trim();
 
     try {
@@ -27,7 +28,11 @@ export function EventQuickAdd({ plantId }: Props) {
         window.dispatchEvent(
           new CustomEvent("flora:events:changed", { detail: { plantId } }),
         );
+      } else if (!navigator.onLine) {
+        queueEvent(payload);
       }
+    } catch {
+      queueEvent(payload);
     } finally {
       setLoading(false);
     }
