@@ -145,7 +145,7 @@ export function PlantHero() {
 
 ## 4. Today View (Tasks)
 
-- [ ] **Task Card**
+- [x] **Task Card**
   - Base on shadcn/ui `<Card>`
   - Avatar left, task title/desc middle, button right
 
