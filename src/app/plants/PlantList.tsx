@@ -33,7 +33,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
         <Button
           aria-label="Grid view"
           onClick={() => setView('grid')}
-          variant={view === 'grid' ? 'secondary' : 'outline'}
+          variant={view === 'grid' ? 'default' : 'outline'}
           size="sm"
         >
           Grid
@@ -41,7 +41,7 @@ export default function PlantList({ plants }: { plants: Plant[] }) {
         <Button
           aria-label="List view"
           onClick={() => setView('list')}
-          variant={view === 'list' ? 'secondary' : 'outline'}
+          variant={view === 'list' ? 'default' : 'outline'}
           size="sm"
         >
           List
