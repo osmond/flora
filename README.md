@@ -111,13 +111,15 @@ cp .env.example .env.local  # Fill in your keys
 supabase login
 # link to your own project or start a local instance
 
-supabase link --project-ref suyojlyvriuqchonmpjt
+supabase link --project-ref <your_project_ref>  # or run `supabase start`
 
-# apply schema in order (safe to re-run)
-supabase db query --file supabase/migrations/20250825045101_rooms_events.sql
-supabase db query --file supabase/plants.sql
-supabase db query --file supabase/tasks.sql
-supabase db query --file supabase/analytics.sql
+# use psql to apply schema in order (safe to re-run)
+export DATABASE_URL="postgresql://postgres:<password>@db.<project_ref>.supabase.co:5432/postgres"  # use local string from `supabase start` if running locally
+psql "$DATABASE_URL" -f supabase/migrations/20250825045101_rooms_events.sql
+psql "$DATABASE_URL" -f supabase/plants.sql
+psql "$DATABASE_URL" -f supabase/tasks.sql
+psql "$DATABASE_URL" -f supabase/analytics.sql
+
 
 # optional sample data
 supabase db query --file supabase/sample_data.sql
