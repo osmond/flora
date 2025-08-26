@@ -39,5 +39,21 @@ describe('PhotoGalleryClient', () => {
       screen.getByRole('dialog', { name: /full size photo/i })
     ).toBeTruthy();
   });
+
+  it('shows tag for photo event', () => {
+    const events: CareEvent[] = [
+      {
+        id: '1',
+        type: 'photo',
+        note: null,
+        image_url: 'a.jpg',
+        created_at: '',
+        tag: 'water',
+      },
+    ];
+
+    render(<PhotoGalleryClient events={events} />);
+    expect(screen.getByText('water')).toBeTruthy();
+  });
 });
 

@@ -44,6 +44,7 @@ export async function POST(req: Request) {
     let note: string | null = null;
     let amount: number | null = null;
     let imageUrl: string | null = null;
+    let tag: string | null = null;
     let file: File | null = null;
 
     if (!contentType || !contentType.includes("application/json")) {
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
       plantId = form.get("plant_id")?.toString() || null;
       type = form.get("type")?.toString() || null;
       note = typeof form.get("note") === "string" ? (form.get("note") as string) : null;
+      tag = form.get("tag")?.toString() || null;
       const amt = form.get("amount");
       amount = typeof amt === "string" && amt ? Number(amt) : null;
       const f = form.get("photo");
@@ -60,6 +62,7 @@ export async function POST(req: Request) {
       plantId = body?.plant_id ?? null;
       type = body?.type ?? null;
       note = typeof body?.note === "string" ? body.note : null;
+      tag = typeof body?.tag === "string" ? body.tag : null;
       amount = body?.amount ?? null;
       imageUrl = typeof body?.photoUrl === "string" ? body.photoUrl : null;
     }
@@ -117,6 +120,7 @@ export async function POST(req: Request) {
       image_url: imageUrl,
       public_id: publicId,
       user_id: userId,
+      tag,
     };
 
     const { data, error } = await supabase.from("events").insert(payload).select();

@@ -41,13 +41,20 @@ export default function PhotoGalleryClient({ events }: { events: CareEvent[] }) 
             onClick={() => setActive(photo)}
             aria-label="View photo"
           >
-            <Image
-              src={photo.image_url || ''}
-              alt={photo.note ?? 'Photo of plant'}
-              width={300}
-              height={300}
-              className="h-48 w-full rounded-lg object-cover"
-            />
+            <div className="relative">
+              <Image
+                src={photo.image_url || ''}
+                alt={photo.note ?? 'Photo of plant'}
+                width={300}
+                height={300}
+                className="h-48 w-full rounded-lg object-cover"
+              />
+              {photo.tag && (
+                <span className="absolute left-2 top-2 rounded bg-background/80 px-2 text-xs capitalize">
+                  {photo.tag}
+                </span>
+              )}
+            </div>
           </button>
         ))}
       </div>
