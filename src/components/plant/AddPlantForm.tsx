@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -39,6 +39,40 @@ export default function AddPlantForm(): JSX.Element {
   const [previewing, setPreviewing] = useState<boolean>(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [roomName, setRoomName] = useState<string | null>(null);
+  const [rooms, setRooms] = useState<{ id: number; name: string }[]>([]);
+
+  const loadRooms = useCallback(async () => {
+    try {
+      const res = await fetch("/api/rooms");
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setRooms(data);
+        return data as { id: number; name: string }[];
+      }
+    } catch {
+      /* ignore */
+    }
+    return [] as { id: number; name: string }[];
+  }, []);
+
+  const updateRoomName = useCallback(
+    async (id: number | null) => {
+      if (id == null) {
+        setRoomName(null);
+        return;
+      }
+      const room = rooms.find((r) => r.id === id);
+      if (room) {
+        setRoomName(room.name);
+      } else {
+        const fetched = await loadRooms();
+        const found = fetched.find((r) => r.id === id);
+        setRoomName(found ? found.name : null);
+      }
+    },
+    [rooms, loadRooms],
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,15 +94,16 @@ export default function AddPlantForm(): JSX.Element {
       try {
         const parsed = JSON.parse(saved);
         form.reset({ ...form.getValues(), ...parsed });
+        void updateRoomName(parsed.room_id ?? null);
       } catch {
         /* ignore */
       }
     }
-  }, [form]);
+  }, [form, updateRoomName]);
 
   useEffect(() => {
     const subscription = form.watch((value) => {
-      const { photo, ...rest } = value;
+      const { photo: _photo, ...rest } = value;
       const isEmpty = Object.values(rest).every(
         (v) => v === "" || v === null || v === undefined,
       );
@@ -132,7 +167,7 @@ export default function AddPlantForm(): JSX.Element {
       localStorage.removeItem(STORAGE_KEY);
 
       const id: string | number | undefined = json?.plant?.id;
-      const imageUrl: string | undefined = json?.plant?.image_url;
+      const _imageUrl: string | undefined = json?.plant?.image_url;
       // imageUrl can be used for further client-side handling if needed
       router.push(id ? `/plants/${id}` : "/plants");
     } catch (err) {
@@ -163,6 +198,7 @@ export default function AddPlantForm(): JSX.Element {
     setCarePreview(null);
     setPreviewError(null);
     setPhotoPreview(null);
+    setRoomName(null);
     setStep(1);
     localStorage.removeItem(STORAGE_KEY);
   }
@@ -274,7 +310,14 @@ export default function AddPlantForm(): JSX.Element {
               render={({ field }) => (
                 <div className="space-y-2">
                   <Label htmlFor="room">Room</Label>
-                  <RoomSelect id="room" value={field.value ?? null} onChange={field.onChange} />
+                  <RoomSelect
+                    id="room"
+                    value={field.value ?? null}
+                    onChange={(id) => {
+                      field.onChange(id);
+                      void updateRoomName(id);
+                    }}
+                  />
                 </div>
               )}
             />
@@ -360,8 +403,8 @@ export default function AddPlantForm(): JSX.Element {
           <div className="space-y-2 text-sm">
             <p><span className="font-medium">Nickname:</span> {form.getValues("nickname")}</p>
             <p><span className="font-medium">Species:</span> {form.getValues("species")}</p>
-            {form.getValues("room_id") != null && (
-              <p><span className="font-medium">Room:</span> {form.getValues("room_id")}</p>
+            {roomName && (
+              <p><span className="font-medium">Room:</span> {roomName}</p>
             )}
             {form.getValues("pot") && (
               <p><span className="font-medium">Pot:</span> {form.getValues("pot")}</p>
