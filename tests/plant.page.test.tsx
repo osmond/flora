@@ -72,7 +72,7 @@ vi.mock("@/lib/db", () => ({
     plant: {
       findFirst: () =>
         Promise.resolve({
-          id: "plant-1",
+          id: "1",
           nickname: "My Plant",
           speciesScientific: "Pothos",
           imageUrl: null,
@@ -90,7 +90,7 @@ vi.mock("@/lib/db", () => ({
 
 const mockOrder = vi.fn();
 vi.mock("@/lib/supabaseAdmin", () => ({
-  supabaseAdmin: {
+  supabaseAdmin: () => ({
     from: () => ({
       select: () => ({
         eq: () => ({
@@ -100,7 +100,7 @@ vi.mock("@/lib/supabaseAdmin", () => ({
         }),
       }),
     }),
-  },
+  }),
 }));
 
 beforeEach(() => {
@@ -111,14 +111,14 @@ beforeEach(() => {
 describe("PlantDetailPage", () => {
   it("falls back to latest photo when plant has no main image", async () => {
     const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
-    const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
+    const element = await PlantDetailPage({ params: Promise.resolve({ id: "1" }) });
     const html = renderToString(element);
     expect(html).toContain("https://example.com/latest.jpg");
   });
 
   it("shows plant name, species, and room", async () => {
     const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
-    const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
+    const element = await PlantDetailPage({ params: Promise.resolve({ id: "1" }) });
     const html = renderToString(element);
     expect(html).toContain("My Plant");
     expect(html).toContain("Pothos");
@@ -127,7 +127,7 @@ describe("PlantDetailPage", () => {
 
   it("renders mark as watered button", async () => {
     const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
-    const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
+    const element = await PlantDetailPage({ params: Promise.resolve({ id: "1" }) });
     const html = renderToString(element);
     expect(html).toContain("Mark as watered");
   });
@@ -135,7 +135,7 @@ describe("PlantDetailPage", () => {
   it("sets timelineError when events fetch fails", async () => {
     mockOrder.mockResolvedValueOnce({ data: null, error: { message: "fail" } });
     const PlantDetailPage = (await import("../src/app/plants/[id]/page")).default;
-    const element = await PlantDetailPage({ params: Promise.resolve({ id: "plant-1" }) });
+    const element = await PlantDetailPage({ params: Promise.resolve({ id: "1" }) });
     renderToString(element);
     expect(plantTabsMock).toHaveBeenCalled();
     expect(plantTabsMock.mock.calls[0][0].timelineError).toBe(true);

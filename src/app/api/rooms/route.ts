@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
 
 export async function GET() {
   try {
@@ -11,6 +11,9 @@ export async function GET() {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json(data ?? [], { status: 200 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
@@ -27,6 +30,9 @@ export async function POST(req: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ room: data }, { status: 201 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
