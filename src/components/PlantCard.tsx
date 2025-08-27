@@ -43,8 +43,10 @@ export default function PlantCard(p: PlantCardProps) {
   );
 
   return (
-    <Link href={`/plants/${p.id}`} prefetch className="block">
-      <Card className="transition-all hover:shadow-md">
+    <Link href={`/plants/${p.id}`} prefetch className="block group">
+      <Card
+        className="relative transition-all duration-200 will-change-transform hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 ring-1 ring-transparent hover:ring-primary/20"
+      >
         <CardContent className="flex items-center gap-3 p-4">
           <Avatar>
             <AvatarFallback>🌿</AvatarFallback>
@@ -57,11 +59,15 @@ export default function PlantCard(p: PlantCardProps) {
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {waterDue && (
-                <Badge variant="secondary">💧 {waterDue.toLocaleDateString()}</Badge>
+                <Badge variant="secondary" className="group-hover:bg-secondary/90">
+                  💧 {waterDue.toLocaleDateString()}
+                </Badge>
               )}
               {fertDue && (
                 <Badge
-                  className={cn("bg-accent text-accent-foreground")}
+                  className={cn(
+                    "bg-accent text-accent-foreground group-hover:bg-accent/90"
+                  )}
                   variant="secondary"
                 >
                   🌱 {fertDue.toLocaleDateString()}
@@ -74,4 +80,3 @@ export default function PlantCard(p: PlantCardProps) {
     </Link>
   );
 }
-

@@ -44,7 +44,6 @@ async function getTasksFromSupabase(): Promise<Task[] | null> {
       type: (row?.type ?? row?.task_type ?? "water") as Task["type"],
       plantName: row?.plant_name ?? row?.nickname ?? "Plant",
       plantId: row?.plant_id ?? undefined,
-      status: row?.status ?? undefined,
     } satisfies Task;
   });
 }
@@ -83,4 +82,3 @@ export default async function TodayPage() {
     </section>
   );
 }
-

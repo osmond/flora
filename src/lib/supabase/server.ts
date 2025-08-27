@@ -7,7 +7,7 @@ export class SupabaseEnvError extends Error {
   }
 }
 
-function getConfig() {
+function getConfig(): { url: string; key: string } {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const missing: string[] = [];
@@ -16,7 +16,7 @@ function getConfig() {
   if (missing.length) {
     throw new SupabaseEnvError(missing);
   }
-  return { url, key };
+  return { url: url as string, key: key as string };
 }
 
 /**
@@ -28,4 +28,3 @@ export function supabaseServer() {
 }
 
 export { getConfig as getSupabaseConfig };
-

@@ -5,6 +5,8 @@ import { Toaster } from "sonner";
 import SiteNav from "@/components/SiteNav";
 import LocationProvider from "@/components/LocationProvider";
 import OfflineQueueProvider from "@/components/OfflineQueueProvider";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts";
+import PageTransition from "@/components/PageTransition";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -21,9 +23,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LocationProvider />
           <OfflineQueueProvider />
+          <KeyboardShortcuts />
           <SiteNav />
           {/* Full-width flow again (keep some padding) */}
-          <main className="flex-1 px-4 py-6 md:px-6">{children}</main>
+          <main className="flex-1 px-4 py-6 md:px-6">
+            <PageTransition>{children}</PageTransition>
+          </main>
           <Toaster richColors />
         </ThemeProvider>
       </body>

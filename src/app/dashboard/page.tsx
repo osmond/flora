@@ -1,5 +1,6 @@
 import DashboardStat from "@/components/DashboardStat"
 import BackupControls from "@/components/BackupControls"
+import AreaOverview from "@/components/charts/AreaOverview"
 
 export const dynamic = "force-dynamic"
 
@@ -91,16 +92,12 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border bg-card text-card-foreground p-6">
-          <h2 className="text-lg font-medium mb-4">Activity (7 days)</h2>
-          <div className="grid grid-cols-7 gap-2">
-            {(stats?.hist || []).map((d: any) => (
-              <div key={d.day} className="flex flex-col items-center gap-2">
-                <div className="w-8 rounded-md bg-primary/20" style={{ height: 4 + d.count * 8 }} />
-                <div className="text-[10px] text-muted-foreground">{d.day.slice(5)}</div>
-              </div>
-            ))}
-          </div>
+        <section>
+          <AreaOverview
+            title="Activity (7 days)"
+            description="Number of care events per day"
+            data={(stats?.hist || []).map((d: any) => ({ name: d.day.slice(5), value: d.count }))}
+          />
         </section>
 
         <section className="rounded-2xl border bg-card text-card-foreground p-6">
@@ -142,4 +139,3 @@ export default async function DashboardPage() {
     </main>
   )
 }
-

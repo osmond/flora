@@ -28,8 +28,7 @@ vi.mock("@supabase/supabase-js", () => ({
 describe("GET /api/notifications/cron", () => {
   it("counts due and overdue tasks", async () => {
     const { GET } = await import("../src/app/api/notifications/cron/route");
-    const req = new Request("http://localhost/api/notifications/cron");
-    const res = await GET(req);
+    const res = await GET();
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body).toEqual({ ok: true, overdue: 1, due: 1 });

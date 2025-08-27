@@ -19,7 +19,7 @@ vi.mock("@/components/DeletePhotoButton", () => ({ default: () => null }));
 vi.mock("@/components/CareNudge", () => ({ default: () => null }));
 vi.mock("@/components/plant/QuickStats", () => ({ default: () => null }));
 vi.mock("@/components/plant/CareCoach", () => ({ default: () => null }));
-const plantTabsMock = vi.fn(() => null);
+const plantTabsMock = vi.fn((_: any) => null);
 vi.mock("@/components/plant/PlantTabs", () => ({
   default: (props: any) => plantTabsMock(props),
 }));
@@ -138,7 +138,7 @@ describe("PlantDetailPage", () => {
     const element = await PlantDetailPage({ params: Promise.resolve({ id: "1" }) });
     renderToString(element);
     expect(plantTabsMock).toHaveBeenCalled();
-    expect(plantTabsMock.mock.calls[0][0].timelineError).toBe(true);
+    const args = plantTabsMock.mock.calls?.[0]?.[0] as any;
+    expect(args.timelineError).toBe(true);
   });
 });
-

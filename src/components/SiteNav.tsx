@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import SyncStatusBadge from "@/components/SyncStatusBadge";
+import ThemeToggle from "@/components/ThemeToggle";
+import ThemePresets from "@/components/ThemePresets";
 
 (globalThis as unknown as { React?: typeof React }).React ??= React;
 
@@ -49,7 +51,11 @@ export default function SiteNav() {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-        <SyncStatusBadge />
+        <div className="flex items-center gap-2">
+          <SyncStatusBadge />
+          <ThemeToggle />
+          <ThemePresets />
+        </div>
       </div>
       <nav className="fixed bottom-0 left-0 right-0 z-20 flex justify-around border-t bg-background py-2 md:hidden">
         {links.map(({ href, label, icon: Icon }) => (

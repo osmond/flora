@@ -1,4 +1,6 @@
 import PlantCard, { type PlantCardProps } from "@/components/PlantCard";
+import EmptyState from "@/components/EmptyState";
+import PlantsGrid from "@/components/PlantsGrid";
 import {
   type PlantRow,
   fallbackPlants,
@@ -39,15 +41,16 @@ export default async function PlantsPage() {
     <section className="space-y-6 px-4 py-6 md:px-6">
       <h1 className="text-2xl font-semibold">Plants</h1>
       {plants.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No plants yet.</p>
+        <EmptyState
+          title="Welcome to Flora"
+          description="Track watering and care, add notes and photos, and keep your plants happy."
+          ctaHref="/plants/new"
+          ctaLabel="Add your first plant"
+          hint="Pro tip: press A to add a plant"
+        />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {plants.map((p) => (
-            <PlantCard key={p.id} {...p} />
-          ))}
-        </div>
+        <PlantsGrid items={plants} />
       )}
     </section>
   );
 }
-

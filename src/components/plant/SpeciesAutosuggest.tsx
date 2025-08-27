@@ -20,7 +20,7 @@ export default function SpeciesAutosuggest(props: {
   onInputChange?: (val: string) => void;
   placeholder?: string;
   className?: string;
-  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  inputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "defaultValue" | "onChange">;
 }) {
   const {
     value = "",
