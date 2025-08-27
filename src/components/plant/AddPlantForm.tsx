@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import SpeciesAutosuggest from "./SpeciesAutosuggest";
 import { RoomSelect } from "./RoomSelect";
 
@@ -42,7 +43,8 @@ export default function AddPlantForm(): JSX.Element {
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [carePreview, setCarePreview] = useState<string | null>(null);
-  const [_previewing, setPreviewing] = useState<boolean>(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewing, setPreviewing] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,6 +61,7 @@ export default function AddPlantForm(): JSX.Element {
 
   async function fetchPreview(scientific: string, common?: string) {
     setCarePreview(null);
+    setPreviewError(null);
     setPreviewing(true);
     try {
       const species = common || scientific;
@@ -66,9 +69,11 @@ export default function AddPlantForm(): JSX.Element {
         `/api/ai-care/preview?species=${encodeURIComponent(species)}`,
       );
       const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Preview failed");
       setCarePreview(typeof json?.preview === "string" ? json.preview : null);
-    } catch {
+    } catch (err) {
       setCarePreview(null);
+      setPreviewError(err instanceof Error ? err.message : "Preview failed");
     } finally {
       setPreviewing(false);
     }
@@ -141,6 +146,8 @@ export default function AddPlantForm(): JSX.Element {
                 onInputChange={(val) => {
                   setSpeciesScientific("");
                   setSpeciesCommon("");
+                  setCarePreview(null);
+                  setPreviewError(null);
                   field.onChange(val);
                 }}
               />
@@ -153,12 +160,19 @@ export default function AddPlantForm(): JSX.Element {
           )}
         />
 
-        {carePreview && (
+        {previewing ? (
+          <div className="rounded-md border bg-secondary/30 p-4">
+            <Skeleton className="h-4 w-1/3 mb-2" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        ) : carePreview ? (
           <div className="rounded-md border bg-secondary/30 p-4 text-sm">
             <p className="font-medium">AI Care Preview</p>
             <p className="text-muted-foreground">{carePreview}</p>
           </div>
-        )}
+        ) : previewError ? (
+          <p className="text-sm text-destructive">{previewError}</p>
+        ) : null}
 
         <div>
           <Button
