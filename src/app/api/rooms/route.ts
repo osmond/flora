@@ -1,8 +1,19 @@
 import { NextResponse } from "next/server";
 import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/server-demo";
 
 export async function GET() {
   try {
+    if (await isDemoMode()) {
+      return NextResponse.json(
+        [
+          { id: 1, name: "Living Room" },
+          { id: 2, name: "Kitchen" },
+          { id: 3, name: "Bedroom" },
+        ],
+        { status: 200 },
+      );
+    }
     const supabase = supabaseServer();
     const { data, error } = await supabase
       .from("rooms")
@@ -24,6 +35,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const name = (body?.name as string | undefined)?.trim();
     if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
+
+    if (await isDemoMode()) {
+      return NextResponse.json({ room: { id: Math.floor(Math.random() * 10000), name } }, { status: 201 });
+    }
 
     const supabase = supabaseServer();
     const { data, error } = await supabase.from("rooms").insert({ name }).select().single();

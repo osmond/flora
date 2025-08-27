@@ -130,7 +130,7 @@
     --ring: 156 42% 40%;
   }
 
-  .forest.dark {
+  .forest-dark {
     --background: 160 20% 9%;
     --foreground: 140 15% 90%;
 
@@ -191,7 +191,7 @@
     --ring: 340 80% 60%;
   }
 
-  .rose.dark {
+  .rose-dark {
     --background: 330 30% 8%;
     --foreground: 330 10% 95%;
 

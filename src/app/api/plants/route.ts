@@ -1,10 +1,26 @@
 import { NextResponse } from "next/server";
 import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
 import cloudinary from "@/lib/cloudinary";
+import { isDemoMode } from "@/lib/server-demo";
+import { getDemoPlants } from "@/lib/demoData";
 
 
 export async function GET() {
   try {
+    if (await isDemoMode()) {
+      return NextResponse.json(
+        getDemoPlants().map((p) => ({
+          id: p.id,
+          nickname: p.nickname,
+          species_common: p.species ?? null,
+          water_every: p.water_every ?? null,
+          fert_every: p.fert_every ?? null,
+          last_watered_at: p.last_watered_at ?? null,
+          last_fertilized_at: p.last_fertilized_at ?? null,
+        })),
+        { status: 200 },
+      );
+    }
     const supabase = supabaseServer();
     const builder = supabase.from("plants").select("*");
     let query: any = builder;
@@ -31,6 +47,39 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    if (await isDemoMode()) {
+      // Simulate creation without persistence in demo mode
+      const contentType = req.headers.get("content-type") || "";
+      let nickname: string | null = null;
+      let speciesScientific: string | null = null;
+      let speciesCommon: string | null = null;
+      let roomId: number | null = null;
+
+      if (!contentType || contentType.includes("application/json")) {
+        const body = await req.json();
+        nickname = (body?.nickname as string | undefined)?.trim() || null;
+        speciesScientific = body?.speciesScientific || null;
+        speciesCommon = body?.speciesCommon || null;
+        roomId = (body?.room_id as number | undefined) ?? null;
+      } else {
+        const form = await req.formData();
+        nickname = form.get("nickname")?.toString() || null;
+        speciesScientific = form.get("speciesScientific")?.toString() || null;
+        speciesCommon = form.get("speciesCommon")?.toString() || null;
+        const room = form.get("room_id")?.toString();
+        roomId = room ? Number(room) : null;
+      }
+      if (!nickname) return NextResponse.json({ error: "nickname is required" }, { status: 400 });
+      const plant = {
+        id: String(Math.random()).slice(2),
+        nickname,
+        species_scientific: speciesScientific,
+        species_common: speciesCommon,
+        room_id: roomId,
+        image_url: null,
+      };
+      return NextResponse.json({ plant }, { status: 201 });
+    }
     const contentType = req.headers.get("content-type") || "";
     let nickname: string | null = null;
     let speciesScientific: string | null = null;

@@ -9,10 +9,12 @@ import { Label } from '@/components/ui/label';
 interface Props {
   plantId: string;
   waterEvery?: string | null;
+  fertEvery?: string | null;
 }
 
-export default function ScheduleAdjuster({ plantId, waterEvery }: Props) {
-  const [value, setValue] = useState(waterEvery ?? '');
+export default function ScheduleAdjuster({ plantId, waterEvery, fertEvery }: Props) {
+  const [water, setWater] = useState(waterEvery ?? '');
+  const [fert, setFert] = useState(fertEvery ?? '');
   const [saving, setSaving] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const router = useRouter();
@@ -38,7 +40,7 @@ export default function ScheduleAdjuster({ plantId, waterEvery }: Props) {
       await fetch(`/api/plants/${plantId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ waterEvery: value || null }),
+        body: JSON.stringify({ waterEvery: water || null, fertEvery: fert || null }),
       });
       router.refresh();
     } catch (err) {
@@ -50,11 +52,17 @@ export default function ScheduleAdjuster({ plantId, waterEvery }: Props) {
 
   return (
     <div className="mt-6 space-y-3">
-      <div className="flex items-end gap-2">
-        <div className="flex-1 space-y-1">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1">
           <Label htmlFor="waterEvery">Water every</Label>
-          <Input id="waterEvery" value={value} onChange={(e) => setValue(e.target.value)} placeholder="e.g. 7 days" />
+          <Input id="waterEvery" value={water} onChange={(e) => setWater(e.target.value)} placeholder="e.g. 7 days" />
         </div>
+        <div className="space-y-1">
+          <Label htmlFor="fertEvery">Fertilize every</Label>
+          <Input id="fertEvery" value={fert} onChange={(e) => setFert(e.target.value)} placeholder="e.g. 30 days" />
+        </div>
+      </div>
+      <div className="flex justify-end">
         <Button disabled={saving} onClick={onSave}>Save</Button>
       </div>
       {suggestions.length > 0 && (

@@ -1,16 +1,18 @@
 import PlantCard, { type PlantCardProps } from "@/components/PlantCard";
 import EmptyState from "@/components/EmptyState";
 import PlantsGrid from "@/components/PlantsGrid";
+import { isDemoMode } from "@/lib/server-demo";
+import { getDemoPlants } from "@/lib/demoData";
 import {
   type PlantRow,
   fallbackPlants,
 } from "@/lib/fallbackPlants";
 
-function rowToProps(row: PlantRow): PlantCardProps {
+function rowToProps(row: PlantRow | any): PlantCardProps {
   return {
     id: String(row.id),
     nickname: row.nickname,
-    species: row.species ?? null,
+    species: row.species ?? row.species_common ?? row.speciesScientific ?? null,
     lastWateredAt: row.last_watered_at ?? null,
     lastFertilizedAt: row.last_fertilized_at ?? null,
     waterEvery: row.water_every ?? null,
@@ -19,18 +21,19 @@ function rowToProps(row: PlantRow): PlantCardProps {
 }
 
 async function getPlants(): Promise<PlantCardProps[]> {
+  if (await isDemoMode()) return getDemoPlants().map(rowToProps);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return fallbackPlants.map(rowToProps);
+  if (!url || !anon) return [];
 
   try {
     const { createClient } = await import("@supabase/supabase-js");
     const supabase = createClient(url, anon);
     const { data, error } = await supabase.from("plants").select("*");
-    if (error || !data) return fallbackPlants.map(rowToProps);
+    if (error || !data) return [];
     return (data as PlantRow[]).map(rowToProps);
   } catch {
-    return fallbackPlants.map(rowToProps);
+    return [];
   }
 }
 

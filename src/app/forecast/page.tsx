@@ -1,69 +1,43 @@
-'use client';
+import ForecastClient from "@/components/ForecastClient";
+import type { Plant } from "@/lib/tasks";
 
-import { useEffect, useState } from 'react';
-import { generateWeeklyCareForecast } from '@/lib/forecast';
-import type { DayForecast } from '@/types/forecast';
-import type { Plant } from '@/lib/tasks';
-import { apiFetch } from '@/lib/api';
+async function getPlants(): Promise<Plant[]> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) return [];
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(url, anon);
+    const { data } = await supabase
+      .from("plants")
+      .select("id, nickname, water_every, fert_every, last_watered_at, last_fertilized_at");
+    if (!data) return [];
+    return (data as any[]).map((p) => ({
+      id: String(p.id),
+      nickname: p.nickname,
+      waterEvery: p.water_every ?? null,
+      fertEvery: p.fert_every ?? null,
+      lastWateredAt: p.last_watered_at ?? null,
+      lastFertilizedAt: p.last_fertilized_at ?? null,
+    }));
+  } catch {
+    return [];
+  }
+}
 
-const samplePlants: Plant[] = [
-  {
-    id: '1',
-    nickname: 'Monstera',
-    waterEvery: '7 days',
-    lastWateredAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-  },
-  {
-    id: '2',
-    nickname: 'Fiddle Leaf Fig',
-    fertEvery: '30 days',
-    lastFertilizedAt: new Date(Date.now() - 30 * 86400000).toISOString(),
-  },
-];
-
-export default function ForecastPage() {
-  const [forecast, setForecast] = useState<DayForecast[]>([]);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const weather = await apiFetch<any>('/api/weather');
-        const data = generateWeeklyCareForecast(samplePlants, weather);
-        setForecast(data);
-      } catch {
-        // errors handled by apiFetch
-      }
-    }
-    load();
-  }, []);
-
+export default async function ForecastPage() {
+  const plants = await getPlants();
   return (
-    <section className="p-4">
-      <h1 className="mb-4 text-xl font-semibold">Weekly Care Forecast</h1>
-      <ul>
-        {forecast.map((day) => (
-          <li key={day.date} className="mb-4">
-            <div className="font-medium">{day.date}</div>
-            {day.weather && (
-              <div className="text-sm text-muted-foreground">
-                High {day.weather.tempMax}°C / Low {day.weather.tempMin}°C – Rain {day.weather.precipitationChance}%
-              </div>
-            )}
-            {day.tasks.length > 0 ? (
-              <ul className="ml-5 list-disc">
-                {day.tasks.map((t) => (
-                  <li key={t.id} className="text-sm">
-                    {t.plantName} – {t.type}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="text-sm">No tasks</div>
-            )}
-          </li>
-        ))}
-      </ul>
+    <section className="space-y-4 px-4 py-6 md:px-6">
+      <div>
+        <h1 className="text-2xl font-semibold">Weekly Care Forecast</h1>
+        <p className="text-sm text-muted-foreground">Plan your week with weather and care tasks.</p>
+      </div>
+      {plants.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No plants yet. Add some to see a forecast.</p>
+      ) : (
+        <ForecastClient plants={plants} />
+      )}
     </section>
   );
 }
-

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Leaf, Calendar } from "lucide-react";
+import { Home, Leaf, Calendar, BarChart3, CloudSun } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -13,14 +13,14 @@ import {
 import { cn } from "@/lib/utils";
 import SyncStatusBadge from "@/components/SyncStatusBadge";
 import ThemeToggle from "@/components/ThemeToggle";
-import ThemePresets from "@/components/ThemePresets";
 
 (globalThis as unknown as { React?: typeof React }).React ??= React;
 
 const links = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/plants", label: "Plants", icon: Leaf },
   { href: "/today", label: "Today", icon: Calendar },
+  { href: "/plants", label: "Plants", icon: Leaf },
+  { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
+  { href: "/forecast", label: "Forecast", icon: CloudSun },
 ];
 
 export default function SiteNav() {
@@ -54,7 +54,6 @@ export default function SiteNav() {
         <div className="flex items-center gap-2">
           <SyncStatusBadge />
           <ThemeToggle />
-          <ThemePresets />
         </div>
       </div>
       <nav className="fixed bottom-0 left-0 right-0 z-20 flex justify-around border-t bg-background py-2 md:hidden">

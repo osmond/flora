@@ -26,9 +26,12 @@ export function RoomSelect(props: {
 
   React.useEffect(() => {
     (async () => {
-      const res = await fetch("/api/rooms");
-      const data = await res.json();
-      if (Array.isArray(data)) setRooms(data as Room[]);
+      try {
+        const res = await fetch("/api/rooms");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data)) setRooms(data as Room[]);
+      } catch {}
     })();
   }, []);
 
@@ -40,7 +43,7 @@ export function RoomSelect(props: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newRoom.trim() }),
     });
-    const json = await res.json();
+    const json = await res.json().catch(() => ({}));
     setCreating(false);
     if (res.ok && json?.room) {
       setRooms((r) => [...r, json.room].sort((a, b) => a.name.localeCompare(b.name)));

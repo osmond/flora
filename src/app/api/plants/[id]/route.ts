@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
 import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
+import { isDemoMode } from "@/lib/server-demo";
+import { getFallbackPlant } from "@/lib/fallbackPlants";
 
 export async function GET(
   _req: Request,
@@ -8,6 +10,19 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    if (await isDemoMode()) {
+      const fb = getFallbackPlant(id);
+      if (!fb) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json(
+        {
+          id: fb.id,
+          nickname: fb.nickname,
+          species_scientific: fb.species ?? null,
+          image_url: null,
+        },
+        { status: 200 },
+      );
+    }
     const supabase = supabaseServer();
     const builder = supabase.from("plants").select("*");
     let query: any = builder;
@@ -39,6 +54,18 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await req.json();
+    if (await isDemoMode()) {
+      // echo back an updated plant shape for demo mode
+      const updated = {
+        id,
+        nickname: body?.nickname ?? "Plant",
+        species_scientific: body?.species_scientific ?? null,
+        species_common: body?.species_common ?? null,
+        image_url: body?.image_url ?? null,
+        water_every: body?.waterEvery ?? null,
+      };
+      return NextResponse.json({ plant: updated }, { status: 200 });
+    }
     const supabase = supabaseServer();
     const updates: Record<string, unknown> = {};
     if (body.nickname !== undefined) updates.nickname = body.nickname;
@@ -50,6 +77,7 @@ export async function PATCH(
     if (body.image_url !== undefined) updates.image_url = body.image_url;
     if (body.archived !== undefined) updates.archived = body.archived;
     if (body.waterEvery !== undefined) updates.water_every = body.waterEvery;
+    if (body.fertEvery !== undefined) updates.fert_every = body.fertEvery;
     if (body.notificationsMuted !== undefined)
       updates.notifications_muted = body.notificationsMuted;
     const updateBuilder = supabase
@@ -82,6 +110,9 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    if (await isDemoMode()) {
+      return NextResponse.json({}, { status: 200 });
+    }
     const supabase = supabaseServer();
     const userId = await getCurrentUserId();
     const { error } = await supabase
@@ -99,4 +130,3 @@ export async function DELETE(
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
-

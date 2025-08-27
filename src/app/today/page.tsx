@@ -2,13 +2,15 @@ import TaskList from "@/components/TaskList";
 import { generateTasks } from "@/lib/tasks";
 import type { Plant } from "@/lib/tasks";
 import type { Task } from "@/types/task";
+import { isDemoMode } from "@/lib/server-demo";
 
 // NOTE: we lazy-import supabase in the loader so the page still
 // renders fine without the package in dev/canvas environments.
 async function getTasksFromSupabase(): Promise<Task[] | null> {
+  if (await isDemoMode()) return null;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return null;
+  if (!url || !anon) return [];
 
   let createClient: any;
   try {
@@ -30,7 +32,7 @@ async function getTasksFromSupabase(): Promise<Task[] | null> {
       .from("tasks")
       .select("id, plant_id, plant_name, type, due_at, status")
       .gte("due_at", new Date(Date.now() - 14 * 86400000).toISOString());
-    if (res.error || !res.data) return null;
+    if (res.error || !res.data) return [];
     data = res.data as any[];
   }
 
@@ -71,9 +73,14 @@ const samplePlants: Plant[] = [
 ];
 
 export default async function TodayPage() {
-  // Try DB first; otherwise compute from sample plants
-  const dbTasks = await getTasksFromSupabase();
-  const tasks = (dbTasks?.length ? dbTasks : generateTasks(samplePlants)) as Task[];
+  const demo = await isDemoMode();
+  let tasks: Task[] = [];
+  if (demo) {
+    tasks = generateTasks(samplePlants) as Task[];
+  } else {
+    const dbTasks = await getTasksFromSupabase();
+    tasks = (dbTasks ?? []) as Task[];
+  }
 
   return (
     <section className="space-y-6 px-4 py-6 md:px-6">

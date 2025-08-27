@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import PlantHero from "@/components/plant/PlantHero";
 import PlantTabs from "@/components/plant/PlantTabs";
+import ScheduleAdjuster from "@/components/plant/ScheduleAdjuster";
 import db from "@/lib/db";
 import { supabaseAdmin, SupabaseEnvError } from "@/lib/supabaseAdmin";
 import { getFallbackPlant, type PlantRow } from "@/lib/fallbackPlants";
+import { isDemoMode } from "@/lib/server-demo";
+import { buildDemoEvents, toCareEvents, getDemoPlants } from "@/lib/demoData";
 
 async function getPlant(id: string): Promise<{
   plant: {
@@ -18,6 +21,19 @@ async function getPlant(id: string): Promise<{
   };
   heroUrl: string | null;
 }> {
+  if (await isDemoMode()) {
+    const demo = getDemoPlants();
+    const plant = demo.find((p) => String(p.id) == id) ?? demo[0]
+    return {
+      plant: {
+        id: String(plant.id),
+        nickname: plant.nickname,
+        speciesScientific: plant.species ?? null,
+        room: null,
+      },
+      heroUrl: null,
+    };
+  }
   // 1) Try Prisma (tests mock this path)
   try {
     const prismaPlant = await (db as any)?.plant?.findFirst?.({
@@ -92,23 +108,29 @@ export default async function PlantDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const demo = await isDemoMode();
   const { plant, heroUrl } = await getPlant(id);
   if (!plant) notFound();
 
   // Load initial events (admin client for server-side fetch during SSR)
   let initialEvents: any[] = [];
   let timelineError = false;
-  try {
-    const supabase = supabaseAdmin();
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .eq("plant_id", plant.id)
-      .order("created_at", { ascending: false });
-    if (error) throw error;
-    initialEvents = data ?? [];
-  } catch (e) {
-    timelineError = true;
+  if (demo) {
+    const demoEvents = buildDemoEvents(1, getDemoPlants());
+    initialEvents = toCareEvents(demoEvents.filter((e) => e.plant_id === plant.id));
+  } else {
+    try {
+      const supabase = supabaseAdmin();
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("plant_id", plant.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      initialEvents = data ?? [];
+    } catch (e) {
+      timelineError = true;
+    }
   }
 
   return (
@@ -159,6 +181,12 @@ export default async function PlantDetail({
           </CardContent>
         </Card>
       </div>
+
+      <ScheduleAdjuster
+        plantId={plant.id}
+        waterEvery={(plant as any).water_every}
+        fertEvery={(plant as any).fert_every}
+      />
 
       {/* Tabs: timeline/photos/notes */}
       <div>

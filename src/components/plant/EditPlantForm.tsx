@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { RoomSelect } from "@/components/plant/RoomSelect";
 
 type Plant = {
   id: string;
   nickname: string;
   speciesScientific: string | null;
   imageUrl: string | null;
+  roomId?: number | null;
 };
 
 export default function EditPlantForm({ plant }: { plant: Plant }) {
@@ -18,6 +20,7 @@ export default function EditPlantForm({ plant }: { plant: Plant }) {
   const [nickname, setNickname] = useState(plant.nickname);
   const [speciesScientific, setSpeciesScientific] = useState(plant.speciesScientific ?? "");
   const [imageUrl, setImageUrl] = useState(plant.imageUrl ?? "");
+  const [roomId, setRoomId] = useState<number | null>(plant.roomId ?? null);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -33,6 +36,7 @@ export default function EditPlantForm({ plant }: { plant: Plant }) {
           nickname: nickname.trim(),
           species_scientific: speciesScientific.trim() || null,
           image_url: imageUrl.trim() || null,
+          room_id: roomId,
         }),
       });
       const data = await res.json();
@@ -101,6 +105,7 @@ export default function EditPlantForm({ plant }: { plant: Plant }) {
           className="h-10"
         />
       </div>
+      <RoomSelect id="room" value={roomId ?? null} onChange={setRoomId} />
       <div className="space-y-2">
         <Label htmlFor="imageUrl">Photo URL</Label>
         <Input
