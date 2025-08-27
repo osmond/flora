@@ -1,5 +1,5 @@
 import cloudinary from "@/lib/cloudinary";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { supabaseAdmin, SupabaseEnvError } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,7 +10,8 @@ export async function DELETE(
   const { id } = await params;
   try {
     const userId = await getCurrentUserId();
-    const { data, error } = await supabaseAdmin
+    const supabase = supabaseAdmin();
+    const { data, error } = await supabase
       .from("events")
       .select("id, public_id")
       .eq("user_id", userId)
@@ -24,7 +25,7 @@ export async function DELETE(
       await cloudinary.uploader.destroy(data.public_id);
     }
 
-    const { error: delError } = await supabaseAdmin
+    const { error: delError } = await supabase
       .from("events")
       .delete()
       .eq("user_id", userId)
@@ -34,6 +35,9 @@ export async function DELETE(
     }
     return NextResponse.json({}, { status: 200 });
   } catch (err) {
+    if (err instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
     if (err instanceof Error && err.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

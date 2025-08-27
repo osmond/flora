@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
 
 export async function GET(req: Request) {
   try {
@@ -24,6 +24,9 @@ export async function GET(req: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json(data ?? [], { status: 200 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
@@ -121,6 +124,9 @@ export async function POST(req: Request) {
     const event = data?.[0] ?? null;
     return NextResponse.json({ event }, { status: 200 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }

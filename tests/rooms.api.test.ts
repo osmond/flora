@@ -18,7 +18,7 @@ describe("GET /api/rooms", () => {
     const res = await GET();
     const body = await res.json();
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(503);
     expect(body.error).toContain("NEXT_PUBLIC_SUPABASE_URL");
     expect(body.error).toContain("SUPABASE_SERVICE_ROLE_KEY");
 

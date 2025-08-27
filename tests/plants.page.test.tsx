@@ -6,6 +6,7 @@ import { renderToString } from 'react-dom/server';
 
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.com';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-key';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon';
 
 vi.mock('@/lib/auth', () => ({
   getCurrentUserId: () => Promise.resolve('user-123'),

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
 
 export async function GET(
   _req: Request,
@@ -24,6 +24,9 @@ export async function GET(
     }
     return NextResponse.json(Array.isArray(data) ? data[0] : data, { status: 200 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
@@ -65,6 +68,9 @@ export async function PATCH(
     const updated = Array.isArray(data) ? data[0] : data;
     return NextResponse.json({ plant: updated }, { status: 200 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
@@ -86,6 +92,9 @@ export async function DELETE(
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({}, { status: 200 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
