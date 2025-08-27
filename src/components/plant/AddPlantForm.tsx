@@ -30,7 +30,7 @@ export default function AddPlantForm(): JSX.Element {
   const router = useRouter();
   const [speciesScientific, setSpeciesScientific] = useState<string>("");
   const [speciesCommon, setSpeciesCommon] = useState<string>("");
-  const [showDetails, setShowDetails] = useState<boolean>(false);
+  const [step, setStep] = useState<number>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [carePreview, setCarePreview] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
@@ -109,82 +109,99 @@ export default function AddPlantForm(): JSX.Element {
   }
 
   const submitting = form.formState.isSubmitting;
+  const totalSteps = 3;
+
+  async function handleNext() {
+    if (step === 1) {
+      const valid = await form.trigger(["nickname", "species"]);
+      if (!valid) return;
+    }
+    setStep((s) => Math.min(s + 1, totalSteps));
+  }
+
+  function handleBack() {
+    setStep((s) => Math.max(s - 1, 1));
+  }
 
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="nickname"
-          render={({ field }) => (
-            <div className="space-y-2">
-              <Label htmlFor="nickname">Nickname</Label>
-              <Input id="nickname" placeholder="e.g. Kay" className="h-10" {...field} />
-              {form.formState.errors.nickname && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.nickname.message}
-                </p>
-              )}
-            </div>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="species"
-          render={({ field }) => (
-            <div className="space-y-2">
-              <Label>Species</Label>
-              <SpeciesAutosuggest
-                value={field.value}
-                onSelect={(scientific, common) => {
-                  setSpeciesScientific(scientific);
-                  setSpeciesCommon(common || "");
-                  field.onChange(common || scientific);
-                  fetchPreview(scientific, common);
-                }}
-                onInputChange={(val) => {
-                  setSpeciesScientific("");
-                  setSpeciesCommon("");
-                  setCarePreview(null);
-                  setPreviewError(null);
-                  field.onChange(val);
-                }}
-              />
-              {form.formState.errors.species && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.species.message}
-                </p>
-              )}
-            </div>
-          )}
-        />
-
-        {previewing ? (
-          <div className="rounded-md border bg-secondary/30 p-4">
-            <Skeleton className="h-4 w-1/3 mb-2" />
-            <Skeleton className="h-4 w-full" />
+        <div className="space-y-2">
+          <div className="w-full bg-secondary rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full"
+              style={{ width: `${(step / totalSteps) * 100}%` }}
+            ></div>
           </div>
-        ) : carePreview ? (
-          <div className="rounded-md border bg-secondary/30 p-4 text-sm">
-            <p className="font-medium">AI Care Preview</p>
-            <p className="text-muted-foreground">{carePreview}</p>
-          </div>
-        ) : previewError ? (
-          <p className="text-sm text-destructive">{previewError}</p>
-        ) : null}
-
-        <div>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() => setShowDetails((s) => !s)}
-          >
-            {showDetails ? "Hide details" : "Add details"}
-          </Button>
+          <p className="text-sm text-center">Step {step} of {totalSteps}</p>
         </div>
 
-        {showDetails && (
+        {step === 1 && (
+          <>
+            <FormField
+              control={form.control}
+              name="nickname"
+              render={({ field }) => (
+                <div className="space-y-2">
+                  <Label htmlFor="nickname">Nickname</Label>
+                  <Input id="nickname" placeholder="e.g. Kay" className="h-10" {...field} />
+                  {form.formState.errors.nickname && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.nickname.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="species"
+              render={({ field }) => (
+                <div className="space-y-2">
+                  <Label>Species</Label>
+                  <SpeciesAutosuggest
+                    value={field.value}
+                    onSelect={(scientific, common) => {
+                      setSpeciesScientific(scientific);
+                      setSpeciesCommon(common || "");
+                      field.onChange(common || scientific);
+                      fetchPreview(scientific, common);
+                    }}
+                    onInputChange={(val) => {
+                      setSpeciesScientific("");
+                      setSpeciesCommon("");
+                      setCarePreview(null);
+                      setPreviewError(null);
+                      field.onChange(val);
+                    }}
+                  />
+                  {form.formState.errors.species && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.species.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+
+            {previewing ? (
+              <div className="rounded-md border bg-secondary/30 p-4">
+                <Skeleton className="h-4 w-1/3 mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ) : carePreview ? (
+              <div className="rounded-md border bg-secondary/30 p-4 text-sm">
+                <p className="font-medium">AI Care Preview</p>
+                <p className="text-muted-foreground">{carePreview}</p>
+              </div>
+            ) : previewError ? (
+              <p className="text-sm text-destructive">{previewError}</p>
+            ) : null}
+          </>
+        )}
+
+        {step === 2 && (
           <div className="space-y-6">
             <FormField
               control={form.control}
@@ -274,13 +291,45 @@ export default function AddPlantForm(): JSX.Element {
           </div>
         )}
 
+        {step === 3 && (
+          <div className="space-y-2 text-sm">
+            <p><span className="font-medium">Nickname:</span> {form.getValues("nickname")}</p>
+            <p><span className="font-medium">Species:</span> {form.getValues("species")}</p>
+            {form.getValues("room_id") != null && (
+              <p><span className="font-medium">Room:</span> {form.getValues("room_id")}</p>
+            )}
+            {form.getValues("pot") && (
+              <p><span className="font-medium">Pot:</span> {form.getValues("pot")}</p>
+            )}
+            {form.getValues("light") && (
+              <p><span className="font-medium">Light:</span> {form.getValues("light")}</p>
+            )}
+            {form.getValues("notes") && (
+              <p><span className="font-medium">Notes:</span> {form.getValues("notes")}</p>
+            )}
+          </div>
+        )}
+
         {errorMsg ? (
           <p className="text-sm text-destructive">{errorMsg}</p>
         ) : null}
 
-        <Button type="submit" className="w-full h-10" disabled={submitting}>
-          {submitting ? "Creating…" : "Create Plant"}
-        </Button>
+        <div className="flex justify-between">
+          {step > 1 && (
+            <Button type="button" variant="outline" onClick={handleBack}>
+              Back
+            </Button>
+          )}
+          {step < totalSteps ? (
+            <Button type="button" className="ml-auto" onClick={handleNext}>
+              Next
+            </Button>
+          ) : (
+            <Button type="submit" className="ml-auto" disabled={submitting}>
+              {submitting ? "Creating…" : "Create Plant"}
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );
