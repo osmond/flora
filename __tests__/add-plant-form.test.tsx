@@ -71,7 +71,7 @@ describe("AddPlantForm validation", () => {
 });
 
 describe("AddPlantForm submission", () => {
-  it("posts data and redirects to detail page", async () => {
+  it("posts typed species to both fields and redirects to detail page", async () => {
     global.fetch = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       if (typeof input === "string" && input.startsWith("/api/ai-care/preview")) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ preview: "test" }) });
@@ -94,6 +94,13 @@ describe("AddPlantForm submission", () => {
     fireEvent.click(screen.getByRole("button", { name: /create plant/i }));
 
     await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/plants",
+        expect.objectContaining({
+          method: "POST",
+          body: expect.stringContaining('"speciesScientific":"Pothos"'),
+        })
+      );
       expect(global.fetch).toHaveBeenCalledWith(
         "/api/plants",
         expect.objectContaining({
