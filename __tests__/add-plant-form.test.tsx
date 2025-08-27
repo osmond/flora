@@ -44,12 +44,18 @@ afterEach(() => {
   global.fetch = originalFetch;
 });
 
-describe("AddPlantForm optional details", () => {
-  it("shows optional fields when expanded", () => {
+describe("AddPlantForm step navigation", () => {
+  it("shows detail fields after navigating", async () => {
     render(<AddPlantForm />);
-    const toggle = screen.getByRole("button", { name: /add details/i });
-    fireEvent.click(toggle);
-    expect(screen.getByLabelText(/room/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/room/i)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/nickname/i), {
+      target: { value: "Kay" },
+    });
+    fireEvent.change(screen.getByLabelText(/species/i), {
+      target: { value: "Pothos" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    expect(await screen.findByLabelText(/room/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/pot/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/light/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
@@ -60,7 +66,7 @@ describe("AddPlantForm optional details", () => {
 describe("AddPlantForm validation", () => {
   it("shows errors when required fields are missing", async () => {
     render(<AddPlantForm />);
-    fireEvent.click(screen.getByRole("button", { name: /create plant/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
     expect(
       await screen.findByText(/please enter a nickname/i),
     ).toBeInTheDocument();
@@ -92,6 +98,10 @@ describe("AddPlantForm submission", () => {
       target: { value: "Pothos" },
     });
 
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByLabelText(/room/i); // wait for step 2
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByRole("button", { name: /create plant/i });
     fireEvent.click(screen.getByRole("button", { name: /create plant/i }));
 
     await waitFor(() => {
