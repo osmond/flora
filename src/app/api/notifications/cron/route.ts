@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { supabaseAdmin, SupabaseEnvError } from "@/lib/supabaseAdmin";
 
 // Scheduled endpoint to check for due and overdue tasks.
 export async function GET() {
   const today = new Date().toISOString().slice(0, 10);
   try {
-    const { data: tasks, error } = await supabaseAdmin
+    const supabase = supabaseAdmin();
+    const { data: tasks, error } = await supabase
       .from("tasks")
       .select("id, due_date")
       .lte("due_date", today)
@@ -26,6 +27,9 @@ export async function GET() {
 
     return NextResponse.json({ ok: true, overdue, due });
   } catch (err) {
+    if (err instanceof SupabaseEnvError) {
+      return NextResponse.json({ ok: false, error: err.message }, { status: 503 });
+    }
     const message = err instanceof Error ? err.message : "Server error";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }

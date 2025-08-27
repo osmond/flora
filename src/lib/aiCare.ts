@@ -21,7 +21,8 @@ function getSeason(date: Date): "winter" | "spring" | "summer" | "fall" {
 
 export async function getAiCareContext(plantId: string): Promise<CareContext> {
   const userId = await getCurrentUserId();
-  const { data: events } = await supabaseAdmin
+  const supabase = supabaseAdmin();
+  const { data: events } = await supabase
     .from("events")
     .select("type, note, created_at")
     .eq("user_id", userId)
@@ -54,8 +55,9 @@ export async function getAiCareContext(plantId: string): Promise<CareContext> {
 export async function getAiCareSuggestions(plantId: string) {
   const userId = await getCurrentUserId();
   const today = new Date().toISOString().slice(0, 10);
+  const supabase = supabaseAdmin();
 
-  const { data: tasks, error } = await supabaseAdmin
+  const { data: tasks, error } = await supabase
     .from("tasks")
     .select("type, due_date")
     .eq("user_id", userId)
