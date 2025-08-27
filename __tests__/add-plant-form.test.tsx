@@ -38,6 +38,7 @@ beforeEach(() => {
   global.fetch = vi.fn(() =>
     Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
   ) as unknown as typeof fetch;
+  localStorage.clear();
 });
 
 afterEach(() => {
@@ -115,5 +116,77 @@ describe("AddPlantForm submission", () => {
       expect(body.get("speciesCommon")).toBe("Pothos");
       expect(push).toHaveBeenCalledWith("/plants/42");
     });
+  });
+});
+
+describe("AddPlantForm localStorage draft", () => {
+  it("saves field values to localStorage", async () => {
+    render(<AddPlantForm />);
+    fireEvent.change(screen.getByLabelText(/nickname/i), {
+      target: { value: "Kay" },
+    });
+    fireEvent.change(screen.getByLabelText(/species/i), {
+      target: { value: "Pothos" },
+    });
+    await waitFor(() => {
+      const stored = localStorage.getItem("addPlantForm");
+      expect(stored).not.toBeNull();
+      const parsed = JSON.parse(stored!);
+      expect(parsed.nickname).toBe("Kay");
+      expect(parsed.species).toBe("Pothos");
+    });
+  });
+
+  it("initializes fields from saved draft", () => {
+    localStorage.setItem(
+      "addPlantForm",
+      JSON.stringify({ nickname: "Saved", species: "Rose" }),
+    );
+    render(<AddPlantForm />);
+    expect(
+      (screen.getByLabelText(/nickname/i) as HTMLInputElement).value,
+    ).toBe("Saved");
+    expect(
+      (screen.getByLabelText(/species/i) as HTMLInputElement).value,
+    ).toBe("Rose");
+  });
+
+  it("clears saved draft after submission", async () => {
+    localStorage.setItem(
+      "addPlantForm",
+      JSON.stringify({ nickname: "Kay", species: "Pothos" }),
+    );
+    global.fetch = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      if (typeof input === "string" && input.startsWith("/api/ai-care/preview")) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ preview: "test" }) });
+      }
+      if (typeof input === "string" && input === "/api/plants" && init?.method === "POST") {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ plant: { id: 1 } }) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    }) as unknown as typeof fetch;
+
+    render(<AddPlantForm />);
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByLabelText(/room/i);
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await screen.findByRole("button", { name: /create plant/i });
+    fireEvent.click(screen.getByRole("button", { name: /create plant/i }));
+    await waitFor(() => expect(push).toHaveBeenCalled());
+    expect(localStorage.getItem("addPlantForm")).toBeNull();
+  });
+
+  it("clears saved draft on manual reset", async () => {
+    render(<AddPlantForm />);
+    fireEvent.change(screen.getByLabelText(/nickname/i), {
+      target: { value: "Kay" },
+    });
+    await waitFor(() =>
+      expect(localStorage.getItem("addPlantForm")).not.toBeNull(),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /reset/i }));
+    await waitFor(() =>
+      expect(localStorage.getItem("addPlantForm")).toBeNull(),
+    );
   });
 });
