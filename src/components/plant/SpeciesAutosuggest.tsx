@@ -122,7 +122,7 @@ export default function SpeciesAutosuggest(props: {
               <CommandEmpty>{error}</CommandEmpty>
               {query && (
                 <CommandItem value={query} onSelect={() => choose({ scientific: query })}>
-                  Use "{query}" anyway
+                  Use &quot;{query}&quot; anyway
                 </CommandItem>
               )}
             </>
