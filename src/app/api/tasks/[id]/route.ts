@@ -1,5 +1,5 @@
 import { getCurrentUserId } from "@/lib/auth";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { supabaseAdmin, SupabaseEnvError } from "@/lib/supabaseAdmin";
 import { logEvent } from "@/lib/analytics";
 import { addDays, formatISO, parseISO } from "date-fns";
 import { NextResponse } from "next/server";
@@ -25,7 +25,8 @@ export async function PATCH(req: Request, { params }: Params) {
     }
 
     if (body.action === "complete") {
-      const { data: task, error: taskError } = await supabaseAdmin
+      const supabase = supabaseAdmin();
+      const { data: task, error: taskError } = await supabase
         .from("tasks")
         .select("plant_id, type")
         .eq("id", id)
@@ -35,7 +36,7 @@ export async function PATCH(req: Request, { params }: Params) {
         return NextResponse.json({ error: "Task not found" }, { status: 404 });
       }
 
-      const { error } = await supabaseAdmin
+      const { error } = await supabase
         .from("tasks")
         .update({ completed_at: new Date().toISOString() })
         .eq("id", id)
@@ -44,7 +45,7 @@ export async function PATCH(req: Request, { params }: Params) {
         return NextResponse.json({ error: "Database error" }, { status: 500 });
       }
 
-      const { error: eventError } = await supabaseAdmin.from("events").insert({
+      const { error: eventError } = await supabase.from("events").insert({
         plant_id: task.plant_id as string,
         user_id: userId,
         type: task.type as string,
@@ -61,7 +62,8 @@ export async function PATCH(req: Request, { params }: Params) {
       const days = typeof body.days === "number" ? body.days : 0;
       const reason = body.reason as string | undefined;
 
-      const { data: task, error: taskError } = await supabaseAdmin
+      const supabase = supabaseAdmin();
+      const { data: task, error: taskError } = await supabase
         .from("tasks")
         .select("due_date, plant_id")
         .eq("id", id)
@@ -74,7 +76,7 @@ export async function PATCH(req: Request, { params }: Params) {
       const due = parseISO(task.due_date as string);
       const newDue = formatISO(addDays(due, days), { representation: "date" });
 
-      const { error: updateError } = await supabaseAdmin
+      const { error: updateError } = await supabase
         .from("tasks")
         .update({ due_date: newDue, snooze_reason: reason })
         .eq("id", id)
@@ -83,7 +85,7 @@ export async function PATCH(req: Request, { params }: Params) {
         return NextResponse.json({ error: "Database error" }, { status: 500 });
       }
 
-      const { data: plant } = await supabaseAdmin
+      const { data: plant } = await supabase
         .from("plants")
         .select("care_plan")
         .eq("id", task.plant_id as string)
@@ -98,7 +100,7 @@ export async function PATCH(req: Request, { params }: Params) {
           ...current,
           waterEvery: `${interval + days} days`,
         };
-        await supabaseAdmin
+        await supabase
           .from("plants")
           .update({ care_plan: updatedPlan })
           .eq("id", task.plant_id as string)
@@ -110,6 +112,9 @@ export async function PATCH(req: Request, { params }: Params) {
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (err) {
+    if (err instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
     if (err instanceof Error && err.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

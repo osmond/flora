@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAiCareSuggestions, getAiCareAnswer } from "@/lib/aiCare";
+import { SupabaseEnvError } from "@/lib/supabaseAdmin";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -15,7 +16,10 @@ export async function GET(req: Request) {
     }
     const suggestions = await getAiCareSuggestions(plantId);
     return NextResponse.json({ suggestions });
-  } catch {
+  } catch (e) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

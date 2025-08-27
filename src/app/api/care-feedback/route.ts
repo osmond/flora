@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { supabaseAdmin, SupabaseEnvError } from "@/lib/supabaseAdmin";
 import { getCurrentUserId } from "@/lib/auth";
 import { z } from "zod";
 import { NextResponse } from "next/server";
@@ -16,7 +16,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
     const userId = await getCurrentUserId();
-    const { error: plantError } = await supabaseAdmin
+    const supabase = supabaseAdmin();
+    const { error: plantError } = await supabase
       .from("plants")
       .select("id")
       .eq("id", parsed.data.plant_id)
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
     if (plantError) {
       return NextResponse.json({ error: "Plant not found" }, { status: 404 });
     }
-    const { error } = await supabaseAdmin.from("events").insert({
+    const { error } = await supabase.from("events").insert({
       plant_id: parsed.data.plant_id,
       user_id: userId,
       type: "note",
@@ -36,6 +37,9 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({}, { status: 200 });
   } catch (err) {
+    if (err instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
     if (err instanceof Error && err.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
