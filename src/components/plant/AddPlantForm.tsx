@@ -42,6 +42,12 @@ export default function AddPlantForm(): JSX.Element {
   const [roomName, setRoomName] = useState<string | null>(null);
   const [rooms, setRooms] = useState<{ id: number; name: string }[]>([]);
 
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+    };
+  }, [photoPreview]);
+
   const loadRooms = useCallback(async () => {
     try {
       const res = await fetch("/api/rooms");
@@ -197,7 +203,10 @@ export default function AddPlantForm(): JSX.Element {
     setSpeciesCommon("");
     setCarePreview(null);
     setPreviewError(null);
-    setPhotoPreview(null);
+    setPhotoPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
     setRoomName(null);
     setStep(1);
     localStorage.removeItem(STORAGE_KEY);
@@ -376,7 +385,10 @@ export default function AddPlantForm(): JSX.Element {
                     onChange={(e) => {
                       const file = e.target.files?.[0] || null;
                       field.onChange(file);
-                      setPhotoPreview(file ? URL.createObjectURL(file) : null);
+                      setPhotoPreview((prev) => {
+                        if (prev) URL.revokeObjectURL(prev);
+                        return file ? URL.createObjectURL(file) : null;
+                      });
                     }}
                   />
                   {photoPreview ? (
