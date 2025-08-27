@@ -38,6 +38,7 @@ export default function AddPlantForm(): JSX.Element {
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState<boolean>(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const previewControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [roomName, setRoomName] = useState<string | null>(null);
   const [rooms, setRooms] = useState<{ id: number; name: string }[]>([]);
@@ -123,22 +124,32 @@ export default function AddPlantForm(): JSX.Element {
   }, [form]);
 
   async function fetchPreview(scientific: string, common?: string) {
+    previewControllerRef.current?.abort();
+    const controller = new AbortController();
+    previewControllerRef.current = controller;
+
     setCarePreview(null);
     setPreviewError(null);
     setPreviewing(true);
+
     try {
       const species = common || scientific;
       const res = await fetch(
         `/api/ai-care/preview?species=${encodeURIComponent(species)}`,
+        { signal: controller.signal },
       );
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || "Preview failed");
+      if (controller.signal.aborted || previewControllerRef.current !== controller)
+        return;
       setCarePreview(typeof json?.preview === "string" ? json.preview : null);
     } catch (err) {
+      if (controller.signal.aborted || previewControllerRef.current !== controller)
+        return;
       setCarePreview(null);
       setPreviewError(err instanceof Error ? err.message : "Preview failed");
     } finally {
-      setPreviewing(false);
+      if (previewControllerRef.current === controller) setPreviewing(false);
     }
   }
 
