@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import cloudinary from "@/lib/cloudinary";
 
 export async function GET() {
   try {
@@ -26,14 +27,37 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const contentType = req.headers.get("content-type") || "";
+    let nickname: string | null = null;
+    let speciesScientific: string | null = null;
+    let speciesCommon: string | null = null;
+    let roomId: number | null = null;
+    let file: File | null = null;
+
+    if (!contentType || contentType.includes("application/json")) {
+      const body = await req.json();
+      nickname = (body?.nickname as string | undefined)?.trim() || null;
+      speciesScientific = body?.speciesScientific || null;
+      speciesCommon = body?.speciesCommon || null;
+      roomId = (body?.room_id as number | undefined) ?? null;
+    } else {
+      const form = await req.formData();
+      nickname = form.get("nickname")?.toString() || null;
+      speciesScientific = form.get("speciesScientific")?.toString() || null;
+      speciesCommon = form.get("speciesCommon")?.toString() || null;
+      const room = form.get("room_id")?.toString();
+      roomId = room ? Number(room) : null;
+      const f = form.get("photo");
+      file = f instanceof File ? f : null;
+    }
+
     const supabase = supabaseServer();
 
     const payload = {
-      nickname: (body?.nickname as string | undefined)?.trim() || null,
-      species_scientific: (body?.speciesScientific as string | undefined) || null,
-      species_common: (body?.speciesCommon as string | undefined) || null,
-      room_id: (body?.room_id as number | undefined) ?? null,
+      nickname,
+      species_scientific: speciesScientific,
+      species_common: speciesCommon,
+      room_id: roomId,
     };
 
     const insertBuilder = supabase.from("plants").insert(payload).select();
@@ -46,6 +70,41 @@ export async function POST(req: Request) {
     }
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     const plant = Array.isArray(data) ? data[0] : data;
+
+    if (file) {
+      const upload = await new Promise<{ secure_url: string; public_id: string }>(
+        async (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream({}, (err, result) => {
+            if (err || !result) return reject(err);
+            resolve(result as { secure_url: string; public_id: string });
+          });
+          try {
+            if (typeof (file as any).arrayBuffer === "function") {
+              const arrayBuffer = await (file as any).arrayBuffer();
+              stream.end(Buffer.from(arrayBuffer));
+            } else if (typeof (file as any).stream === "function") {
+              const arrayBuffer = await new Response((file as any).stream()).arrayBuffer();
+              stream.end(Buffer.from(arrayBuffer));
+            } else if (typeof (file as any).text === "function") {
+              const text = await (file as any).text();
+              stream.end(Buffer.from(text));
+            } else {
+              stream.end();
+            }
+          } catch (err) {
+            stream.end();
+          }
+        },
+      );
+      const imageUrl = upload.secure_url;
+      const { error: updateError } = await supabase
+        .from("plants")
+        .update({ image_url: imageUrl })
+        .eq("id", plant.id);
+      if (updateError)
+        return NextResponse.json({ error: updateError.message }, { status: 400 });
+      plant.image_url = imageUrl;
+    }
 
     return NextResponse.json({ plant }, { status: 201 });
   } catch (e: unknown) {
