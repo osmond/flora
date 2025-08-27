@@ -11,7 +11,6 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import SyncStatusBadge from "@/components/SyncStatusBadge";
 import ThemeToggle from "@/components/ThemeToggle";
 
 (globalThis as unknown as { React?: typeof React }).React ??= React;
@@ -52,7 +51,6 @@ export default function SiteNav() {
           </NavigationMenuList>
         </NavigationMenu>
         <div className="flex items-center gap-2">
-          <SyncStatusBadge />
           <ThemeToggle />
         </div>
       </div>

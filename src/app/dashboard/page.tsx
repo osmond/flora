@@ -1,5 +1,6 @@
 import DashboardStat from "@/components/DashboardStat"
 import BackupControls from "@/components/BackupControls"
+import CarePlanActions from "@/components/admin/CarePlanActions"
 import AreaOverview from "@/components/charts/AreaOverview"
 
 export const dynamic = "force-dynamic"
@@ -16,6 +17,11 @@ export default async function DashboardPage() {
     <main className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto space-y-8">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
+
+        <section className="flex items-center justify-between">
+          <h2 className="text-lg font-medium">Overview</h2>
+          <CarePlanActions />
+        </section>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <DashboardStat
