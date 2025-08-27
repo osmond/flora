@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
 
 const plantSchema = z.object({
   id: z.string().uuid().optional(),
@@ -66,6 +66,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (e: unknown) {
+    if (e instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: e.message }, { status: 503 });
+    }
     if (e instanceof z.ZodError) {
       return NextResponse.json({ error: e.message }, { status: 400 });
     }

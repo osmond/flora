@@ -21,7 +21,9 @@ export async function apiFetch<T>(input: RequestInfo | URL, init?: RequestInit):
     } catch {
       // ignore JSON parse errors
     }
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 503 && message.toLowerCase().includes('supabase')) {
+      message = 'Supabase credentials missing or server not running';
+    } else if (res.status === 401 || res.status === 403) {
       message = 'You do not have permission to perform this action';
     }
     if (typeof window !== 'undefined') {

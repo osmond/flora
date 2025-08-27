@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
 
 export async function GET() {
   try {
@@ -19,6 +19,9 @@ export async function GET() {
       { status: 200 },
     );
   } catch (err) {
+    if (err instanceof SupabaseEnvError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
     if (err instanceof Error && err.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

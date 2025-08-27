@@ -20,7 +20,8 @@ function parseInterval(value?: string | null) {
 
 export default async function QuickStats({ plant }: QuickStatsProps) {
   const userId = await getCurrentUserId();
-  const { data: waterEvents } = await supabaseAdmin
+  const supabase = supabaseAdmin();
+  const { data: waterEvents } = await supabase
     .from("events")
     .select("created_at")
     .eq("plant_id", plant.id)
