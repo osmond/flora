@@ -79,7 +79,7 @@ export default function AddPlantForm(): JSX.Element {
     try {
       const payload: CreatePayload = {
         nickname: values.nickname.trim(),
-        speciesScientific: speciesScientific || null,
+        speciesScientific: (speciesScientific || values.species).trim(),
         speciesCommon: speciesCommon || values.species || null,
         room_id: values.room_id ?? null,
         pot: values.pot?.trim() || null,
