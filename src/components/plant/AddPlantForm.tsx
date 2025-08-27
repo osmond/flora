@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -15,16 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import SpeciesAutosuggest from "./SpeciesAutosuggest";
 import { RoomSelect } from "./RoomSelect";
-
-type CreatePayload = {
-  nickname: string;
-  speciesScientific?: string | null;
-  speciesCommon?: string | null;
-  room_id?: number | null;
-  pot?: string | null;
-  light?: string | null;
-  notes?: string | null;
-};
 
 const formSchema = z.object({
   nickname: z.string().min(1, "Please enter a nickname"),
@@ -45,6 +35,8 @@ export default function AddPlantForm(): JSX.Element {
   const [carePreview, setCarePreview] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState<boolean>(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,26 +74,34 @@ export default function AddPlantForm(): JSX.Element {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setErrorMsg(null);
     try {
-      const payload: CreatePayload = {
-        nickname: values.nickname.trim(),
-        speciesScientific: (speciesScientific || values.species).trim(),
-        speciesCommon: speciesCommon || values.species || null,
-        room_id: values.room_id ?? null,
-        pot: values.pot?.trim() || null,
-        light: values.light?.trim() || null,
-        notes: values.notes?.trim() || null,
-      };
+      const formData = new FormData();
+      formData.append("nickname", values.nickname.trim());
+      formData.append(
+        "speciesScientific",
+        (speciesScientific || values.species).trim(),
+      );
+      formData.append(
+        "speciesCommon",
+        speciesCommon || values.species || "",
+      );
+      if (values.room_id != null)
+        formData.append("room_id", String(values.room_id));
+      if (values.pot) formData.append("pot", values.pot.trim());
+      if (values.light) formData.append("light", values.light.trim());
+      if (values.notes) formData.append("notes", values.notes.trim());
+      if (values.photo) formData.append("photo", values.photo);
 
       const res = await fetch("/api/plants", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || "Create failed");
 
       const id: string | number | undefined = json?.plant?.id;
+      const imageUrl: string | undefined = json?.plant?.image_url;
+      // imageUrl can be used for further client-side handling if needed
       router.push(id ? `/plants/${id}` : "/plants");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Create failed");
@@ -242,13 +242,32 @@ export default function AddPlantForm(): JSX.Element {
               render={({ field }) => (
                 <div className="space-y-2">
                   <Label htmlFor="photo">Photo</Label>
-                  <Input
+                  <input
+                    ref={fileInputRef}
                     id="photo"
                     type="file"
                     accept="image/*"
-                    className="h-10"
-                    onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      field.onChange(file);
+                      setPhotoPreview(file ? URL.createObjectURL(file) : null);
+                    }}
                   />
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="Selected photo"
+                      className="h-20 w-20 rounded-md object-cover"
+                    />
+                  ) : null}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {field.value ? "Change Photo" : "Upload Photo"}
+                  </Button>
                 </div>
               )}
             />

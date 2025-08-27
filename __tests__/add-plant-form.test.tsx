@@ -8,6 +8,7 @@ import AddPlantForm from "@/components/plant/AddPlantForm";
 const push = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
+  notFound: vi.fn(),
 }));
 
 vi.mock("@/components/plant/SpeciesAutosuggest", () => ({
@@ -94,20 +95,14 @@ describe("AddPlantForm submission", () => {
     fireEvent.click(screen.getByRole("button", { name: /create plant/i }));
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/plants",
-        expect.objectContaining({
-          method: "POST",
-          body: expect.stringContaining('"speciesScientific":"Pothos"'),
-        })
+      const plantCall = (global.fetch as any).mock.calls.find(
+        ([input, init]: any[]) =>
+          input === "/api/plants" && init?.method === "POST",
       );
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/plants",
-        expect.objectContaining({
-          method: "POST",
-          body: expect.stringContaining('"speciesCommon":"Pothos"'),
-        })
-      );
+      expect(plantCall).toBeTruthy();
+      const body = plantCall[1].body as FormData;
+      expect(body.get("speciesScientific")).toBe("Pothos");
+      expect(body.get("speciesCommon")).toBe("Pothos");
       expect(push).toHaveBeenCalledWith("/plants/42");
     });
   });

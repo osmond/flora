@@ -1,2 +1,7 @@
 import "@testing-library/jest-dom/vitest";
-// If your components use next/navigation, you may need to mock it per test.
+import { vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  notFound: vi.fn(),
+}));
