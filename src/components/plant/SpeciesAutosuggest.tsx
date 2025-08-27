@@ -20,8 +20,16 @@ export default function SpeciesAutosuggest(props: {
   onInputChange?: (val: string) => void;
   placeholder?: string;
   className?: string;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }) {
-  const { value = "", onSelect, onInputChange, placeholder = "Search species…", className } = props;
+  const {
+    value = "",
+    onSelect,
+    onInputChange,
+    placeholder = "Search species…",
+    className,
+    inputProps,
+  } = props;
   const [query, setQuery] = React.useState(value);
   const debounced = useDebounce(query, 350);
   const [items, setItems] = React.useState<Item[]>([]);
@@ -101,6 +109,7 @@ export default function SpeciesAutosuggest(props: {
         }}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
+        {...inputProps}
       />
       {open && (
         <CommandList className="absolute z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md">

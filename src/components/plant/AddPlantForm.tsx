@@ -42,6 +42,7 @@ export default function AddPlantForm(): JSX.Element {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
     defaultValues: {
       nickname: "",
       species: "",
@@ -141,6 +142,7 @@ export default function AddPlantForm(): JSX.Element {
 
   const submitting = form.formState.isSubmitting;
   const totalSteps = 3;
+  const errorFields = Object.keys(form.formState.errors);
 
   async function handleNext() {
     if (step === 1) {
@@ -168,6 +170,11 @@ export default function AddPlantForm(): JSX.Element {
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <div aria-live="polite" className="sr-only">
+          {errorFields.length > 0
+            ? `Please fix the following fields: ${errorFields.join(", ")}.`
+            : ""}
+        </div>
         <div className="space-y-2">
           <div className="w-full bg-secondary rounded-full h-2">
             <div
@@ -186,9 +193,18 @@ export default function AddPlantForm(): JSX.Element {
               render={({ field }) => (
                 <div className="space-y-2">
                   <Label htmlFor="nickname">Nickname</Label>
-                  <Input id="nickname" placeholder="e.g. Kay" className="h-10" {...field} />
+                  <Input
+                    id="nickname"
+                    placeholder="e.g. Kay"
+                    className="h-10"
+                    aria-invalid={!!form.formState.errors.nickname}
+                    aria-describedby={
+                      form.formState.errors.nickname ? "nickname-error" : undefined
+                    }
+                    {...field}
+                  />
                   {form.formState.errors.nickname && (
-                    <p className="text-sm text-destructive">
+                    <p id="nickname-error" className="text-sm text-destructive">
                       {form.formState.errors.nickname.message}
                     </p>
                   )}
@@ -217,9 +233,16 @@ export default function AddPlantForm(): JSX.Element {
                       setPreviewError(null);
                       field.onChange(val);
                     }}
+                    inputProps={{
+                      id: "species",
+                      "aria-invalid": !!form.formState.errors.species,
+                      "aria-describedby": form.formState.errors.species
+                        ? "species-error"
+                        : undefined,
+                    }}
                   />
                   {form.formState.errors.species && (
-                    <p className="text-sm text-destructive">
+                    <p id="species-error" className="text-sm text-destructive">
                       {form.formState.errors.species.message}
                     </p>
                   )}
@@ -372,7 +395,11 @@ export default function AddPlantForm(): JSX.Element {
               Next
             </Button>
           ) : (
-            <Button type="submit" className="ml-auto" disabled={submitting}>
+            <Button
+              type="submit"
+              className="ml-auto"
+              disabled={submitting || !form.formState.isValid}
+            >
               {submitting ? "Creating…" : "Create Plant"}
             </Button>
           )}
