@@ -2,21 +2,15 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
-type PlantRow = {
-  id: string;
-  nickname: string;
-  species?: string | null;
-  water_every?: string | null;
-  fert_every?: string | null;
-  last_watered_at?: string | null;
-  last_fertilized_at?: string | null;
-};
+import {
+  type PlantRow,
+  getFallbackPlant,
+} from "@/lib/fallbackPlants";
 
 async function getPlant(id: string): Promise<PlantRow | null> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return null;
+  if (!url || !anon) return getFallbackPlant(id);
   try {
     const { createClient } = await import("@supabase/supabase-js");
     const supabase = createClient(url, anon);
@@ -25,10 +19,10 @@ async function getPlant(id: string): Promise<PlantRow | null> {
       .select("*")
       .eq("id", id)
       .maybeSingle();
-    if (error) return null;
+    if (error || !data) return getFallbackPlant(id);
     return data as PlantRow;
   } catch {
-    return null;
+    return getFallbackPlant(id);
   }
 }
 
