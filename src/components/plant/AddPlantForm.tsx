@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import SpeciesAutosuggest from "./SpeciesAutosuggest";
 import { RoomSelect } from "./RoomSelect";
+
+const STORAGE_KEY = "addPlantForm";
 
 const formSchema = z.object({
   nickname: z.string().min(1, "Please enter a nickname"),
@@ -50,6 +52,33 @@ export default function AddPlantForm(): JSX.Element {
       photo: null,
     },
   });
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        form.reset({ ...form.getValues(), ...parsed });
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [form]);
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      const { photo, ...rest } = value;
+      const isEmpty = Object.values(rest).every(
+        (v) => v === "" || v === null || v === undefined,
+      );
+      if (isEmpty) {
+        localStorage.removeItem(STORAGE_KEY);
+      } else {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   async function fetchPreview(scientific: string, common?: string) {
     setCarePreview(null);
@@ -99,6 +128,8 @@ export default function AddPlantForm(): JSX.Element {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || "Create failed");
 
+      localStorage.removeItem(STORAGE_KEY);
+
       const id: string | number | undefined = json?.plant?.id;
       const imageUrl: string | undefined = json?.plant?.image_url;
       // imageUrl can be used for further client-side handling if needed
@@ -121,6 +152,17 @@ export default function AddPlantForm(): JSX.Element {
 
   function handleBack() {
     setStep((s) => Math.max(s - 1, 1));
+  }
+
+  function handleReset() {
+    form.reset();
+    setSpeciesScientific("");
+    setSpeciesCommon("");
+    setCarePreview(null);
+    setPreviewError(null);
+    setPhotoPreview(null);
+    setStep(1);
+    localStorage.removeItem(STORAGE_KEY);
   }
 
   return (
@@ -315,11 +357,16 @@ export default function AddPlantForm(): JSX.Element {
         ) : null}
 
         <div className="flex justify-between">
-          {step > 1 && (
-            <Button type="button" variant="outline" onClick={handleBack}>
-              Back
+          <div className="flex gap-2">
+            {step > 1 && (
+              <Button type="button" variant="outline" onClick={handleBack}>
+                Back
+              </Button>
+            )}
+            <Button type="button" variant="outline" onClick={handleReset}>
+              Reset
             </Button>
-          )}
+          </div>
           {step < totalSteps ? (
             <Button type="button" className="ml-auto" onClick={handleNext}>
               Next
