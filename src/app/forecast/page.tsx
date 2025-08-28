@@ -10,13 +10,13 @@ async function getPlants(): Promise<Plant[]> {
     const supabase = createClient(url, anon);
     const { data } = await supabase
       .from("plants")
-      .select("id, nickname, water_every, fert_every, last_watered_at, last_fertilized_at");
+      .select("id, nickname, water_every, fert_every, care_plan, last_watered_at, last_fertilized_at");
     if (!data) return [];
     return (data as any[]).map((p) => ({
       id: String(p.id),
       nickname: p.nickname,
-      waterEvery: p.water_every ?? null,
-      fertEvery: p.fert_every ?? null,
+      waterEvery: p.water_every ?? p.care_plan?.water_every ?? null,
+      fertEvery: p.fert_every ?? p.care_plan?.fert_every ?? null,
       lastWateredAt: p.last_watered_at ?? null,
       lastFertilizedAt: p.last_fertilized_at ?? null,
     }));

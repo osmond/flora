@@ -15,8 +15,8 @@ function rowToProps(row: PlantRow | any): PlantCardProps {
     species: row.species ?? row.species_common ?? row.speciesScientific ?? null,
     lastWateredAt: row.last_watered_at ?? null,
     lastFertilizedAt: row.last_fertilized_at ?? null,
-    waterEvery: row.water_every ?? null,
-    fertEvery: row.fert_every ?? null,
+    waterEvery: row.water_every ?? row.care_plan?.water_every ?? null,
+    fertEvery: row.fert_every ?? row.care_plan?.fert_every ?? null,
   };
 }
 

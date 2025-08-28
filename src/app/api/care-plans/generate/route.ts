@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const supabase = supabaseAdmin();
     const { data: plants } = await supabase
       .from("plants")
-      .select("id, nickname, species_common, water_every, fert_every")
+      .select("id, nickname")
       .order("created_at", { ascending: true });
 
     // Optional: basic climate signals (can be extended with your /api/weather)
@@ -37,22 +37,19 @@ export async function POST(req: Request) {
     let updated = 0;
     let attempted = 0;
     for (const p of plants || []) {
-      const name = (p as any).species_common || (p as any).nickname || "";
-      const currentWater = (p as any).water_every ?? null;
-      const currentFert = (p as any).fert_every ?? null;
+      const name = (p as any).nickname || "";
       const plan = await generateCarePlan({
         species: String(name),
         nickname: (p as any).nickname ?? null,
         climate: { lat, lon, avgTempC, rainChancePct },
       });
       attempted++;
-      if (plan && (plan.water_every !== currentWater || plan.fert_every !== currentFert)) {
+      if (plan) {
         const { error: upErr } = await supabase
           .from("plants")
-          .update({ water_every: plan.water_every, fert_every: plan.fert_every })
+          .update({ care_plan: { water_every: plan.water_every, fert_every: plan.fert_every, notes: plan.notes } })
           .eq("id", (p as any).id);
-        if (upErr) throw upErr;
-        updated++;
+        if (!upErr) updated++;
       }
     }
 

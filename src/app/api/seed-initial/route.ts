@@ -120,12 +120,16 @@ export async function POST() {
     const officeRows = officeList.map((nickname) => ({
       nickname,
       species_common: nickname,
+      species_scientific: nickname,
       room_id: officeId,
+      user_id: 'flora-single-user',
     }));
     const outsideRows = outsideList.map((nickname) => ({
       nickname,
       species_common: nickname,
+      species_scientific: nickname,
       room_id: outsideId,
+      user_id: 'flora-single-user',
     }));
     // Build target map and normalize
     const norm = (s: string) => s.trim().toLowerCase();
@@ -157,8 +161,8 @@ export async function POST() {
     const missingOffice = officeList.filter((n) => !existingByName.has(norm(n)));
     const missingOutside = outsideList.filter((n) => !existingByName.has(norm(n)));
     const rows = [
-      ...missingOffice.map((nickname) => ({ nickname, species_common: nickname, room_id: officeId })),
-      ...missingOutside.map((nickname) => ({ nickname, species_common: nickname, room_id: outsideId })),
+      ...missingOffice.map((nickname) => ({ nickname, species_common: nickname, species_scientific: nickname, room_id: officeId, user_id: 'flora-single-user' })),
+      ...missingOutside.map((nickname) => ({ nickname, species_common: nickname, species_scientific: nickname, room_id: outsideId, user_id: 'flora-single-user' })),
     ];
     let inserted = 0;
     if (rows.length) {

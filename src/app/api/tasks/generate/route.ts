@@ -29,7 +29,7 @@ export async function POST() {
     // Load plants
     const { data: plants } = await supabase
       .from("plants")
-      .select("id, nickname, water_every, fert_every");
+      .select("id, nickname, care_plan, water_every, fert_every");
 
     // Load recent events for last 180 days
     const since = formatISO(addDays(today, -180));
@@ -52,8 +52,8 @@ export async function POST() {
     const rows: any[] = [];
     for (const p of plants || []) {
       const pid = (p as any).id;
-      const waterDays = parseInterval((p as any).water_every);
-      const fertDays = parseInterval((p as any).fert_every);
+      const waterDays = parseInterval((p as any).water_every || (p as any).care_plan?.water_every);
+      const fertDays = parseInterval((p as any).fert_every || (p as any).care_plan?.fert_every);
       const pevents = (events || []).filter((e: any) => e.plant_id === pid);
       const lastWater = pevents.filter((e) => e.type === "water").sort((a, b) => b.created_at.localeCompare(a.created_at))[0]?.created_at;
       const lastFert = pevents.filter((e) => e.type === "fertilize").sort((a, b) => b.created_at.localeCompare(a.created_at))[0]?.created_at;
@@ -93,4 +93,3 @@ export async function POST() {
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
-

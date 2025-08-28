@@ -99,35 +99,40 @@ export async function GET() {
 
     // Weekly completion (approx): last 7d events count vs plants*expected(1)
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    const { data: events, error: evErr } = await supabase
-      .from("events")
-      .select("id, created_at, plant_id, type")
+    let recentEvents: any[] = []
+    try {
+      const { data: events } = await supabase
+        .from("events")
+        .select("id, created_at, plant_id, type")
+      recentEvents = (events || []).filter(e => e.created_at >= since)
+    } catch {}
 
-    if (evErr) throw evErr
-    const recentEvents = (events || []).filter(e => e.created_at >= since)
-
-    const { data: plants, error: pErr } = await supabase
-      .from("plants")
-      .select("id, name, created_at")
-
-    if (pErr) throw pErr
+    let plants: any[] = []
+    try {
+      const { data } = await supabase
+        .from("plants")
+        .select("id, nickname, created_at")
+      plants = data || []
+    } catch {}
 
     const todayStr = new Date().toISOString().slice(0, 10)
 
-    const { data: tasks, error: tErr } = await supabase
-      .from("tasks")
-      .select("id, plant_id, type, due_date, completed_at")
-      .lte("due_date", todayStr)
-      .order("due_date", { ascending: true })
-
-    if (tErr) throw tErr
+    let tasks: any[] = []
+    try {
+      const { data } = await supabase
+        .from("tasks")
+        .select("id, plant_id, type, due_date, completed_at")
+        .lte("due_date", todayStr)
+        .order("due_date", { ascending: true })
+      tasks = data || []
+    } catch {}
 
     const attention = (tasks || [])
       .filter(t => !t.completed_at)
       .slice(0, 5)
       .map(t => ({
         id: t.id,
-        plantName: (plants || []).find(p => p.id === t.plant_id)?.name || "Unknown",
+        plantName: (plants || []).find(p => p.id === t.plant_id)?.nickname || "Unknown",
         type: t.type,
         due: t.due_date,
       }))
@@ -136,13 +141,13 @@ export async function GET() {
     const now = Date.now()
     const neglected = (plants || [])
       .map(p => {
-        const lastEvent = (events || [])
+        const lastEvent = (recentEvents || [])
           .filter(e => e.plant_id === p.id)
           .map(e => new Date(e.created_at).getTime())
           .reduce((max, t) => (t > max ? t : max), 0)
         const baseline = lastEvent || new Date(p.created_at).getTime()
         const days = Math.floor((now - baseline) / (1000 * 60 * 60 * 24))
-        return { id: p.id, plantName: p.name, days }
+        return { id: p.id, plantName: (p as any).nickname || 'Unknown', days }
       })
       .filter(p => p.days >= 14)
       .sort((a, b) => b.days - a.days)
@@ -216,7 +221,7 @@ export async function GET() {
       dayStart.setDate(dayStart.getDate() - i)
       const dayEnd = new Date(dayStart)
       dayEnd.setDate(dayStart.getDate() + 1)
-      const has = (events || []).some(e => {
+      const has = (recentEvents || []).some(e => {
         const t = new Date(e.created_at).getTime()
         return t >= dayStart.getTime() && t < dayEnd.getTime()
       })
@@ -229,7 +234,7 @@ export async function GET() {
       .map(p => {
         const days = Array.from(
           new Set(
-            (events || [])
+            (recentEvents || [])
               .filter(e => e.plant_id === p.id)
               .map(e => e.created_at.slice(0, 10))
           )
@@ -246,7 +251,7 @@ export async function GET() {
           if (current > max) max = current
           prev = day
         }
-        return { id: p.id, plantName: p.name, streak: max }
+        return { id: p.id, plantName: (p as any).nickname || 'Unknown', streak: max }
       })
       .filter(s => s.streak > 0)
       .sort((a, b) => b.streak - a.streak)

@@ -21,19 +21,7 @@ async function getPlant(id: string): Promise<{
   };
   heroUrl: string | null;
 }> {
-  if (await isDemoMode()) {
-    const demo = getDemoPlants();
-    const plant = demo.find((p) => String(p.id) == id) ?? demo[0]
-    return {
-      plant: {
-        id: String(plant.id),
-        nickname: plant.nickname,
-        speciesScientific: plant.species ?? null,
-        room: null,
-      },
-      heroUrl: null,
-    };
-  }
+  // Demo mode disabled in live usage; do not fallback
   // 1) Try Prisma (tests mock this path)
   try {
     const prismaPlant = await (db as any)?.plant?.findFirst?.({
@@ -88,18 +76,7 @@ async function getPlant(id: string): Promise<{
       }
     } catch {}
   }
-
-  // 3) Fallback
-  const fb = getFallbackPlant(id);
-  return {
-    plant: {
-      id: String(fb?.id ?? id),
-      nickname: fb?.nickname ?? "Plant",
-      speciesScientific: fb?.species ?? null,
-      room: null,
-    },
-    heroUrl: null,
-  };
+  return { plant: null as any, heroUrl: null };
 }
 
 export default async function PlantDetail({
@@ -108,17 +85,13 @@ export default async function PlantDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const demo = await isDemoMode();
   const { plant, heroUrl } = await getPlant(id);
   if (!plant) notFound();
 
   // Load initial events (admin client for server-side fetch during SSR)
   let initialEvents: any[] = [];
   let timelineError = false;
-  if (demo) {
-    const demoEvents = buildDemoEvents(1, getDemoPlants());
-    initialEvents = toCareEvents(demoEvents.filter((e) => e.plant_id === plant.id));
-  } else {
+  {
     try {
       const supabase = supabaseAdmin();
       const { data, error } = await supabase
@@ -152,11 +125,11 @@ export default async function PlantDetail({
           <CardContent className="space-y-2 text-sm">
             <div>
               <span className="text-muted-foreground">Water every: </span>
-              <Badge variant="secondary">{(plant as any).water_every ?? "—"}</Badge>
+              <Badge variant="secondary">{(plant as any).water_every ?? (plant as any).care_plan?.water_every ?? "—"}</Badge>
             </div>
             <div>
               <span className="text-muted-foreground">Fertilize every: </span>
-              <Badge variant="secondary">{(plant as any).fert_every ?? "—"}</Badge>
+              <Badge variant="secondary">{(plant as any).fert_every ?? (plant as any).care_plan?.fert_every ?? "—"}</Badge>
             </div>
           </CardContent>
         </Card>
