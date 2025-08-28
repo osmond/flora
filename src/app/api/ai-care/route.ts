@@ -9,11 +9,6 @@ export async function GET(req: Request) {
   if (!plantId) {
     return NextResponse.json({ error: "Missing plantId" }, { status: 400 });
   }
-  // Validate UUID to avoid Postgres cast errors
-  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  if (!uuidRe.test(plantId)) {
-    return NextResponse.json({ error: "Invalid plantId (expected UUID)" }, { status: 400 });
-  }
   try {
     if (question) {
       const answer = await getAiCareAnswer(plantId, question);

@@ -2,12 +2,9 @@ import PlantCard, { type PlantCardProps } from "@/components/PlantCard";
 import EmptyState from "@/components/EmptyState";
 import PlantsGrid from "@/components/PlantsGrid";
 import QuickAddDialog from "@/components/plant/QuickAddDialog";
-import type { PlantRow } from "@/lib/fallbackPlants";
-import { isDemoMode } from "@/lib/server-demo";
-import { getDemoPlants } from "@/lib/demoData";
-import { fallbackPlants } from "@/lib/fallbackPlants";
+// Live data only (no demo fallback)
 
-function rowToProps(row: PlantRow | any): PlantCardProps {
+function rowToProps(row: any): PlantCardProps {
   return {
     id: String(row.id),
     nickname: row.nickname,
@@ -20,7 +17,6 @@ function rowToProps(row: PlantRow | any): PlantCardProps {
 }
 
 async function getPlants(): Promise<(PlantCardProps & { roomName?: string | null })[]> {
-  if (await isDemoMode()) return getDemoPlants().map(rowToProps);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return [];

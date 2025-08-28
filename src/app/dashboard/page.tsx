@@ -19,8 +19,14 @@ async function fetchCarePlans() {
   return (json?.plants ?? []) as any[]
 }
 
+async function fetchSchemaHealth() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/schema-health`, { cache: "no-store" })
+  if (!res.ok) return null
+  return res.json()
+}
+
 export default async function DashboardPage() {
-  const [stats, plans] = await Promise.all([fetchStats(), fetchCarePlans()])
+  const [stats, plans, schema] = await Promise.all([fetchStats(), fetchCarePlans(), fetchSchemaHealth()])
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -37,6 +43,44 @@ export default async function DashboardPage() {
             <CarePlanList plans={plans as any[]} />
           ) : (
             <p className="text-sm text-muted-foreground">No care plans yet. Use Generate All above.</p>
+          )}
+        </section>
+
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Schema Health</h2>
+          {schema ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-left text-muted-foreground">
+                  <tr>
+                    <th className="py-2 pr-4">Field</th>
+                    <th className="py-2 pr-4">Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-t">
+                    <td className="py-2 pr-4 font-medium">plants.id</td>
+                    <td className="py-2 pr-4">{schema.types?.plants_id ?? '—'}</td>
+                  </tr>
+                  <tr className="border-t">
+                    <td className="py-2 pr-4 font-medium">events.plant_id</td>
+                    <td className="py-2 pr-4">{schema.types?.events_plant_id ?? '—'}</td>
+                  </tr>
+                  <tr className="border-t">
+                    <td className="py-2 pr-4 font-medium">tasks.plant_id</td>
+                    <td className="py-2 pr-4">{schema.types?.tasks_plant_id ?? '—'}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-3 text-xs text-muted-foreground">
+                FK coverage: events→plants {schema.fkCoverage?.events_to_plants_percent ?? '—'}%, tasks→plants {schema.fkCoverage?.tasks_to_plants_percent ?? '—'}%
+              </div>
+              {schema.types?.plants_id && schema.types?.events_plant_id && schema.types?.tasks_plant_id && schema.types.plants_id !== schema.types.events_plant_id || schema.types.plants_id !== schema.types.tasks_plant_id ? (
+                <p className="mt-2 text-sm text-destructive">Warning: ID types differ across tables. Align events/tasks to match plants.id.</p>
+              ) : null}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Unable to fetch schema health.</p>
           )}
         </section>
 

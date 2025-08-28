@@ -22,11 +22,12 @@ function getSeason(date: Date): "winter" | "spring" | "summer" | "fall" {
 export async function getAiCareContext(plantId: string): Promise<CareContext> {
   const userId = await getCurrentUserId();
   const supabase = supabaseAdmin();
+  const pid: string | number = /^\d+$/.test(plantId) ? Number(plantId) : plantId;
   const { data: events } = await supabase
     .from("events")
     .select("type, note, created_at")
     .eq("user_id", userId)
-    .eq("plant_id", plantId)
+    .eq("plant_id", pid)
     .order("created_at", { ascending: false })
     .limit(20);
 

@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const { data, error } = await supabase
       .from("events")
       .select("*")
-      .eq("plant_id", plantId)
+      .eq("plant_id", /^\d+$/.test(String(plantId)) ? Number(plantId) : plantId)
       .order("created_at", { ascending: false });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
-    let plantId: string | null = null;
+    let plantId: string | number | null = null;
     let type: string | null = null;
     let note: string | null = null;
     let amount: number | null = null;
@@ -45,7 +45,8 @@ export async function POST(req: Request) {
 
     if (!contentType || !contentType.includes("application/json")) {
       const form = await req.formData();
-      plantId = form.get("plant_id")?.toString() || null;
+      const pidForm = form.get("plant_id")?.toString() || null;
+      plantId = pidForm && /^\d+$/.test(pidForm) ? Number(pidForm) : pidForm;
       type = form.get("type")?.toString() || null;
       note = typeof form.get("note") === "string" ? (form.get("note") as string) : null;
       tag = form.get("tag")?.toString() || null;
@@ -55,7 +56,8 @@ export async function POST(req: Request) {
       file = f instanceof File ? f : null;
     } else {
       const body = await req.json();
-      plantId = body?.plant_id ?? null;
+      const pidBody = body?.plant_id ?? null;
+      plantId = typeof pidBody === 'string' && /^\d+$/.test(pidBody) ? Number(pidBody) : pidBody;
       type = body?.type ?? null;
       note = typeof body?.note === "string" ? body.note : null;
       tag = typeof body?.tag === "string" ? body.tag : null;
@@ -66,10 +68,7 @@ export async function POST(req: Request) {
     if (!plantId || !type || typeof plantId !== "string" || typeof type !== "string") {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
-    const uuidRegex = /^[0-9a-fA-F-]{36}$/;
-    if (!uuidRegex.test(plantId)) {
-      return NextResponse.json({ error: "Invalid plant_id" }, { status: 400 });
-    }
+    // Accept numeric ids or UUIDs based on your schema
 
     const userId = await getCurrentUserId();
     const supabase = supabaseServer();

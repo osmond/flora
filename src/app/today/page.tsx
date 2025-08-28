@@ -1,13 +1,13 @@
 import TaskList from "@/components/TaskList";
+import EmptyState from "@/components/EmptyState";
 import { generateTasks } from "@/lib/tasks";
 import type { Plant } from "@/lib/tasks";
 import type { Task } from "@/types/task";
-import { isDemoMode } from "@/lib/server-demo";
 
 // NOTE: we lazy-import supabase in the loader so the page still
 // renders fine without the package in dev/canvas environments.
 async function getTasksFromSupabase(): Promise<Task[] | null> {
-  if (await isDemoMode()) return null;
+  // Live data only; no demo fallback
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return [];
@@ -50,36 +50,38 @@ async function getTasksFromSupabase(): Promise<Task[] | null> {
   });
 }
 
-// --- Fallback sample plants (kept for local/dev) ---
-const samplePlants: Plant[] = [
-  {
-    id: "1",
-    nickname: "Monstera",
-    waterEvery: "7 days",
-    lastWateredAt: new Date(Date.now() - 8 * 86400000).toISOString(),
-  },
-  {
-    id: "2",
-    nickname: "Fiddle Leaf Fig",
-    fertEvery: "30 days",
-    lastFertilizedAt: new Date(Date.now() - 30 * 86400000).toISOString(),
-  },
-  {
-    id: "3",
-    nickname: "Snake Plant",
-    waterEvery: "14 days",
-    lastWateredAt: new Date(Date.now() - 10 * 86400000).toISOString(),
-  },
-];
+// No demo/sample fallback in live mode
 
 export default async function TodayPage() {
-  const demo = await isDemoMode();
-  let tasks: Task[] = [];
-  if (demo) {
-    tasks = generateTasks(samplePlants) as Task[];
-  } else {
-    const dbTasks = await getTasksFromSupabase();
-    tasks = (dbTasks ?? []) as Task[];
+  // Load tasks from DB only
+  const dbTasks = await getTasksFromSupabase();
+  const tasks = (dbTasks ?? []) as Task[];
+  // Also load plant count to decide empty state
+  let plantCount = 0;
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (url && anon) {
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabase = createClient(url, anon);
+      const { count } = await supabase.from("plants").select("id", { count: "exact", head: true });
+      plantCount = count ?? 0;
+    }
+  } catch {}
+
+  // If there are no plants at all, show a friendly welcome/CTA instead of "All caught up".
+  if (!plantCount) {
+    return (
+      <section className="space-y-6 px-4 py-6 md:px-6">
+        <h1 className="text-2xl font-semibold">Today&apos;s Tasks</h1>
+        <EmptyState
+          title="No plants yet"
+          description="Add your first plant to start seeing care tasks here."
+          ctaHref="/plants/new"
+          ctaLabel="Add a Plant"
+        />
+      </section>
+    );
   }
 
   return (
