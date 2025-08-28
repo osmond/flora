@@ -57,11 +57,23 @@ async function getPlant(id: string): Promise<{
     try {
       const { createClient } = await import("@supabase/supabase-js");
       const supabase = createClient(url, anon);
-      const { data, error } = await supabase
+      // Try id as string (UUID) first
+      let { data, error } = await supabase
         .from("plants")
         .select("*")
         .eq("id", id)
         .maybeSingle();
+      // If not found and looks numeric, try numeric match to support bigint ids
+      if ((!data || error) && /^\d+$/.test(id)) {
+        const n = Number(id);
+        const retry = await supabase
+          .from("plants")
+          .select("*")
+          .eq("id", n)
+          .maybeSingle();
+        data = retry.data;
+        error = retry.error;
+      }
       if (!error && data) {
         return {
           plant: {
@@ -93,11 +105,22 @@ export default async function PlantDetail({ params }: { params: Promise<{ id: st
   {
     try {
       const supabase = supabaseAdmin();
-      const { data, error } = await supabase
+      // Fetch events with flexible id matching
+      let { data, error } = await supabase
         .from("events")
         .select("*")
         .eq("plant_id", plant.id)
         .order("created_at", { ascending: false });
+      if ((!data || error) && /^\d+$/.test(String(plant.id))) {
+        const n = Number(plant.id);
+        const retry = await supabase
+          .from("events")
+          .select("*")
+          .eq("plant_id", n)
+          .order("created_at", { ascending: false });
+        data = retry.data;
+        error = retry.error;
+      }
       if (error) throw error;
       initialEvents = data ?? [];
     } catch (e) {
