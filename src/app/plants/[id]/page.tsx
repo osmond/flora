@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -79,14 +79,18 @@ async function getPlant(id: string): Promise<{
   return { plant: null as any, heroUrl: null };
 }
 
-export default async function PlantDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function PlantDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!uuidRe.test(id)) {
+    // Invalid id format → send users back to list instead of a blank/404
+    redirect("/plants");
+  }
   const { plant, heroUrl } = await getPlant(id);
-  if (!plant) notFound();
+  if (!plant) {
+    // If a well-formed UUID doesn't exist, show 404
+    notFound();
+  }
 
   // Load initial events (admin client for server-side fetch during SSR)
   let initialEvents: any[] = [];

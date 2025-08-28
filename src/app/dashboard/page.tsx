@@ -2,6 +2,7 @@ import DashboardStat from "@/components/DashboardStat"
 import BackupControls from "@/components/BackupControls"
 import CarePlanActions from "@/components/admin/CarePlanActions"
 import AreaOverview from "@/components/charts/AreaOverview"
+import CarePlanList from "@/components/admin/CarePlanList"
 
 export const dynamic = "force-dynamic"
 
@@ -11,8 +12,15 @@ async function fetchStats() {
   return res.json()
 }
 
+async function fetchCarePlans() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/care-plans/list`, { cache: "no-store" })
+  if (!res.ok) return [] as any[]
+  const json = await res.json().catch(() => ({ plants: [] }))
+  return (json?.plants ?? []) as any[]
+}
+
 export default async function DashboardPage() {
-  const stats = await fetchStats()
+  const [stats, plans] = await Promise.all([fetchStats(), fetchCarePlans()])
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -21,6 +29,15 @@ export default async function DashboardPage() {
         <section className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Overview</h2>
           <CarePlanActions />
+        </section>
+
+        <section className="rounded-2xl border bg-card text-card-foreground p-6">
+          <h2 className="text-lg font-medium mb-4">Care Plans</h2>
+          {plans.length ? (
+            <CarePlanList plans={plans as any[]} />
+          ) : (
+            <p className="text-sm text-muted-foreground">No care plans yet. Use Generate All above.</p>
+          )}
         </section>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

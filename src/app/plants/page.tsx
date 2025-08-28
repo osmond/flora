@@ -1,12 +1,11 @@
 import PlantCard, { type PlantCardProps } from "@/components/PlantCard";
 import EmptyState from "@/components/EmptyState";
 import PlantsGrid from "@/components/PlantsGrid";
+import QuickAddDialog from "@/components/plant/QuickAddDialog";
+import type { PlantRow } from "@/lib/fallbackPlants";
 import { isDemoMode } from "@/lib/server-demo";
 import { getDemoPlants } from "@/lib/demoData";
-import {
-  type PlantRow,
-  fallbackPlants,
-} from "@/lib/fallbackPlants";
+import { fallbackPlants } from "@/lib/fallbackPlants";
 
 function rowToProps(row: PlantRow | any): PlantCardProps {
   return {
@@ -20,7 +19,7 @@ function rowToProps(row: PlantRow | any): PlantCardProps {
   };
 }
 
-async function getPlants(): Promise<PlantCardProps[]> {
+async function getPlants(): Promise<(PlantCardProps & { roomName?: string | null })[]> {
   if (await isDemoMode()) return getDemoPlants().map(rowToProps);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -29,9 +28,16 @@ async function getPlants(): Promise<PlantCardProps[]> {
   try {
     const { createClient } = await import("@supabase/supabase-js");
     const supabase = createClient(url, anon);
-    const { data, error } = await supabase.from("plants").select("*");
-    if (error || !data) return [];
-    return (data as PlantRow[]).map(rowToProps);
+    const { data: plants } = await supabase
+      .from("plants")
+      .select("id, nickname, species_common, image_url, room_id, water_every, fert_every, care_plan, last_watered_at, last_fertilized_at");
+    const { data: rooms } = await supabase.from("rooms").select("id, name");
+    const roomMap = new Map<string, string>();
+    (rooms || []).forEach((r: any) => roomMap.set(String(r.id), r.name));
+    return (plants || []).map((row: any) => ({
+      ...rowToProps(row as any),
+      roomName: row.room_id ? roomMap.get(String(row.room_id)) ?? null : null,
+    }));
   } catch {
     return [];
   }
@@ -39,10 +45,19 @@ async function getPlants(): Promise<PlantCardProps[]> {
 
 export default async function PlantsPage() {
   const plants = await getPlants();
+  const groups = new Map<string, (typeof plants)[number][]>();
+  for (const p of plants) {
+    const key = p.roomName ?? "Unassigned";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(p);
+  }
 
   return (
     <section className="space-y-6 px-4 py-6 md:px-6">
-      <h1 className="text-2xl font-semibold">Plants</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Plants</h1>
+        <QuickAddDialog />
+      </div>
       {plants.length === 0 ? (
         <EmptyState
           title="Welcome to Flora"
@@ -52,7 +67,14 @@ export default async function PlantsPage() {
           hint="Pro tip: press A to add a plant"
         />
       ) : (
-        <PlantsGrid items={plants} />
+        <div className="space-y-8">
+          {Array.from(groups.entries()).map(([room, items]) => (
+            <div key={room}>
+              <h2 className="mb-3 text-lg font-medium">{room}</h2>
+              <PlantsGrid items={items} />
+            </div>
+          ))}
+        </div>
       )}
     </section>
   );

@@ -124,6 +124,13 @@ export async function POST(req: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     const plant = Array.isArray(data) ? data[0] : data;
 
+    // Fire-and-forget: generate care plan asynchronously
+    try {
+      const base = process.env.NEXT_PUBLIC_BASE_URL || "";
+      // Do not await; best-effort
+      fetch(`${base}/api/care-plans/generate/${plant.id}`, { method: "POST", keepalive: true }).catch(() => undefined);
+    } catch {}
+
     if (file) {
       const upload = await new Promise<{ secure_url: string; public_id: string }>(
         async (resolve, reject) => {
