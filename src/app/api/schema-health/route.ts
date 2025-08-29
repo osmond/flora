@@ -68,7 +68,7 @@ export async function GET() {
 
     async function countExisting(idsNum: number[], idsStr: string[]) {
       let found = 0;
-      let total = idsNum.length + idsStr.length;
+      const total = idsNum.length + idsStr.length;
       if (total === 0) return null;
       if (idsNum.length) {
         const { data } = await supabase.from("plants").select("id").in("id", idsNum);
