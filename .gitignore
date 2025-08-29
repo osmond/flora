@@ -44,3 +44,4 @@ apply-add-trefle-autosuggest.sh
 apply-fix-species-fetch.sh
 apply-fix-species-proxy.sh
 apply-fix-species-url.sh
+.env.local

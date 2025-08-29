@@ -53,41 +53,38 @@ async function getPlant(id: string): Promise<{
   // 2) Try Supabase anon
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (url && anon) {
-    try {
-      const { createClient } = await import("@supabase/supabase-js");
-      const supabase = createClient(url, anon);
-      // Try id as string (UUID) first
-      let { data, error } = await supabase
+  // Use admin client to avoid RLS issues
+  try {
+    const supabase = supabaseAdmin();
+    // Try id as string first
+    let { data, error } = await supabase
+      .from("plants")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if ((!data || error) && /^\d+$/.test(id)) {
+      const n = Number(id);
+      const retry = await supabase
         .from("plants")
         .select("*")
-        .eq("id", id)
+        .eq("id", n)
         .maybeSingle();
-      // If not found and looks numeric, try numeric match to support bigint ids
-      if ((!data || error) && /^\d+$/.test(id)) {
-        const n = Number(id);
-        const retry = await supabase
-          .from("plants")
-          .select("*")
-          .eq("id", n)
-          .maybeSingle();
-        data = retry.data;
-        error = retry.error;
-      }
-      if (!error && data) {
-        return {
-          plant: {
-            id: String((data as any).id),
-            nickname: (data as any).nickname,
-            speciesScientific: (data as any).species_scientific ?? null,
-            speciesCommon: (data as any).species_common ?? null,
-            room: (data as any).room ?? null,
-          },
-          heroUrl: (data as any).image_url ?? null,
-        };
-      }
-    } catch {}
-  }
+      data = retry.data;
+      error = retry.error;
+    }
+    if (!error && data) {
+      return {
+        plant: {
+          id: String((data as any).id),
+          nickname: (data as any).nickname,
+          speciesScientific: (data as any).species_scientific ?? null,
+          speciesCommon: (data as any).species_common ?? null,
+          room: (data as any).room ?? null,
+        },
+        heroUrl: (data as any).image_url ?? null,
+      };
+    }
+  } catch {}
   return { plant: null as any, heroUrl: null };
 }
 

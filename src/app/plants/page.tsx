@@ -1,6 +1,7 @@
 import PlantCard, { type PlantCardProps } from "@/components/PlantCard";
 import EmptyState from "@/components/EmptyState";
 import PlantsGrid from "@/components/PlantsGrid";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import QuickAddDialog from "@/components/plant/QuickAddDialog";
 // Live data only (no demo fallback)
 
@@ -17,13 +18,8 @@ function rowToProps(row: any): PlantCardProps {
 }
 
 async function getPlants(): Promise<(PlantCardProps & { roomName?: string | null })[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return [];
-
   try {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(url, anon);
+    const supabase = supabaseAdmin();
     const { data: plants } = await supabase
       .from("plants")
       .select("id, nickname, species_common, image_url, room_id, water_every, fert_every, care_plan, last_watered_at, last_fertilized_at");

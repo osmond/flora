@@ -1,26 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabaseServer, SupabaseEnvError } from "@/lib/supabase/server";
 import cloudinary from "@/lib/cloudinary";
-import { isDemoMode } from "@/lib/server-demo";
-import { getDemoPlants } from "@/lib/demoData";
+import { generateCarePlan } from "@/lib/llm";
 
 
 export async function GET() {
   try {
-    if (await isDemoMode()) {
-      return NextResponse.json(
-        getDemoPlants().map((p) => ({
-          id: p.id,
-          nickname: p.nickname,
-          species_common: p.species ?? null,
-          water_every: p.water_every ?? null,
-          fert_every: p.fert_every ?? null,
-          last_watered_at: p.last_watered_at ?? null,
-          last_fertilized_at: p.last_fertilized_at ?? null,
-        })),
-        { status: 200 },
-      );
-    }
     const supabase = supabaseServer();
     const builder = supabase.from("plants").select("*");
     let query: any = builder;
@@ -47,39 +32,6 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    if (await isDemoMode()) {
-      // Simulate creation without persistence in demo mode
-      const contentType = req.headers.get("content-type") || "";
-      let nickname: string | null = null;
-      let speciesScientific: string | null = null;
-      let speciesCommon: string | null = null;
-      let roomId: number | null = null;
-
-      if (!contentType || contentType.includes("application/json")) {
-        const body = await req.json();
-        nickname = (body?.nickname as string | undefined)?.trim() || null;
-        speciesScientific = body?.speciesScientific || null;
-        speciesCommon = body?.speciesCommon || null;
-        roomId = (body?.room_id as number | undefined) ?? null;
-      } else {
-        const form = await req.formData();
-        nickname = form.get("nickname")?.toString() || null;
-        speciesScientific = form.get("speciesScientific")?.toString() || null;
-        speciesCommon = form.get("speciesCommon")?.toString() || null;
-        const room = form.get("room_id")?.toString();
-        roomId = room ? Number(room) : null;
-      }
-      if (!nickname) return NextResponse.json({ error: "nickname is required" }, { status: 400 });
-      const plant = {
-        id: String(Math.random()).slice(2),
-        nickname,
-        species_scientific: speciesScientific,
-        species_common: speciesCommon,
-        room_id: roomId,
-        image_url: null,
-      };
-      return NextResponse.json({ plant }, { status: 201 });
-    }
     const contentType = req.headers.get("content-type") || "";
     let nickname: string | null = null;
     let speciesScientific: string | null = null;
@@ -124,11 +76,29 @@ export async function POST(req: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     const plant = Array.isArray(data) ? data[0] : data;
 
-    // Fire-and-forget: generate care plan asynchronously
+    // Synchronously generate care plan; fallback to sensible defaults
+    let plan = null as null | { water_every: string; fert_every: string; notes?: string };
     try {
-      const base = process.env.NEXT_PUBLIC_BASE_URL || "";
-      // Do not await; best-effort
-      fetch(`${base}/api/care-plans/generate/${plant.id}`, { method: "POST", keepalive: true }).catch(() => undefined);
+      plan = await generateCarePlan({
+        species: speciesCommon || speciesScientific || nickname || undefined,
+        nickname: nickname || undefined,
+        climate: { lat: process.env.WEATHER_LAT, lon: process.env.WEATHER_LON, avgTempC: null, rainChancePct: null },
+      });
+    } catch {}
+    const fallbackPlan = { water_every: "7 days", fert_every: "30 days" };
+    const finalPlan = plan ?? fallbackPlan;
+    try {
+      await supabase
+        .from("plants")
+        .update({
+          care_plan: { water_every: finalPlan.water_every, fert_every: finalPlan.fert_every, notes: finalPlan.notes },
+          water_every: finalPlan.water_every,
+          fert_every: finalPlan.fert_every,
+        })
+        .eq("id", plant.id);
+      plant.care_plan = { water_every: finalPlan.water_every, fert_every: finalPlan.fert_every, notes: finalPlan.notes };
+      plant.water_every = finalPlan.water_every;
+      plant.fert_every = finalPlan.fert_every;
     } catch {}
 
     if (file) {

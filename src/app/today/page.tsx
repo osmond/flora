@@ -22,16 +22,17 @@ async function getTasksFromSupabase(): Promise<Task[] | null> {
   const supabase = createClient(url, anon);
 
   // Prefer a view if present
-  const { data: initialData, error } = await supabase
-    .from("tasks_today_view")
-    .select("*");
-  let data = initialData;
+  let data: any[] | null = null;
+  try {
+    const view = await supabase.from("tasks_today_view").select("*");
+    if (!view.error && view.data) data = view.data as any[];
+  } catch {}
 
-  if (error || !data) {
+  if (!data) {
     const res = await supabase
       .from("tasks")
-      .select("id, plant_id, plant_name, type, due_at, status")
-      .gte("due_at", new Date(Date.now() - 14 * 86400000).toISOString());
+      .select("id, plant_id, type, due_date, completed_at")
+      .gte("due_date", new Date(Date.now() - 14 * 86400000).toISOString());
     if (res.error || !res.data) return [];
     data = res.data as any[];
   }
@@ -39,7 +40,7 @@ async function getTasksFromSupabase(): Promise<Task[] | null> {
   // Ensure we never pass Promises into JSX
   return (data as any[]).map((row) => {
     const dueISO =
-      row?.due_at ?? row?.dueAt ?? row?.due ?? new Date().toISOString();
+      row?.due_at ?? row?.dueAt ?? row?.due ?? row?.due_date ?? new Date().toISOString();
     return {
       id: String(row.id ?? row.task_id ?? `${row.plant_id}-${row.type}`),
       due: new Date(dueISO).toISOString(),
@@ -59,14 +60,10 @@ export default async function TodayPage() {
   // Also load plant count to decide empty state
   let plantCount = 0;
   try {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (url && anon) {
-      const { createClient } = await import("@supabase/supabase-js");
-      const supabase = createClient(url, anon);
-      const { count } = await supabase.from("plants").select("id", { count: "exact", head: true });
-      plantCount = count ?? 0;
-    }
+    const { supabaseServer } = await import("@/lib/supabase/server");
+    const supabase = supabaseServer();
+    const { count } = await supabase.from("plants").select("id", { count: "exact", head: true });
+    plantCount = count ?? 0;
   } catch {}
 
   // If there are no plants at all, show a friendly welcome/CTA instead of "All caught up".

@@ -3,6 +3,7 @@ import BackupControls from "@/components/BackupControls"
 import CarePlanActions from "@/components/admin/CarePlanActions"
 import AreaOverview from "@/components/charts/AreaOverview"
 import CarePlanList from "@/components/admin/CarePlanList"
+import AdminDangerPanel from "@/components/admin/AdminDangerPanel"
 
 export const dynamic = "force-dynamic"
 
@@ -202,6 +203,8 @@ export default async function DashboardPage() {
           <h2 className="text-lg font-medium mb-4">Backup</h2>
           <BackupControls />
         </section>
+
+        <AdminDangerPanel />
       </div>
     </main>
   )
