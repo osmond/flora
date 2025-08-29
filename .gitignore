@@ -44,3 +44,4 @@ apply-fix-species-proxy.sh
 apply-fix-species-url.sh
 .env.local
 .env
+.env*
