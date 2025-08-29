@@ -30,8 +30,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env
 
 
 # vercel
@@ -45,3 +43,4 @@ apply-fix-species-fetch.sh
 apply-fix-species-proxy.sh
 apply-fix-species-url.sh
 .env.local
+.env
