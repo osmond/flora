@@ -45,3 +45,4 @@ apply-fix-species-url.sh
 .env.local
 .env
 .env*
+.env*
